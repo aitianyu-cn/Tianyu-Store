@@ -1,22 +1,28 @@
 {
     "name": "@aitianyu.cn/tianyu-store",
-    "version": "0.0.5",
+    "version": "0.1.0",
     "description": "tianyu storage for nodejs.",
     "main": "./dist/lib/index.js",
     "types": "./dist/types/index.d.ts",
     "exports": {
         ".": "./dist/lib/index.js"
     },
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./dist/types/index.d.ts"
+            ]
+        }
+    },
     "files": [
         "dist"
     ],
     "type": "commonjs",
     "scripts": {
-        "start": "ts-node src/index.ts",
         "build": "npm run before-build && npm run compiler && npm run copy-lib && npm run copy-types && npm run after-build",
         "compiler": "tsc && tsc-alias",
-        "copy-lib": "copyfiles -u 1 \"build/src/**/*.js\" \"build/index.js\" dist/lib",
-        "copy-types": "copyfiles -u 1 \"build/src/**/*.d.ts\" \"build/index.d.ts\" dist/types",
+        "copy-lib": "copyfiles -u 1 \"build/src/**/*.js\" dist/lib",
+        "copy-types": "copyfiles -u 1 \"build/src/**/*.d.ts\" dist/types",
         "before-build": "rimraf ./dist ./build",
         "after-build": "rimraf ./build",
         "test": "jest --no-cache --verbose",

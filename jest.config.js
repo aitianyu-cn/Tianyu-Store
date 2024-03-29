@@ -12,7 +12,7 @@ module.exports = {
             "./node_modules/jest-html-reporters",
             {
                 //输出页面标题
-                pageTitle: "Tianyu Storage Unit Test",
+                pageTitle: "Tianyu Store Unit Test",
                 //插件将会输出的HTML报告的路径。
                 publicPath: "test/__report__/unit",
                 //为每个失败的测试输出详细的失败消息。
@@ -23,4 +23,7 @@ module.exports = {
         ],
     ],
     coverageDirectory: "test/__report__/coverage",
+    moduleNameMapper: {
+        src: "<rootDir>/src",
+    },
 };

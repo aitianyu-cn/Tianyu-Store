@@ -1,9 +1,10 @@
 /**@format */
 
 import { ObjectHelper } from "@aitianyu.cn/types";
-import { IAction } from "src/interface/Action";
-import { IActionDispatch, IDispatch } from "src/interface/Dispatch";
+import { IAction, IActionDispatch } from "src/interface/Action";
+import { IDispatch } from "src/interface/Dispatch";
 
+/** Tianyu Store Dispatcher */
 export class Dispatcher implements IDispatch, IActionDispatch {
     private queue: IAction<any>[];
 
@@ -31,6 +32,12 @@ export class Dispatcher implements IDispatch, IActionDispatch {
         return ObjectHelper.clone(this.queue);
     }
 
+    /**
+     * Create an action dispatcher from specified actions
+     *
+     * @param actions provided actions
+     * @returns return a action dispatcher object
+     */
     public static createDispatcher(...actions: IAction<any>[]): IDispatch {
         const dispatch = new Dispatcher();
         for (const action of actions) {

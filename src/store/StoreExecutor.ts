@@ -1,17 +1,14 @@
 /**@format */
 
 import { IDispatch } from "src/interface/Dispatch";
-import { IStoreReducerMap } from "src/interface/Store";
-import { IStoreExecution } from "./IStoreExecution";
+import { IStoreExecution } from "../interface/StoreExecution";
 
 export class StoreExecutor<STATE> {
-    private reducerMap: IStoreReducerMap<STATE>;
     private store: IStoreExecution<STATE>;
 
     private processPromise: Promise<void>;
 
-    public constructor(reducerMap: IStoreReducerMap<STATE>, store: IStoreExecution<STATE>) {
-        this.reducerMap = reducerMap;
+    public constructor(store: IStoreExecution<STATE>) {
         this.store = store;
 
         this.processPromise = Promise.resolve();
@@ -38,7 +35,7 @@ export class StoreExecutor<STATE> {
                 // process transaction flag
                 actionTransactable = actionTransactable && !!action.transcation;
 
-                const reducer = this.reducerMap[action.action];
+                const reducer = this.store.getReducer(action.action);
                 if (!reducer) {
                     throw new Error();
                 }
@@ -53,8 +50,6 @@ export class StoreExecutor<STATE> {
                 actions: initialActions,
                 transactable: actionTransactable,
             });
-
-            this.store.fireSubscribe();
         } catch (e) {
             return Promise.reject(e);
         }
