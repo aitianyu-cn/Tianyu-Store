@@ -9,12 +9,12 @@ export class Listener<STATE> implements IListener<STATE> {
     private executer: NodeJS.Timeout | string | number | null;
     private state: STATE;
 
-    public constructor(initialState: STATE, overtime: number) {
+    public constructor(initialState: Readonly<STATE>, overtime: number) {
         this.overtime = overtime;
         this.listeners = new Map<string, ListenerCallback<STATE>>();
 
         this.executer = null;
-        this.state = Object.freeze(initialState);
+        this.state = initialState;
     }
 
     public get(): Map<string, ListenerCallback<STATE>> {
@@ -32,7 +32,7 @@ export class Listener<STATE> implements IListener<STATE> {
             this.executer = null;
         }
 
-        this.state = Object.freeze(state);
+        this.state = state;
         this.executer = setTimeout(() => {
             this._fireInternal();
         }, this.overtime);

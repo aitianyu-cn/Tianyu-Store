@@ -2,10 +2,10 @@
 
 import { IStoreBase } from "src/interface/StoreBase";
 import { ITransactionItem } from "src/interface/Transaction";
-import { ActionHandler } from "./Action";
+import { Reducer } from "./Reducer";
 
 export interface IStoreExecution<STATE> extends IStoreBase<STATE> {
     transact(transactionData: ITransactionItem<STATE>): void;
     setState(newState: STATE): void;
-    getReducer(action: string): ActionHandler<STATE, any> | null;
+    getReducer(action: string): Reducer<STATE, any> | null;
 }

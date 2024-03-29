@@ -1,7 +1,7 @@
 /**@format */
 
 import { CallbackAction, guid } from "@aitianyu.cn/types";
-import { ISubscribe } from "src/interface/Subscribe";
+import { Subscribe } from "src/interface/Subscribe";
 
 export class SubscribeEntity {
     private subscribes: Map<string, CallbackAction>;
@@ -31,7 +31,7 @@ export class SubscribeEntity {
         }, 0);
     }
 
-    public subscribe(callback: CallbackAction): ISubscribe {
+    public subscribe(callback: CallbackAction): Subscribe {
         const id = guid();
         this.subscribes.set(id, callback);
         return {

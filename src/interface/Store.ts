@@ -2,12 +2,12 @@
 
 import { IStoreBase } from "./StoreBase";
 import { IDispatch } from "./Dispatch";
-import { ISelector } from "./Selector";
-import { Missing } from "./Missing";
+import { Selector } from "./Selector";
+import { Missing } from "../store/Missing";
 import { IListener } from "./Listener";
-import { ISubscribe } from "./Subscribe";
+import { Subscribe } from "./Subscribe";
 import { CallbackAction } from "@aitianyu.cn/types";
-import { ActionHandler } from "./Action";
+import { Reducer } from "./Reducer";
 
 /** Tianyu Store Executor Interface */
 export interface IStoreExecutor<STATE> {
@@ -22,7 +22,7 @@ export interface IStoreExecutor<STATE> {
      *
      * @param selector the selector to generate data
      */
-    doSelect<T>(selector: ISelector<STATE, T>): Promise<T | Missing>;
+    doSelect<T>(selector: Selector<STATE, T>): Promise<T | Missing>;
 }
 
 /** Tianyu Store Transaction Interface */
@@ -53,7 +53,7 @@ export interface IStore<STATE> extends IStoreBase<STATE>, IStoreExecutor<STATE>,
      *
      * @param reducerMap the reducer map
      */
-    withReducer(reducerMap: Map<string, ActionHandler<STATE, any>>): void;
+    withReducer(reducerMap: Map<string, Reducer<STATE, any>>): void;
     /**
      * Get a listener operator of current store
      *
@@ -67,7 +67,7 @@ export interface IStore<STATE> extends IStoreBase<STATE>, IStoreExecutor<STATE>,
      *
      * @returns return the subscribe object
      */
-    subscribe(callback: CallbackAction): ISubscribe;
+    subscribe(callback: CallbackAction): Subscribe;
 }
 
 /** Tianyu Store Configuration */

@@ -1,10 +1,10 @@
 /**@format */
 
-import { IAction } from "./Action";
+import { Action } from "./Action";
 
 export interface ITransactionItem<STATE> {
     old: STATE;
     new: STATE;
-    actions: IAction<any>[];
+    actions: Action<any>[];
     transactable: boolean;
 }

@@ -1,22 +1,22 @@
 /**@format */
 
 import { ObjectHelper } from "@aitianyu.cn/types";
-import { IAction, IActionDispatch } from "src/interface/Action";
+import { Action, IActionDispatch } from "src/interface/Action";
 import { IDispatch } from "src/interface/Dispatch";
 
 /** Tianyu Store Dispatcher */
 export class Dispatcher implements IDispatch, IActionDispatch {
-    private queue: IAction<any>[];
+    private queue: Action<any>[];
 
     private constructor() {
         this.queue = [];
     }
 
-    public put<T>(action: IAction<T>): void {
+    public put<T>(action: Action<T>): void {
         this.queue.push(action);
     }
 
-    public get(): IAction<any> | null {
+    public get(): Action<any> | null {
         if (!this.queue.length) {
             return null;
         }
@@ -28,7 +28,7 @@ export class Dispatcher implements IDispatch, IActionDispatch {
         this.queue.shift();
     }
 
-    public getAll(): IAction<any>[] {
+    public getAll(): Action<any>[] {
         return ObjectHelper.clone(this.queue);
     }
 
@@ -38,7 +38,7 @@ export class Dispatcher implements IDispatch, IActionDispatch {
      * @param actions provided actions
      * @returns return a action dispatcher object
      */
-    public static createDispatcher(...actions: IAction<any>[]): IDispatch {
+    public static createDispatcher(...actions: Action<any>[]): IDispatch {
         const dispatch = new Dispatcher();
         for (const action of actions) {
             dispatch.put(action);

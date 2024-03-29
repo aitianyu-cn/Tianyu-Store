@@ -4,7 +4,7 @@
  * A missing type of Tianyu Store to replace null value
  * when the state getter could not find a required value
  */
-export interface Missing {
+export class Missing {
     /** the error or missing message */
     message?: string;
 }

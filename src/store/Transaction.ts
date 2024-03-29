@@ -1,7 +1,6 @@
 /**@format */
 
-import { CallbackAction, CallbackActionT } from "@aitianyu.cn/types";
-import { IAction } from "src/interface/Action";
+import { CallbackActionT } from "@aitianyu.cn/types";
 import { ITransactionItem } from "src/interface/Transaction";
 
 export class Transaction<STATE> {

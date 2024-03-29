@@ -1,7 +1,7 @@
 /**@format */
 
-import { Missing } from "src/interface/Missing";
-import { IRawSelector, ISelector } from "src/interface/Selector";
+import { Missing } from "src/store/Missing";
+import { RawSelector, Selector } from "src/interface/Selector";
 
 /** Tianyu Store Selector Creator */
 export class SelectorCreator {
@@ -11,7 +11,7 @@ export class SelectorCreator {
      * @param selector the selector raw function
      * @returns return a tianyu store selector
      */
-    public static create<STATE, T>(selector: IRawSelector<STATE, T>): ISelector<STATE, T> {
+    public static create<STATE, T>(selector: RawSelector<STATE, T>): Selector<STATE, T> {
         return {
             selector: async function (state: Readonly<STATE>) {
                 try {

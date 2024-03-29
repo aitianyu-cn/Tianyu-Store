@@ -1,7 +1,7 @@
 /**@format */
 
 /** Tianyu Store Action */
-export interface IAction<T> {
+export interface Action<T> {
     action: string;
     params: T;
     transcation: boolean;
@@ -12,17 +12,10 @@ export interface IAction<T> {
  * Used to generate an action
  */
 export interface ActionGenerator<T> {
-    (params: T): IAction<T>;
-}
-
-/**
- * Function of Tianyu Store Action Handler as an action main executor
- */
-export interface ActionHandler<STATE, T> {
-    (this: IActionDispatch, state: Readonly<STATE>, params: T): Promise<STATE>;
+    (params: T): Action<T>;
 }
 
 /** Function of Tianyu Store Action Dispatcher to support action queue process in an action execution */
 export interface IActionDispatch {
-    put<T>(action: IAction<T>): void;
+    put<T>(action: Action<T>): void;
 }

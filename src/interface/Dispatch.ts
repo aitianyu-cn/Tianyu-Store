@@ -1,6 +1,6 @@
 /**@format */
 
-import { IAction, IActionDispatch } from "./Action";
+import { Action, IActionDispatch } from "./Action";
 
 /** Tianyu Store Dispatch Interface */
 export interface IDispatch extends IActionDispatch {
@@ -9,7 +9,7 @@ export interface IDispatch extends IActionDispatch {
      *
      * @returns return the first action or null value for there is all actions are executed done.
      */
-    get(): IAction<any> | null;
+    get(): Action<any> | null;
     /** to make the first action done and move the action point into the next */
     done(): void;
 
@@ -18,5 +18,5 @@ export interface IDispatch extends IActionDispatch {
      *
      * @returns return an action array
      */
-    getAll(): IAction<any>[];
+    getAll(): Action<any>[];
 }

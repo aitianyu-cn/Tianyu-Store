@@ -2,6 +2,7 @@
 
 import { IDispatch } from "src/interface/Dispatch";
 import { IStoreExecution } from "../interface/StoreExecution";
+import { ObjectHelper } from "@aitianyu.cn/types";
 
 export class StoreExecutor<STATE> {
     private store: IStoreExecution<STATE>;
@@ -45,8 +46,8 @@ export class StoreExecutor<STATE> {
 
             this.store.setState(state);
             this.store.transact({
-                old: initialState,
-                new: state,
+                old: ObjectHelper.clone(initialState),
+                new: ObjectHelper.clone(state),
                 actions: initialActions,
                 transactable: actionTransactable,
             });

@@ -1,12 +1,12 @@
 /**@format */
 
-import { Missing } from "./Missing";
+import { Missing } from "../store/Missing";
 
 /**
  * Tianyu Store Selector
  * This is a auto-generated object from Raw Selector Function
  */
-export interface ISelector<STATE, T> {
+export interface Selector<STATE, T> {
     /**
      * Selector processor of Store
      *
@@ -20,7 +20,7 @@ export interface ISelector<STATE, T> {
  * Raw function of Tianyu Store Selector
  * This is a user given function
  */
-export interface IRawSelector<STATE, T> {
+export interface RawSelector<STATE, T> {
     /**
      * @param state the source state
      *
