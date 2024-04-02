@@ -11,12 +11,7 @@ import { ObjectHelper } from "@aitianyu.cn/types";
  * @param forceObj a flag to check whether the specific path object does exist
  * @returns return a new state, if the forceObj is true and the specific object from path does not exist, the raw state will be returned
  */
-export function getNewState<STATE, T>(
-    rawState: Readonly<STATE>,
-    path: string[],
-    changes: T,
-    forceObj?: boolean,
-): STATE {
+export function getNewState(rawState: any, path: string[], changes: any, forceObj?: boolean): any {
     const rawCopy = ObjectHelper.clone(rawState);
     const targetName = path.pop();
     if (targetName) {
@@ -28,13 +23,12 @@ export function getNewState<STATE, T>(
                 } else {
                     operator[item] = {};
                 }
-            } else {
-                operator = operator[item];
             }
+            operator = operator[item];
         }
 
         if (!forceObj || operator[targetName]) {
-            operator[targetName] = changes;
+            operator[targetName] = ObjectHelper.clone(changes);
         }
     }
 

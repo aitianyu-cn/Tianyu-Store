@@ -24,6 +24,8 @@ module.exports = {
     ],
     coverageDirectory: "test/__report__/coverage",
     moduleNameMapper: {
-        src: "<rootDir>/src",
+        // "src/*": "<rootDir>/src/*",
+        // "src/store": "<rootDir>/src/store",
     },
+    // modulePathIgnorePatterns: ["<rootDir>/src/index.ts"],
 };

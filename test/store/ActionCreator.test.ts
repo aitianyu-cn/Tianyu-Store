@@ -1,6 +1,6 @@
 /**@format */
 
-import { ActionCreator } from "src";
+import { ActionCreator } from "../../src/store/ActionCreator";
 
 describe("aitianyu-cn.node-module.tianyu-store.store.ActionCreator", () => {
     it("- create an action generator with transaction - true", () => {

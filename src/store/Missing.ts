@@ -7,4 +7,6 @@
 export class Missing {
     /** the error or missing message */
     message?: string;
+
+    public constructor() {}
 }

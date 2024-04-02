@@ -19,4 +19,10 @@ export interface IDispatch extends IActionDispatch {
      * @returns return an action array
      */
     getAll(): Action<any>[];
+    /**
+     * get dispatch entity id
+     *
+     * @returns return the unfied entity id
+     */
+    getId(): string;
 }

@@ -1,6 +1,6 @@
 /**@format */
 
-import { Missing } from "src/store/Missing";
+import { Missing } from "./Missing";
 import { RawSelector, Selector } from "src/interface/Selector";
 
 /** Tianyu Store Selector Creator */
@@ -15,12 +15,11 @@ export class SelectorCreator {
         return {
             selector: async function (state: Readonly<STATE>) {
                 try {
-                    const result = selector(state);
+                    const result = await selector(state);
                     return result;
                 } catch (e) {
-                    const missing: Missing = {
-                        message: (e as any)?.message,
-                    };
+                    const missing: Missing = new Missing();
+                    missing.message = (e as any)?.message;
 
                     return missing;
                 }

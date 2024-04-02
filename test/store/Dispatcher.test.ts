@@ -1,6 +1,6 @@
 /**@format */
 
-import { Dispatcher } from "src";
+import { Dispatcher } from "../../src/store/Dispatcher";
 
 describe("aitianyu-cn.node-module.tianyu-store.store.Dispatcher", () => {
     let dispatcher = Dispatcher.createDispatcher();
@@ -41,5 +41,14 @@ describe("aitianyu-cn.node-module.tianyu-store.store.Dispatcher", () => {
         );
         const actions = oDispatcher.getAll();
         expect(actions.length).toEqual(2);
+    });
+
+    it("getId", () => {
+        const oDispatcher = Dispatcher.createDispatcher(
+            { action: "test1", params: "payload", transcation: true },
+            { action: "test2", params: 1, transcation: true },
+        );
+        expect(oDispatcher.getId()).toBeDefined();
+        expect(oDispatcher.getId()).not.toEqual("");
     });
 });

@@ -1,19 +1,20 @@
 /**@format */
 
+import { Action } from "src/interface/Action";
 import { CallbackAction, ObjectCalculater, ObjectHelper } from "@aitianyu.cn/types";
-import { Transaction } from "src/store/Transaction";
 import { IDispatch } from "src/interface/Dispatch";
-import { Missing } from "src/store/Missing";
-import { Selector } from "src/interface/Selector";
 import { IStore, IStoreConfiguration } from "src/interface/Store";
-import { StoreExecutor } from "./StoreExecutor";
-import { IStoreExecution } from "../interface/StoreExecution";
+import { IStoreExecution } from "src/interface/StoreExecution";
 import { ITransactionItem } from "src/interface/Transaction";
 import { IListener } from "src/interface/Listener";
-import { Listener } from "src/store/Listener";
-import { SubscribeEntity } from "src/store/SubscribeEntity";
-import { Subscribe } from "src/interface/Subscribe";
 import { Reducer } from "src/interface/Reducer";
+import { Selector } from "src/interface/Selector";
+import { Subscribe } from "src/interface/Subscribe";
+import { Listener } from "./Listener";
+import { Missing } from "./Missing";
+import { StoreExecutor } from "./StoreExecutor";
+import { SubscribeEntity } from "./SubscribeEntity";
+import { Transaction } from "./Transaction";
 
 const STORE_FIRE_OVERTIME_DEFAULT = 30;
 
@@ -26,10 +27,12 @@ export class StoreEntity<STATE> implements IStore<STATE>, IStoreExecution<STATE>
 
     private state: STATE;
     private forceState: boolean;
+    private error?: (actions: Action<any>[], errorMsg: string) => void;
 
     public constructor(initialState: STATE, config?: IStoreConfiguration) {
         this.state = Object.freeze(ObjectHelper.clone(initialState));
         this.forceState = !!config?.forceState;
+        this.error = config?.error;
 
         this.transaction = new Transaction<STATE>(this.state, this.onTransactionChanged.bind(this));
         this.reducerMap = new Map<string, Reducer<STATE, any>>();
@@ -39,10 +42,9 @@ export class StoreEntity<STATE> implements IStore<STATE>, IStoreExecution<STATE>
     }
 
     public withReducer(reducers: Map<string, Reducer<STATE, any>>): void {
-        this.reducerMap = {
-            ...this.reducerMap,
-            ...reducers,
-        };
+        for (const item of reducers) {
+            this.reducerMap.set(item[0], item[1]);
+        }
     }
     public withListener(): IListener<STATE> {
         return this.listener;
@@ -90,6 +92,9 @@ export class StoreEntity<STATE> implements IStore<STATE>, IStoreExecution<STATE>
     }
     getReducer(action: string): Reducer<STATE, any> | null {
         return this.reducerMap.get(action) || null;
+    }
+    postError(actions: Action<any>[], error: string): void {
+        this.error?.(actions, error);
     }
 
     private onTransactionChanged(state: STATE): void {

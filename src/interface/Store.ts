@@ -8,6 +8,7 @@ import { IListener } from "./Listener";
 import { Subscribe } from "./Subscribe";
 import { CallbackAction } from "@aitianyu.cn/types";
 import { Reducer } from "./Reducer";
+import { Action } from "./Action";
 
 /** Tianyu Store Executor Interface */
 export interface IStoreExecutor<STATE> {
@@ -76,4 +77,6 @@ export interface IStoreConfiguration {
     fireOverTime?: number;
     /** Indicates the listener should be triggerred even the state is not changed */
     forceState?: boolean;
+    /** Indicates a callback function used to expose error message when action dispatching */
+    error?: (actions: Action<any>[], errorMsg: string) => void;
 }

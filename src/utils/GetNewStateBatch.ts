@@ -8,8 +8,7 @@ function processChangeTrie(changes: StateChangePair<any>[]): StateChangesTrie {
     const changesTrie: StateChangesTrie = { children: {} };
 
     for (const change of changes) {
-        const targetName = change.path.pop();
-        if (!targetName) {
+        if (!change.path.length) {
             // empty path will not be processed
             continue;
         }
@@ -54,11 +53,11 @@ function setState(operator: any, nodes: Record<string, StateChangesTrie>, forceO
  * @param forceObj a flag to check whether the specific path object does exist
  * @returns return a new state, if the forceObj is true and the specific object from path does not exist, the raw state will be returned
  */
-export function getNewStateBatch<STATE>(
-    rawState: Readonly<STATE>,
+export function getNewStateBatch(
+    rawState: any,
     changes: StateChangePair<any>[] | StateChangesTrie,
     forceObj?: boolean,
-): STATE {
+): any {
     const rawCopy = ObjectHelper.clone(rawState);
     const changeTrie = Array.isArray(changes) ? processChangeTrie(changes) : changes;
 

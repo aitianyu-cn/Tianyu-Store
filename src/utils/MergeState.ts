@@ -40,6 +40,7 @@ export function mergeState(oldState: any, newState: any, forceObj?: boolean): an
 
     try {
         setState(rawCopy, newState, !!forceObj);
+        return rawCopy;
     } catch (e) {
         // for batch mode, to avoid change lost (like some of changes are applied or others are not)
         // if set state process has exception, to return rawState

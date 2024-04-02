@@ -9,7 +9,7 @@ export { type Selector, type RawSelector } from "./interface/Selector";
 export { type IStoreExecutor, type IStoreTransaction, type IStore, type IStoreConfiguration } from "./interface/Store";
 export { type IStoreBase } from "./interface/StoreBase";
 export { type Subscribe } from "./interface/Subscribe";
-export { type StateChangePair } from "./interface/Utils";
+export { type StateChangePair, type StateChangesTrie } from "./interface/Utils";
 
 /** Implementation Part */
 export { Missing } from "./store/Missing";

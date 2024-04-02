@@ -1,14 +1,16 @@
 /**@format */
 
-import { ObjectHelper } from "@aitianyu.cn/types";
+import { guid, ObjectHelper } from "@aitianyu.cn/types";
 import { Action, IActionDispatch } from "src/interface/Action";
 import { IDispatch } from "src/interface/Dispatch";
 
 /** Tianyu Store Dispatcher */
 export class Dispatcher implements IDispatch, IActionDispatch {
+    private id: string;
     private queue: Action<any>[];
 
     private constructor() {
+        this.id = guid();
         this.queue = [];
     }
 
@@ -30,6 +32,10 @@ export class Dispatcher implements IDispatch, IActionDispatch {
 
     public getAll(): Action<any>[] {
         return ObjectHelper.clone(this.queue);
+    }
+
+    public getId(): string {
+        return this.id;
     }
 
     /**

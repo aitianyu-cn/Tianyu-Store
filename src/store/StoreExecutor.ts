@@ -17,9 +17,27 @@ export class StoreExecutor<STATE> {
 
     public execute(dispatcher: IDispatch): void {
         this.processPromise = this.processPromise.then(async () => {
-            return new Promise<void>((resolve, reject) => {
+            return new Promise<void>((resolve) => {
                 setTimeout(() => {
-                    this.executeInternal(dispatcher).then(resolve, reject);
+                    this.executeInternal(dispatcher)
+                        .then(
+                            () => {
+                                console.log(`actions: ${dispatcher.getId()} are executed done with no error`);
+                            },
+                            (reason: any) => {
+                                const actions = dispatcher.getAll();
+                                const actionsStrify = JSON.stringify(actions);
+                                console.log(
+                                    `actions: ${dispatcher.getId()} are executed failed. \n\r ${actionsStrify}`,
+                                );
+                                const errorMsg =
+                                    typeof reason === "string"
+                                        ? reason
+                                        : (reason as any)?.message || "error with unknown reason";
+                                this.store.postError(actions, errorMsg);
+                            },
+                        )
+                        .finally(resolve);
                 }, 0);
             });
         });
@@ -42,6 +60,7 @@ export class StoreExecutor<STATE> {
                 }
 
                 state = await reducer.call(dispatcher, state, action.params);
+                dispatcher.done();
             }
 
             this.store.setState(state);
