@@ -80,6 +80,8 @@ describe("aitianyu-cn.node-module.tianyu-store.store.StoreEntity", () => {
 
         store.withListener().add("test", listener);
         subscribe = store.subscribe(subscribeCallback);
+
+        expect(store.getId()).toBeDefined();
     });
 
     beforeEach(() => {

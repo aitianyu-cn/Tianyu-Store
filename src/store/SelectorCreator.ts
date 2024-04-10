@@ -1,5 +1,6 @@
 /**@format */
 
+import { guid } from "@aitianyu.cn/types";
 import { Missing } from "./Missing";
 import { RawSelector, Selector } from "src/interface/Selector";
 
@@ -24,6 +25,7 @@ export class SelectorCreator {
                     return missing;
                 }
             },
+            id: guid(),
         };
     }
 }

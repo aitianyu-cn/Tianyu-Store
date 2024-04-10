@@ -17,7 +17,7 @@ export interface IStoreExecutor<STATE> {
      *
      * @param dispatcher needs to be dispatched actions group
      */
-    doDispatch(dispatcher: IDispatch): void;
+    doDispatch(dispatcher: IDispatch<STATE>): void;
     /**
      * To get some specified data from store state by given selector
      *

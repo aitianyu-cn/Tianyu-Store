@@ -1,8 +1,9 @@
 /**@format */
 
 import { Action } from "src/interface/Action";
-import { CallbackAction, ObjectCalculater, ObjectHelper } from "@aitianyu.cn/types";
+import { CallbackAction, guid, ObjectCalculater, ObjectHelper } from "@aitianyu.cn/types";
 import { IDispatch } from "src/interface/Dispatch";
+import { IExternalObjectController } from "src/interface/ExternalObject";
 import { IStore, IStoreConfiguration } from "src/interface/Store";
 import { IStoreExecution } from "src/interface/StoreExecution";
 import { ITransactionItem } from "src/interface/Transaction";
@@ -15,6 +16,7 @@ import { Missing } from "./Missing";
 import { StoreExecutor } from "./StoreExecutor";
 import { SubscribeEntity } from "./SubscribeEntity";
 import { Transaction } from "./Transaction";
+import { ExternalObjectController } from "./ExternalObject";
 
 const STORE_FIRE_OVERTIME_DEFAULT = 30;
 
@@ -24,10 +26,13 @@ export class StoreEntity<STATE> implements IStore<STATE>, IStoreExecution<STATE>
     private executor: StoreExecutor<STATE>;
     private listener: Listener<STATE>;
     private subscribeEntity: SubscribeEntity;
+    private externalObjController: ExternalObjectController;
 
     private state: STATE;
     private forceState: boolean;
     private error?: (actions: Action<any>[], errorMsg: string) => void;
+
+    private id: string;
 
     public constructor(initialState: STATE, config?: IStoreConfiguration) {
         this.state = Object.freeze(ObjectHelper.clone(initialState));
@@ -39,6 +44,9 @@ export class StoreEntity<STATE> implements IStore<STATE>, IStoreExecution<STATE>
         this.executor = new StoreExecutor<STATE>(this);
         this.listener = new Listener<STATE>(initialState, config?.fireOverTime || STORE_FIRE_OVERTIME_DEFAULT);
         this.subscribeEntity = new SubscribeEntity();
+        this.externalObjController = new ExternalObjectController();
+
+        this.id = guid();
     }
 
     public withReducer(reducers: Map<string, Reducer<STATE, any>>): void {
@@ -52,12 +60,19 @@ export class StoreEntity<STATE> implements IStore<STATE>, IStoreExecution<STATE>
     public subscribe(callback: CallbackAction): Subscribe {
         return this.subscribeEntity.subscribe(callback);
     }
+    public withExternalObject(): IExternalObjectController {
+        return this.externalObjController;
+    }
 
     public getState(): Readonly<STATE> {
         return this.state;
     }
+    public getId(): string {
+        return this.id;
+    }
 
-    public doDispatch(dispatcher: IDispatch): void {
+    public doDispatch(dispatcher: IDispatch<STATE>): void {
+        dispatcher.setStore(this);
         this.executor.execute(dispatcher);
     }
     public async doSelect<T>(selector: Selector<STATE, T>): Promise<Missing | T> {

@@ -1,5 +1,6 @@
 /**@format */
 
+import { guid } from "@aitianyu.cn/types";
 import { ActionGenerator } from "src/interface/Action";
 
 /** Tianyu Store Action Creator */
@@ -12,12 +13,15 @@ export class ActionCreator {
      * @returns return a action generator function
      */
     public static create<T>(action: string, transcation?: boolean): ActionGenerator<T> {
-        return function (params: T) {
+        const generator = function (params: T) {
             return {
                 action: action,
                 params: params,
                 transcation: !!transcation,
             };
         };
+        generator.id = guid();
+
+        return generator;
     }
 }

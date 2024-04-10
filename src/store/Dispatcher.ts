@@ -3,15 +3,20 @@
 import { guid, ObjectHelper } from "@aitianyu.cn/types";
 import { Action, IActionDispatch } from "src/interface/Action";
 import { IDispatch } from "src/interface/Dispatch";
+import { IStore } from "src/interface/Store";
 
 /** Tianyu Store Dispatcher */
-export class Dispatcher implements IDispatch, IActionDispatch {
+export class Dispatcher<STATE> implements IDispatch<STATE>, IActionDispatch<STATE> {
     private id: string;
     private queue: Action<any>[];
+
+    private store: IStore<STATE> | null;
 
     private constructor() {
         this.id = guid();
         this.queue = [];
+
+        this.store = null;
     }
 
     public put<T>(action: Action<T>): void {
@@ -38,14 +43,26 @@ export class Dispatcher implements IDispatch, IActionDispatch {
         return this.id;
     }
 
+    public setStore(store: IStore<STATE>): void {
+        this.store = store;
+    }
+
+    public getStore(): IStore<STATE> {
+        if (!this.store) {
+            throw new Error("dispatch is not running in an valid Store entity");
+        }
+
+        return this.store;
+    }
+
     /**
      * Create an action dispatcher from specified actions
      *
      * @param actions provided actions
      * @returns return a action dispatcher object
      */
-    public static createDispatcher(...actions: Action<any>[]): IDispatch {
-        const dispatch = new Dispatcher();
+    public static createDispatcher<STATE>(...actions: Action<any>[]): IDispatch<STATE> {
+        const dispatch = new Dispatcher<STATE>();
         for (const action of actions) {
             dispatch.put(action);
         }

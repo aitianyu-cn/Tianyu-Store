@@ -1,9 +1,10 @@
 /**@format */
 
 import { Action, IActionDispatch } from "./Action";
+import { IStore } from "./Store";
 
 /** Tianyu Store Dispatch Interface */
-export interface IDispatch extends IActionDispatch {
+export interface IDispatch<STATE> extends IActionDispatch<STATE> {
     /**
      * get the first action which does not executed done.
      *
@@ -25,4 +26,10 @@ export interface IDispatch extends IActionDispatch {
      * @returns return the unfied entity id
      */
     getId(): string;
+    /**
+     * To set a store instance which is current running store
+     *
+     * @param store the store instance
+     */
+    setStore(store: IStore<STATE>): void;
 }

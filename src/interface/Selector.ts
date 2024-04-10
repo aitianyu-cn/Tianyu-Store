@@ -14,6 +14,8 @@ export interface Selector<STATE, T> {
      * @returns return the specific data type or missing for the value is not valid
      */
     selector(state: Readonly<STATE>): Promise<T | Missing>;
+    /** Selector Unified ID */
+    id: string;
 }
 
 /**

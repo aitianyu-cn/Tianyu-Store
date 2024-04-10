@@ -15,7 +15,7 @@ export class StoreExecutor<STATE> {
         this.processPromise = Promise.resolve();
     }
 
-    public execute(dispatcher: IDispatch): void {
+    public execute(dispatcher: IDispatch<STATE>): void {
         this.processPromise = this.processPromise.then(async () => {
             return new Promise<void>((resolve) => {
                 setTimeout(() => {
@@ -43,7 +43,7 @@ export class StoreExecutor<STATE> {
         });
     }
 
-    private async executeInternal(dispatcher: IDispatch): Promise<void> {
+    private async executeInternal(dispatcher: IDispatch<STATE>): Promise<void> {
         try {
             const initialState = this.store.getState();
             const initialActions = dispatcher.getAll();
