@@ -23,15 +23,15 @@ describe("aitianyu-cn.node-module.tianyu-store.store.StoreEntity", () => {
         },
     );
 
-    function increase(this: IActionDispatch, state: IStoreState, _params: any): Promise<IStoreState> {
+    function increase(this: IActionDispatch<IStoreState>, state: IStoreState, _params: any): Promise<IStoreState> {
         const newState = getNewState(state, ["time"], state.time + 1);
         return newState;
     }
-    function decrease(this: IActionDispatch, state: IStoreState, _params: any): Promise<IStoreState> {
+    function decrease(this: IActionDispatch<IStoreState>, state: IStoreState, _params: any): Promise<IStoreState> {
         const newState = getNewState(state, ["time"], state.time - 1);
         return newState;
     }
-    function add(this: IActionDispatch, state: IStoreState, params: any): Promise<IStoreState> {
+    function add(this: IActionDispatch<IStoreState>, state: IStoreState, params: any): Promise<IStoreState> {
         const addValue = Number.parseInt(params?.add);
         if (!addValue || Number.isNaN(addValue)) {
             throw "params add value empty";
@@ -39,7 +39,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.StoreEntity", () => {
         const newState = getNewState(state, ["time"], state.time + addValue);
         return newState;
     }
-    function sub(this: IActionDispatch, state: IStoreState, params: any): Promise<IStoreState> {
+    function sub(this: IActionDispatch<IStoreState>, state: IStoreState, params: any): Promise<IStoreState> {
         const subValue = Number.parseInt(params?.sub);
         if (!subValue || Number.isNaN(subValue)) {
             throw "params sub value empty";
@@ -47,7 +47,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.StoreEntity", () => {
         const newState = getNewState(state, ["time"], state.time - subValue);
         return newState;
     }
-    function noChange(this: IActionDispatch, state: IStoreState, params: any): Promise<IStoreState> {
+    function noChange(this: IActionDispatch<IStoreState>, state: IStoreState, params: any): Promise<IStoreState> {
         return getNewState(state, [], {});
     }
 
@@ -89,7 +89,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.StoreEntity", () => {
     });
 
     it("to do increase", (done) => {
-        const dispatcher = Dispatcher.createDispatcher(ACTIONS.increase({}));
+        const dispatcher = Dispatcher.createDispatcher<IStoreState>(ACTIONS.increase({}));
         let presolve: Function = () => undefined;
         const promise = new Promise<any>((resolve) => {
             presolve = resolve;
@@ -106,7 +106,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.StoreEntity", () => {
     });
 
     it("to do add and decrease", (done) => {
-        const dispatcher = Dispatcher.createDispatcher(ACTIONS.add({ add: 5 }), ACTIONS.decrease({}));
+        const dispatcher = Dispatcher.createDispatcher<IStoreState>(ACTIONS.add({ add: 5 }), ACTIONS.decrease({}));
         let presolve: Function = () => undefined;
         const promise = new Promise<any>((resolve) => {
             presolve = resolve;
@@ -123,7 +123,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.StoreEntity", () => {
     });
 
     it("to do failure", (done) => {
-        const dispatcher = Dispatcher.createDispatcher(ACTIONS.add({ add: 5 }), {
+        const dispatcher = Dispatcher.createDispatcher<IStoreState>(ACTIONS.add({ add: 5 }), {
             action: "non-action",
             transcation: true,
             params: {},
@@ -192,5 +192,9 @@ describe("aitianyu-cn.node-module.tianyu-store.store.StoreEntity", () => {
             expect(value).toEqual(5);
             done();
         });
+    });
+
+    it("withExternalObject", () => {
+        expect(store.withExternalObject()).toBeDefined();
     });
 });

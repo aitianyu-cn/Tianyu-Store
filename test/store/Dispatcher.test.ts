@@ -51,4 +51,17 @@ describe("aitianyu-cn.node-module.tianyu-store.store.Dispatcher", () => {
         expect(oDispatcher.getId()).toBeDefined();
         expect(oDispatcher.getId()).not.toEqual("");
     });
+
+    describe("getStore", () => {
+        it("error when store is not set", () => {
+            expect(() => {
+                dispatcher.getStore();
+            }).toThrow("[Dispatch] dispatch is not running in an valid Store entity");
+        });
+
+        it("get store success", () => {
+            dispatcher.setStore({} as any);
+            expect(dispatcher.getStore()).toBeDefined();
+        });
+    });
 });

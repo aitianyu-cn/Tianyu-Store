@@ -2,6 +2,8 @@
 
 import { CallbackAction, guid } from "@aitianyu.cn/types";
 import { Subscribe } from "src/interface/Subscribe";
+import { MessageBundle } from "../infra/Message";
+import { Log } from "../infra/Log";
 
 export class SubscribeEntity {
     private subscribes: Map<string, CallbackAction>;
@@ -25,7 +27,13 @@ export class SubscribeEntity {
                 try {
                     item[1]();
                 } catch (e) {
-                    //
+                    Log.error(
+                        MessageBundle.getText(
+                            "SUBSCRIBE_FIRE_FAILED",
+                            item[0],
+                            (e as any)?.message || MessageBundle.getText("KNOWN_REASON"),
+                        ),
+                    );
                 }
             }
         }, 0);

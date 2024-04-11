@@ -3,6 +3,7 @@
 /** API Part */
 export { type Action, type ActionGenerator, type IActionDispatch } from "./interface/Action";
 export { type IDispatch } from "./interface/Dispatch";
+export { type IExternalObjectController } from "./interface/ExternalObject";
 export { type ListenerCallback, type IListener } from "./interface/Listener";
 export { type Reducer } from "./interface/Reducer";
 export { type Selector, type RawSelector } from "./interface/Selector";

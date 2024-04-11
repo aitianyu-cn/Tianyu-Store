@@ -1,5 +1,7 @@
 /**@format */
 
+import { Log } from "../infra/Log";
+import { MessageBundle } from "../infra/Message";
 import { IListener, ListenerCallback } from "src/interface/Listener";
 
 export class Listener<STATE> implements IListener<STATE> {
@@ -47,7 +49,13 @@ export class Listener<STATE> implements IListener<STATE> {
             try {
                 item[1](this.state);
             } catch (e) {
-                //
+                Log.error(
+                    MessageBundle.getText(
+                        "LISTENER_FIRE_FAILED",
+                        item[0],
+                        (e as any)?.message || MessageBundle.getText("KNOWN_REASON"),
+                    ),
+                );
             }
         }
     }

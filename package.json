@@ -2,15 +2,15 @@
     "name": "@aitianyu.cn/tianyu-store",
     "version": "0.1.0",
     "description": "tianyu storage for nodejs.",
-    "main": "./dist/lib/index.js",
-    "types": "./dist/types/index.d.ts",
+    "main": "./dist/lib/src/index.js",
+    "types": "./dist/types/src/index.d.ts",
     "exports": {
-        ".": "./dist/lib/index.js"
+        ".": "./dist/lib/src/index.js"
     },
     "typesVersions": {
         "*": {
             "*": [
-                "./dist/types/index.d.ts"
+                "./dist/types/src/index.d.ts"
             ]
         }
     },
@@ -19,9 +19,10 @@
     ],
     "type": "commonjs",
     "scripts": {
-        "build": "npm run before-build && npm run compiler && npm run copy-lib && npm run copy-types && npm run after-build",
+        "build": "npm run before-build && npm run compiler && npm run copy-lib && npm run copy-types && npm run copy-res && npm run after-build",
         "compiler": "tsc && tsc-alias",
         "copy-lib": "copyfiles -u 1 \"build/src/**/*.js\" dist/lib",
+        "copy-res": "copyfiles \"src/**/*.json\" dist/lib",
         "copy-types": "copyfiles -u 1 \"build/src/**/*.d.ts\" dist/types",
         "before-build": "rimraf ./dist ./build",
         "after-build": "rimraf ./build",

@@ -3,6 +3,8 @@
 import { IDispatch } from "src/interface/Dispatch";
 import { IStoreExecution } from "../interface/StoreExecution";
 import { ObjectHelper } from "@aitianyu.cn/types";
+import { Log } from "../infra/Log";
+import { MessageBundle } from "../infra/Message";
 
 export class StoreExecutor<STATE> {
     private store: IStoreExecution<STATE>;
@@ -22,18 +24,18 @@ export class StoreExecutor<STATE> {
                     this.executeInternal(dispatcher)
                         .then(
                             () => {
-                                console.log(`actions: ${dispatcher.getId()} are executed done with no error`);
+                                Log.debug(MessageBundle.getText("ACTION_EXECUTION_SUCCESS", dispatcher.getId()));
                             },
                             (reason: any) => {
                                 const actions = dispatcher.getAll();
                                 const actionsStrify = JSON.stringify(actions);
-                                console.log(
-                                    `actions: ${dispatcher.getId()} are executed failed. \n\r ${actionsStrify}`,
+                                Log.error(
+                                    MessageBundle.getText("ACTION_EXECUTION_FAILED", dispatcher.getId(), actionsStrify),
                                 );
                                 const errorMsg =
                                     typeof reason === "string"
                                         ? reason
-                                        : (reason as any)?.message || "error with unknown reason";
+                                        : (reason as any)?.message || MessageBundle.getText("KNOWN_REASON");
                                 this.store.postError(actions, errorMsg);
                             },
                         )
@@ -56,7 +58,7 @@ export class StoreExecutor<STATE> {
 
                 const reducer = this.store.getReducer(action.action);
                 if (!reducer) {
-                    throw new Error();
+                    throw new Error(MessageBundle.getText("ACTION_EXECUTE_REDUCER_NOT_FOUND", action.action));
                 }
 
                 state = await reducer.call(dispatcher, state, action.params);

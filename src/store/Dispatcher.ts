@@ -1,9 +1,11 @@
 /**@format */
 
 import { guid, ObjectHelper } from "@aitianyu.cn/types";
+import { MessageBundle } from "../infra/Message";
 import { Action, IActionDispatch } from "src/interface/Action";
 import { IDispatch } from "src/interface/Dispatch";
 import { IStore } from "src/interface/Store";
+import { Log } from "../infra/Log";
 
 /** Tianyu Store Dispatcher */
 export class Dispatcher<STATE> implements IDispatch<STATE>, IActionDispatch<STATE> {
@@ -49,7 +51,8 @@ export class Dispatcher<STATE> implements IDispatch<STATE>, IActionDispatch<STAT
 
     public getStore(): IStore<STATE> {
         if (!this.store) {
-            throw new Error("dispatch is not running in an valid Store entity");
+            Log.error(MessageBundle.getText("DISPATCHER_GET_STORE_FAILED", this.id));
+            throw new Error(MessageBundle.getText("ERROR_DISPATCHER_STORE_NOT_INIT"));
         }
 
         return this.store;

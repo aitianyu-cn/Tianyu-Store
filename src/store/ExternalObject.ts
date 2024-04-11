@@ -1,5 +1,7 @@
 /**@format */
 
+import { MessageBundle } from "../infra/Message";
+import { Log } from "../infra/Log";
 import { IExternalObjectController } from "src/interface/ExternalObject";
 
 interface IExternalObjectMap {
@@ -31,6 +33,10 @@ export class ExternalObjectController implements IExternalObjectController {
         return objectOperator.objects.get(name) || null;
     }
     public set(name: string, path: string[], obj: any): boolean {
+        if (!obj) {
+            return false;
+        }
+
         try {
             let objectOperator: IExternalObjectMap = this.objects;
             for (const dir of path) {
@@ -52,6 +58,13 @@ export class ExternalObjectController implements IExternalObjectController {
 
             return !!objectOperator.objects.set(name, Object.freeze(obj));
         } catch (e) {
+            Log.error(
+                MessageBundle.getText(
+                    "EXTERNAL_OBJ_SET_EXCEPTION",
+                    name,
+                    (e as any)?.message || MessageBundle.getText("KNOWN_REASON"),
+                ),
+            );
             return false;
         }
     }
