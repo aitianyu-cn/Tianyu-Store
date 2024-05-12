@@ -1,3 +1,5 @@
 /**@format */
 
-export {};
+export namespace ActionCreator {
+    //
+}

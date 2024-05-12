@@ -23,10 +23,11 @@
     ],
     "type": "commonjs",
     "scripts": {
-        "build": "npm run before-build && npm run compiler && npm run copy-lib && npm run copy-types && npm run copy-res && npm run after-build",
+        "build": "npm run before-build && npm run compiler && npm run copy-lib && npm run copy-types && npm run copy-res && npm run after-build && npm run remove-beta",
         "compiler": "tsc && tsc-alias",
         "copy-lib": "copyfiles -u 1 \"build/src/**/*.js\" dist/lib",
         "copy-res": "copyfiles \"src/**/*.json\" dist/lib",
+        "remove-beta": "rimraf ./dist/lib/src/beta ./dist/lib/src/beta2",
         "copy-types": "copyfiles -u 1 \"build/src/**/*.d.ts\" dist/types",
         "before-build": "rimraf ./dist ./build",
         "after-build": "rimraf ./build",
