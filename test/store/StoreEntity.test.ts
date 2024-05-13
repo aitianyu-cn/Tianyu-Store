@@ -8,6 +8,7 @@ import { ActionCreator } from "../../src/store/ActionCreator";
 import { Dispatcher } from "../../src/store/Dispatcher";
 import { SelectorCreator } from "../../src/store/SelectorCreator";
 import { Missing } from "src";
+import { StoreEntity } from "src/store/StoreEntity";
 
 interface IStoreState {
     time: number;
@@ -79,13 +80,32 @@ describe("aitianyu-cn.node-module.tianyu-store.store.StoreEntity", () => {
         store.withReducer(reducersMap);
 
         store.withListener().add("test", listener);
-        subscribe = store.subscribe(subscribeCallback);
+        subscribe = store.subscribe(subscribeCallback, SELECTORS.getTime);
 
         expect(store.getId()).toBeDefined();
     });
 
     beforeEach(() => {
         jest.clearAllMocks();
+    });
+
+    it("removeReducer", () => {
+        const testReducer = async function (
+            this: IActionDispatch<IStoreState>,
+            _state: IStoreState,
+            _params: any,
+        ): Promise<IStoreState> {
+            return { time: 0 };
+        };
+
+        const reducersMap = new Map<string, Reducer<IStoreState, any>>();
+        reducersMap.set("testReducer", testReducer);
+        store.withReducer(reducersMap);
+
+        expect((store as StoreEntity<IStoreState>).getReducer("testReducer")).toBeDefined();
+
+        store.removeReducer(["testReducer"]);
+        expect((store as StoreEntity<IStoreState>).getReducer("testReducer")).toBeNull();
     });
 
     it("to do increase", (done) => {
@@ -152,10 +172,17 @@ describe("aitianyu-cn.node-module.tianyu-store.store.StoreEntity", () => {
     });
 
     it("undo", (done) => {
+        let presolve: Function = () => undefined;
+        const promise = new Promise<any>((resolve) => {
+            presolve = resolve;
+        });
         listener.mockImplementation(() => {
             expect(store.getState().time).toEqual(1);
+            presolve();
         });
-        subscribeCallback.mockImplementation(done);
+        subscribeCallback.mockImplementation(() => {
+            promise.then(done);
+        });
 
         store.undo();
     });

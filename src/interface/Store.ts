@@ -5,7 +5,7 @@ import { IDispatch } from "./Dispatch";
 import { Selector } from "./Selector";
 import { Missing } from "../store/Missing";
 import { IListener } from "./Listener";
-import { Subscribe } from "./Subscribe";
+import { Subscribe, SubscribeCallback } from "./Subscribe";
 import { CallbackAction } from "@aitianyu.cn/types";
 import { Reducer } from "./Reducer";
 import { Action } from "./Action";
@@ -56,6 +56,12 @@ export interface IStore<STATE> extends IStoreBase<STATE>, IStoreExecutor<STATE>,
      */
     withReducer(reducerMap: Map<string, Reducer<STATE, any>>): void;
     /**
+     * To remove reducer from current store
+     *
+     * @param reducers the reducer name
+     */
+    removeReducer(reducers: string[]): void;
+    /**
      * Get a listener operator of current store
      *
      * @returns return a listener instance
@@ -68,7 +74,7 @@ export interface IStore<STATE> extends IStoreBase<STATE>, IStoreExecutor<STATE>,
      *
      * @returns return the subscribe object
      */
-    subscribe(callback: CallbackAction): Subscribe;
+    subscribe<T>(callback: SubscribeCallback<T>, selector: Selector<STATE, T>): Subscribe;
 }
 
 /** Tianyu Store Configuration */

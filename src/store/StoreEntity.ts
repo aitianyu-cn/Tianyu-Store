@@ -10,7 +10,7 @@ import { ITransactionItem } from "src/interface/Transaction";
 import { IListener } from "src/interface/Listener";
 import { Reducer } from "src/interface/Reducer";
 import { Selector } from "src/interface/Selector";
-import { Subscribe } from "src/interface/Subscribe";
+import { Subscribe, SubscribeCallback } from "src/interface/Subscribe";
 import { Listener } from "./Listener";
 import { Missing } from "./Missing";
 import { StoreExecutor } from "./StoreExecutor";
@@ -25,7 +25,7 @@ export class StoreEntity<STATE> implements IStore<STATE>, IStoreExecution<STATE>
     private reducerMap: Map<string, Reducer<STATE, any>>;
     private executor: StoreExecutor<STATE>;
     private listener: Listener<STATE>;
-    private subscribeEntity: SubscribeEntity;
+    private subscribeEntity: SubscribeEntity<STATE>;
     private externalObjController: ExternalObjectController;
 
     private state: STATE;
@@ -54,11 +54,16 @@ export class StoreEntity<STATE> implements IStore<STATE>, IStoreExecution<STATE>
             this.reducerMap.set(item[0], item[1]);
         }
     }
+    public removeReducer(reducers: string[]): void {
+        for (const reducer of reducers) {
+            this.reducerMap.delete(reducer);
+        }
+    }
     public withListener(): IListener<STATE> {
         return this.listener;
     }
-    public subscribe(callback: CallbackAction): Subscribe {
-        return this.subscribeEntity.subscribe(callback);
+    public subscribe<T>(callback: SubscribeCallback<T>, selector: Selector<STATE, T>): Subscribe {
+        return this.subscribeEntity.subscribe(callback, selector);
     }
     public withExternalObject(): IExternalObjectController {
         return this.externalObjController;
@@ -97,13 +102,15 @@ export class StoreEntity<STATE> implements IStore<STATE>, IStoreExecution<STATE>
         this.transaction.record(transactionData);
     }
     setState(newState: STATE): void {
+        const oldState = this.state;
         const shouldFireListener = this.forceState || ObjectCalculater.calculateDiff(this.state, newState).size();
         this.state = Object.freeze(ObjectHelper.clone(newState));
 
         if (shouldFireListener) {
             this.listener.fire(this.state);
         }
-        this.subscribeEntity.fire();
+        // fire the subscribe by old and new state
+        this.subscribeEntity.fire(oldState, this.state);
     }
     getReducer(action: string): Reducer<STATE, any> | null {
         return this.reducerMap.get(action) || null;

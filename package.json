@@ -5,18 +5,7 @@
     "main": "./dist/lib/src/index.js",
     "types": "./dist/types/src/index.d.ts",
     "exports": {
-        ".": "./dist/lib/src/index.js",
-        "./beta": "./dist/lib/src/beta/index.js"
-    },
-    "typesVersions": {
-        "*": {
-            "*": [
-                "./dist/types/src/index.d.ts"
-            ],
-            "beta": [
-                "./dist/types/src/beta/index.d.ts"
-            ]
-        }
+        ".": "./dist/lib/src/index.js"
     },
     "files": [
         "dist"

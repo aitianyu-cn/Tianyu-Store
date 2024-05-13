@@ -1,31 +1,40 @@
 /**@format */
 
-import { CallbackAction, guid } from "@aitianyu.cn/types";
-import { Subscribe } from "src/interface/Subscribe";
+import { CallbackAction, guid, ObjectCalculater } from "@aitianyu.cn/types";
+import { Subscribe, SubscribeCallback } from "src/interface/Subscribe";
 import { MessageBundle } from "../infra/Message";
 import { Log } from "../infra/Log";
+import { Selector } from "src/interface/Selector";
 
-export class SubscribeEntity {
-    private subscribes: Map<string, CallbackAction>;
+interface ISubscribeItem<STATE, T> {
+    callback: SubscribeCallback<T>;
+    selector: Selector<STATE, T>;
+}
+
+export class SubscribeEntity<STATE> {
+    private subscribes: Map<string, ISubscribeItem<any, any>>;
 
     public constructor() {
-        this.subscribes = new Map<string, CallbackAction>();
+        this.subscribes = new Map<string, ISubscribeItem<any, any>>();
     }
 
-    public get(): Map<string, CallbackAction> {
-        const map = new Map<string, CallbackAction>();
+    public get(): Map<string, ISubscribeItem<any, any>> {
+        const map = new Map<string, ISubscribeItem<any, any>>();
         for (const item of this.subscribes) {
             map.set(item[0], item[1]);
         }
         return map;
     }
 
-    public fire(): void {
-        setTimeout(() => {
+    public fire(oldState: STATE, newState: STATE): void {
+        setTimeout(async () => {
             const map = this.get();
             for (const item of map) {
                 try {
-                    item[1]();
+                    const oldResult = await item[1].selector.selector(oldState as any);
+                    const newResult = await item[1].selector.selector(newState as any);
+                    const diff = ObjectCalculater.calculateDiff(oldResult, newResult);
+                    diff.size() && item[1].callback(newResult, oldResult);
                 } catch (e) {
                     Log.error(
                         MessageBundle.getText(
@@ -39,9 +48,12 @@ export class SubscribeEntity {
         }, 0);
     }
 
-    public subscribe(callback: CallbackAction): Subscribe {
+    public subscribe<T>(callback: CallbackAction, selector: Selector<STATE, T>): Subscribe {
         const id = guid();
-        this.subscribes.set(id, callback);
+        this.subscribes.set(id, {
+            callback: callback,
+            selector: selector,
+        });
         return {
             unsubscribe: () => {
                 this.subscribes.delete(id);

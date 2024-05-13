@@ -32,3 +32,18 @@ export interface RawSelector<STATE, T> {
      */
     (state: Readonly<STATE>): Promise<T>;
 }
+
+/**
+ * Raw function of Tianyu Store Selector
+ * This is a user given function
+ */
+export interface RawParamsSelector<STATE, PT, T> {
+    /**
+     * @param state the source state
+     *
+     * @returns return the specific value
+     *
+     * @throws throw any error for exception
+     */
+    (state: Readonly<STATE>, params: PT): Promise<T>;
+}

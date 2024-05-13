@@ -6,7 +6,7 @@ export { type IDispatch } from "./interface/Dispatch";
 export { type IExternalObjectController } from "./interface/ExternalObject";
 export { type ListenerCallback, type IListener } from "./interface/Listener";
 export { type Reducer } from "./interface/Reducer";
-export { type Selector, type RawSelector } from "./interface/Selector";
+export { type Selector, type RawSelector, type RawParamsSelector } from "./interface/Selector";
 export { type IStoreExecutor, type IStoreTransaction, type IStore, type IStoreConfiguration } from "./interface/Store";
 export { type IStoreBase } from "./interface/StoreBase";
 export { type Subscribe } from "./interface/Subscribe";
