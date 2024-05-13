@@ -1,6 +1,6 @@
 /**@format */
 
-import { mergeState } from "../../src/utils/MergeState";
+import { mergeState } from "../../../beta/utils/MergeState";
 
 describe("aitianyu-cn.node-module.tianyu-store.utils.MergeState", () => {
     const rawState = {

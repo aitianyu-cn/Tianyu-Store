@@ -1,6 +1,6 @@
 {
-    "include": ["src", "test"],
-    "exclude": ["src/beta", "src/beta2"],
+    "include": ["beta", "test"],
+    "exclude": [],
     "compilerOptions": {
         "composite": true,
         "target": "ESNext",

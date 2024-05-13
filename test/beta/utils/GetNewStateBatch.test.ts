@@ -1,7 +1,7 @@
 /**@format */
 
-import { StateChangesTrie } from "../../src/interface/Utils";
-import { getNewStateBatch } from "../../src/utils/GetNewStateBatch";
+import { StateChangesTrie } from "../../beta/interface/Utils";
+import { getNewStateBatch } from "../../../beta/utils/GetNewStateBatch";
 
 describe("aitianyu-cn.node-module.tianyu-store.utils.GetNewStateBatch", () => {
     const rawState = {

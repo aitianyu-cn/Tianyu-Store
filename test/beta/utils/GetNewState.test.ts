@@ -1,6 +1,6 @@
 /**@format */
 
-import { getNewState } from "../../src/utils/GetNewState";
+import { getNewState } from "../../../beta/utils/GetNewState";
 
 describe("aitianyu-cn.node-module.tianyu-store.utils.GetNewState", () => {
     const rawState = {

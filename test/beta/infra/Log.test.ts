@@ -1,8 +1,8 @@
 /**@format */
 
 import { Log as LogBase } from "@aitianyu.cn/types";
-import { Infra } from "../../src/infra/Infra";
-import { Log } from "../../src/infra/Log";
+import { Infra } from "../../../beta/infra/Infra";
+import { Log } from "../../../beta/infra/Log";
 
 describe("aitianyu-cn.node-module.tianyu-store.infra.Log", () => {
     beforeEach(() => {

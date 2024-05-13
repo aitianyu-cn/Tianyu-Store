@@ -1,8 +1,8 @@
 /**@format */
 
 import { AreaCode } from "@aitianyu.cn/types";
-import { Infra } from "../../src/infra/Infra";
-import { MessageBundle } from "../../src/infra/Message";
+import { Infra } from "../../../beta/infra/Infra";
+import { MessageBundle } from "../../../beta/infra/Message";
 
 describe("aitianyu-cn.node-module.tianyu-store.infra.Message", () => {
     describe("getText", () => {
