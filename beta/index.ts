@@ -2,9 +2,9 @@
 
 /** Utils Part */
 
-import * as GetNewStateImport from "./utils/GetNewState";
-import * as GetNewStateBatchImport from "./utils/GetNewStateBatch";
-import * as MergeStateImport from "./utils/MergeState";
+import * as GetNewStateImport from "./utils/StateHelper/GetNewState";
+import * as GetNewStateBatchImport from "./utils/StateHelper/GetNewStateBatch";
+import * as MergeStateImport from "./utils/StateHelper/MergeState";
 
 export namespace StoreUtils {
     export import getNewState = GetNewStateImport.getNewState;
