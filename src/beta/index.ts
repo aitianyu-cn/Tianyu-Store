@@ -1,5 +1,0 @@
-/**@format */
-
-export namespace ActionCreator {
-    //
-}
