@@ -1,40 +1,27 @@
 /**@format */
 
 import { guid } from "@aitianyu.cn/types";
-import { IInstanceAction, ActionType, IAction } from "beta/types/Action";
-import { InstanceId } from "beta/types/Instance";
+import { ActionType, IActionProvider } from "beta/types/Action";
 import { IterableType, ReturnableType } from "beta/types/Model";
+import { actionBaseImpl } from "./ActionBaseImpl";
+import { IActionHandlerParameter } from "beta/types/Handler";
 
 export function virtualActionImpl<
     STATE extends IterableType,
     PARAMETER_TYPE extends IterableType,
     RETURN_TYPE extends ReturnableType,
->(): IAction<STATE, PARAMETER_TYPE, RETURN_TYPE> {
-    const actionInstanceCaller = <IAction<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
-        function (instanceId: InstanceId, params: PARAMETER_TYPE): IInstanceAction {
-            return {
-                action: actionInstanceCaller.action,
-                id: actionInstanceCaller.id,
-                instanceId,
-                params,
-            };
-        }
+>(): IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
+    const handler = function* (
+        _action: IActionHandlerParameter<PARAMETER_TYPE>,
+    ): Generator<IActionHandlerParameter<PARAMETER_TYPE>, RETURN_TYPE, IActionHandlerParameter<PARAMETER_TYPE>> {
+        throw new Error();
+    };
+    const reducer = function (_state: STATE, _data: RETURN_TYPE): STATE {
+        throw new Error();
+    };
+    const actionInstanceCaller = <IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
+        actionBaseImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(guid(), handler, reducer, ActionType.ACTION_CREATOR)
     );
-
-    actionInstanceCaller.handler = function* <INPUT_TYPE = InstanceId & Readonly<PARAMETER_TYPE>>(
-        _action: INPUT_TYPE,
-    ): Generator<INPUT_TYPE, RETURN_TYPE, INPUT_TYPE> {
-        throw new Error();
-    };
-    actionInstanceCaller.reducer = function (_state: STATE, _data: RETURN_TYPE): STATE {
-        throw new Error();
-    };
-
-    actionInstanceCaller.id = guid();
-    actionInstanceCaller.action = actionInstanceCaller.id;
-    actionInstanceCaller.getType = function (): ActionType {
-        return ActionType.ACTION_CREATOR;
-    };
 
     return actionInstanceCaller;
 }

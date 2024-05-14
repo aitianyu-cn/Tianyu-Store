@@ -2,7 +2,7 @@
 
 import { ActionHandlerFunction } from "./Handler";
 import { InstanceId } from "./Instance";
-import { IterableType, ReturnableType } from "./Model";
+import { IOperator, IterableType, ReturnableType } from "./Model";
 import { ReducerFunction } from "./Reducer";
 
 // ================================================================================
@@ -16,82 +16,238 @@ import { ReducerFunction } from "./Reducer";
 //                  redo and undo.
 // ================================================================================
 
+/**
+ * Tianyu Store Action Instance
+ *
+ * Action Instance is generated from a IAction instance provider
+ */
 export interface IInstanceAction {
+    /** Action Id */
     id: string;
+    /** Action Full Name */
     action: string;
+    /** Store Entity Type */
+    storeType: string;
+    /** Target Store Instance Id */
     instanceId: InstanceId;
+    /** Additional Parameter */
     params: any;
 }
 
+/**
+ * Tianyu Store View Action Instance
+ *
+ * View Action Instance is generated from a ViewAction instance provider
+ */
 export interface IInstanceViewAction extends IInstanceAction {
+    /** View Instance Id */
     viewInstanceId?: InstanceId;
+    /** Indicates view action transaction is not support */
     transaction: false;
 }
 
+/** Tianyu Store Action Type */
 export enum ActionType {
+    /** Default Action Type */
     ACTION,
+    /** View Action Type */
     VIEW_ACTION,
+    /** The action is a creator with default handler and reducer */
     ACTION_CREATOR,
+    /** The action is a handler with default reducer */
     ACTION_HANDLER,
+    /** Store Entity Create Action */
+    CREATE,
+    /** Store Entity Destroy Action */
+    DESTROY,
 }
 
-export interface IActionBase<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType,
-    RETURN_TYPE extends ReturnableType,
-> {
+/** Tianyu Store Action Basic Type */
+export interface IActionProviderBase extends IOperator {
+    /** Store Action Id */
     id: string;
-    action: string;
+    /** Store Action Unified Name (Same as Id currently) */
+    actionId: string;
 
-    handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>;
-    reducer: ReducerFunction<STATE, RETURN_TYPE>;
-
+    /**
+     * Get current action provider type
+     *
+     * @returns return the action type
+     */
     getType(): ActionType;
 }
 
-export interface IAction<
+/**
+ * Tianyu Store Action Provider Interface
+ *
+ * This is a basic type of all action provider
+ *
+ * @template STATE the type of store state
+ * @template PARAMETER_TYPE the type of action input parameter
+ * @template RETURN_TYPE the type of action handler returns
+ */
+export interface IActionProvider<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined,
     RETURN_TYPE extends ReturnableType,
-> extends IActionBase<STATE, PARAMETER_TYPE, RETURN_TYPE> {
+> extends IActionProviderBase {
+    /**
+     * To create an action instance
+     *
+     * @param instanceId target store entity instance id
+     * @param param action input parameter
+     *
+     * @returns return a packeged action instance
+     */
     (instanceId: InstanceId, param: PARAMETER_TYPE): IInstanceAction;
+
+    /** Action Handler Exectuor */
+    handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>;
+    /** Action Reducer Exectuor */
+    reducer: ReducerFunction<STATE, RETURN_TYPE>;
 }
 
-export interface ActionCreator<STATE extends IterableType, PARAMETER_TYPE extends IterableType>
-    extends IAction<STATE, PARAMETER_TYPE, undefined> {
+/** Tianyu Store Action Creator to create a new store entity */
+export interface CreateStoreActionCreator extends IActionProvider<any, any, undefined> {
+    /**
+     * Function to add a custom reducer and get a new Action Provider
+     *
+     * @param reducer provided reducer function
+     * @returns return a new create store action provider
+     */
+    withReducer(reducer: ReducerFunction<any, any>): ActionProvider<any, any, any>;
+}
+
+/** Tianyu Store Action Creator to destroy a store entity */
+export interface DestroyStoreActionCreator extends IActionProvider<any, undefined, undefined> {
+    /**
+     * Function to add a custom reducer and get a new Action Provider
+     *
+     * @param reducer provided reducer function
+     * @returns return a new destroy store action provider
+     */
+    withReducer(reducer: ReducerFunction<any, undefined>): ActionProvider<any, undefined, undefined>;
+}
+
+/**
+ * Tianyu Store Action Creator Provider
+ *
+ * To be a default action instance provider with default handler and reducer
+ *
+ * @template STATE the type of store state
+ * @template PARAMETER_TYPE the type of store reduer parameter
+ */
+export interface ActionCreatorProvider<STATE extends IterableType, PARAMETER_TYPE extends IterableType | undefined>
+    extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
+    /**
+     * Function to add a custom action handler and get a new action provider
+     *
+     * @template RETURN_TYPE the type of handler return value
+     *
+     * @param handler provided handler function
+     * @returns return a new action provider
+     */
     withHandler<RETURN_TYPE extends ReturnableType>(
         handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
-    ): ActionHandler<STATE, PARAMETER_TYPE, RETURN_TYPE>;
+    ): ActionHandlerProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>;
 
-    withReducer(reducer: ReducerFunction<STATE, undefined>): Action<STATE, PARAMETER_TYPE, undefined>;
+    /**
+     * Function to add a custom state reducer and get a new Action Provider
+     *
+     * @param reducer provided  reducer function
+     * @returns return a new action provider
+     */
+    withReducer(reducer: ReducerFunction<STATE, PARAMETER_TYPE>): ActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE>;
 
-    asViewAction(): ViewAction<STATE, PARAMETER_TYPE, undefined>;
+    /**
+     * @deprecated
+     *
+     * Function to create a view action provider
+     *
+     * @returns return a new view action provider
+     */
+    asViewAction(): ViewActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE>;
 }
 
-export interface ActionHandler<
+/**
+ * Tianyu Store Action Handler Provider
+ *
+ * To be a handled action instance provider with custom handler and default reducer
+ *
+ * @template STATE the type of store state
+ * @template PARAMETER_TYPE the type of store handler parameter
+ * @template RETURN_TYPE the type of store handler return and reducer input
+ */
+export interface ActionHandlerProvider<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined,
     RETURN_TYPE extends ReturnableType,
-> extends IAction<STATE, PARAMETER_TYPE, RETURN_TYPE> {
-    withReducer(reducer: ReducerFunction<STATE, RETURN_TYPE>): Action<STATE, PARAMETER_TYPE, RETURN_TYPE>;
+> extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
+    /**
+     * Function to add a custom state reducer and get a new Action Provider
+     *
+     * @param reducer provided  reducer function
+     * @returns return a new action provider
+     */
+    withReducer(reducer: ReducerFunction<STATE, RETURN_TYPE>): ActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>;
 }
 
-export interface Action<
+/**
+ * Tianyu Store Action Provider
+ *
+ * To be an action instance provider with custom handler and reducer
+ *
+ * @template STATE the type of store state
+ * @template PARAMETER_TYPE the type of store handler parameter
+ * @template RETURN_TYPE the type of store handler return and reducer input
+ */
+export interface ActionProvider<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined,
     RETURN_TYPE extends ReturnableType,
-> extends IAction<STATE, PARAMETER_TYPE, RETURN_TYPE> {
-    asViewAction(): ViewAction<STATE, PARAMETER_TYPE, RETURN_TYPE>;
+> extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
+    /**
+     * Function to create a view action provider
+     *
+     * @returns return a new view action provider
+     */
+    asViewAction(): ViewActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>;
 }
 
-export interface ViewAction<
+/**
+ * Tianyu Store View Action Provider
+ *
+ * To be an view action instance provider with custom handler and reducer
+ * If the this action provider is created from ActionCreatorProvider directly,
+ * the hander and reducer will be default
+ *
+ * @template STATE the type of store state
+ * @template PARAMETER_TYPE the type of store handler parameter
+ * @template RETURN_TYPE the type of store handler return and reducer input
+ */
+export interface ViewActionProvider<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined,
     RETURN_TYPE extends ReturnableType,
-> extends IAction<STATE, PARAMETER_TYPE, RETURN_TYPE> {
+> extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
+    /**
+     * To create a view action instance
+     *
+     * @param instanceId target store entity instance id
+     * @param param action input parameter
+     * @param viewInstanceId target view instance id
+     *
+     * @returns return a packeged view action instance
+     */
     (instanceId: InstanceId, param: PARAMETER_TYPE, viewInstanceId: InstanceId): IInstanceViewAction;
 }
 
+/**
+ * Tianyu Store Batch Action
+ *
+ * To group more than 1 action and to do execution one by one synced
+ */
 export interface IBatchAction {
+    /** Action Instances Array */
     actions: IInstanceAction[];
 }

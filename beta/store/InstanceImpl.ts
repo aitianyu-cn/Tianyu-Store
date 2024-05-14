@@ -1,17 +1,31 @@
 /**@format */
 
-import { InstanceId } from "beta/types/Instance";
+import { IInstancePair, InstanceId } from "beta/types/Instance";
+import { parseJsonString } from "beta/utils/ObjectUtils";
 
 export class InstanceIdImpl implements InstanceId {
-    public id: string;
-    public path: string[];
+    private instanceKey: string;
 
-    public constructor(id: string, path: string[]) {
-        this.id = id;
-        this.path = path;
+    public constructor(instanceId: InstanceId | string | IInstancePair[]) {
+        const instancePair =
+            typeof instanceId === "string"
+                ? ((parseJsonString(instanceId) || []) as IInstancePair[])
+                : Array.isArray(instanceId)
+                ? instanceId
+                : instanceId.structure();
+
+        this.instanceKey = JSON.stringify(instancePair);
+    }
+
+    public get id(): string {
+        return this.instanceKey;
     }
 
     public toString(): string {
-        return `${this.path.join(".")}.${this.id}`;
+        return this.instanceKey;
+    }
+
+    public structure(): IInstancePair[] {
+        return JSON.parse(this.instanceKey);
     }
 }

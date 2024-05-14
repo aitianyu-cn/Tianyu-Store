@@ -1,7 +1,7 @@
 /**@format */
 
 import { ObjectHelper } from "@aitianyu.cn/types";
-import { StateChangePair, StateChangesTrie } from "src/interface/Utils";
+import { StateChangePair, StateChangesTrie } from "beta/types/Utils";
 
 /** this function is used to generate a changed values trie */
 function processChangeTrie(changes: StateChangePair<any>[]): StateChangesTrie {
