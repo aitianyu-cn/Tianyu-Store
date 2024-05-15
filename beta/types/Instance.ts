@@ -34,3 +34,7 @@ export interface ViewInstanceId extends InstanceId {
     /** View Instance Id */
     viewInstanceId?: string;
 }
+
+export interface IInstance {
+    //
+}

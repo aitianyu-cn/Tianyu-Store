@@ -1,7 +1,11 @@
 /**@format */
 
+<<<<<<< Updated upstream
 import { IInstancePair, InstanceId } from "beta/types/Instance";
 import { parseJsonString } from "beta/utils/ObjectUtils";
+=======
+import { IInstance, InstanceId } from "beta/types/Instance";
+>>>>>>> Stashed changes
 
 export class InstanceIdImpl implements InstanceId {
     private instanceKey: string;
@@ -29,3 +33,5 @@ export class InstanceIdImpl implements InstanceId {
         return JSON.parse(this.instanceKey);
     }
 }
+
+export const InvalidInstance: IInstance = {};

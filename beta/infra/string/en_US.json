@@ -1,16 +1,3 @@
 {
-    "TIANYU_STORE_CURRENT_LANGUAGE": "en_us",
-    "KNOWN_REASON": "Unknown Reason",
-    "DISPATCHER_GET_STORE_FAILED": "[Dispatch] '{0}' could not to get a valid store instance.",
-    "ERROR_DISPATCHER_STORE_NOT_INIT": "[Dispatch] dispatch is not running in an valid Store entity",
-
-    "LISTENER_FIRE_FAILED": "[Listener] execute listener '{0}' failed, due to: {1}",
-
-    "ACTION_EXECUTION_SUCCESS": "[Actions] '{0}' are executed done with no error",
-    "ACTION_EXECUTION_FAILED": "[Actions] '{0}' are executed failed. \n\r {1}",
-    "ACTION_EXECUTE_REDUCER_NOT_FOUND": "[Action] could not find reducer by name: '{0}'",
-
-    "SUBSCRIBE_FIRE_FAILED": "[Subscribe] execute subscribe '{0}' failed: {1}",
-
-    "EXTERNAL_OBJ_SET_EXCEPTION": "[External Object] object {0} could not be set: {1}"
+    "TIANYU_STORE_CURRENT_LANGUAGE": "en_us"
 }
