@@ -3,6 +3,9 @@
 /**
  * Tianyu Store Iterable Type Definition.
  * Used for constraint the store state
+ *
+ * Store State is an iterator object and support string, boolean, number,
+ * null, undefined and state itself and the array of them
  */
 export interface IterableType {
     [key: string]:
@@ -18,6 +21,8 @@ export interface IterableType {
 /**
  * Tianyu Store Returnable Type Definition.
  * Used for constraint the action handler returns
+ *
+ * Mix: string, boolean, number, IterableType, null, undefined and array type of them
  */
 export type ReturnableType =
     | string
@@ -26,7 +31,6 @@ export type ReturnableType =
     | IterableType
     | null
     | undefined
-    | IterableType
     | (string | boolean | number | IterableType | null | undefined | IterableType)[];
 
 /**

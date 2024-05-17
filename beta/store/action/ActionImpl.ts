@@ -9,8 +9,8 @@ import {
     IInstanceViewAction,
     ViewActionProvider,
 } from "beta/types/Action";
-import { ActionHandlerFunction, IActionHandlerParameter } from "beta/types/Handler";
-import { InstanceId } from "beta/types/Instance";
+import { ActionHandlerFunction } from "beta/types/Handler";
+import { InstanceId } from "beta/types/InstanceId";
 import { IterableType, ReturnableType } from "beta/types/Model";
 import { ReducerFunction } from "beta/types/Reducer";
 import { actionBaseImpl } from "./ActionBaseImpl";

@@ -1,9 +1,10 @@
 /**@format */
 
-import { IInstance, InstanceId } from "beta/types/Instance";
+import { InstanceId } from "beta/types/InstanceId";
 import { IStore } from "beta/types/Store";
-import { InvalidInstance } from "./InstanceImpl";
 import { guid } from "@aitianyu.cn/types";
+import { IInstance } from "beta/types/StoreInstance";
+import { InvalidInstance } from "./StoreInstanceImpl";
 
 export class StoreImpl implements IStore {
     private instanceIdMap: Map<string, string>;

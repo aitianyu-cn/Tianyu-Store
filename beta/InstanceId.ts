@@ -1,8 +1,8 @@
 /**@format */
 
 import { guid } from "@aitianyu.cn/types";
-import { InstanceIdImpl } from "beta/store/InstanceImpl";
-import { InstanceId } from "beta/types/Instance";
+import { InstanceIdImpl } from "beta/store/InstanceIdImpl";
+import { InstanceId } from "beta/types/InstanceId";
 
 /**
  * Function to generate a new instance id from a parent instance id

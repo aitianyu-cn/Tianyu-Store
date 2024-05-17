@@ -1,7 +1,7 @@
 /**@format */
 
 import { guid } from "@aitianyu.cn/types";
-import { InstanceId } from "beta/types/Instance";
+import { InstanceId } from "beta/types/InstanceId";
 import { IterableType, OperatorInfoType } from "beta/types/Model";
 import {
     SelectorProvider,
@@ -23,15 +23,17 @@ function fillSelectorInstanceCaller<
         | RawSelector<STATE, RETURN_TYPE>
         | RawParameterSelector<STATE, PARAMETER_TYPE, RETURN_TYPE>,
 >(rawSelector: RAW_SELECTOR_TYPE): SELECT_TYPE {
-    const selectorInstanceCaller = <SELECT_TYPE>function (instanceId: InstanceId): IInstanceSelector {
-        return {
-            id: selectorInstanceCaller.selector,
-            selector: selectorInstanceCaller.info.fullName,
-            storeType: selectorInstanceCaller.info.storeType,
-            params: undefined,
-            instanceId,
-        };
-    };
+    const selectorInstanceCaller = <SELECT_TYPE>(
+        function (instanceId: InstanceId, params?: PARAMETER_TYPE): IInstanceSelector<RETURN_TYPE> {
+            return {
+                id: selectorInstanceCaller.selector,
+                selector: selectorInstanceCaller.info.fullName,
+                storeType: selectorInstanceCaller.info.storeType,
+                params: params,
+                instanceId,
+            };
+        }
+    );
 
     selectorInstanceCaller.id = guid();
     selectorInstanceCaller.selector = selectorInstanceCaller.id;

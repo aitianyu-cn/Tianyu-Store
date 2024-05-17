@@ -2,7 +2,7 @@
 
 import { ITianyuStoreInterfaceImplementation } from "beta/types/Interface";
 import { IOperator } from "beta/types/Model";
-import { SelectorProviderBase } from "beta/types/Selector";
+import { ISelectorProviderBase } from "beta/types/Selector";
 
 /**
  * Function to register the store interface to generate operator information
@@ -15,11 +15,11 @@ export function registerExpose(element: ITianyuStoreInterfaceImplementation, sto
 }
 
 function isSelector(obj: any): boolean {
-    return typeof obj === "object" && !!(obj as SelectorProviderBase).selector;
+    return typeof obj === "object" && !!(obj as ISelectorProviderBase).selector;
 }
 
 function isAction(obj: any): boolean {
-    return typeof obj === "object" && !!(obj as SelectorProviderBase).selector;
+    return typeof obj === "object" && !!(obj as ISelectorProviderBase).selector;
 }
 
 function _registerExposeInternal(element: ITianyuStoreInterfaceImplementation, path: string, storeType: string): void {

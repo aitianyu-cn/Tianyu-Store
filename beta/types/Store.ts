@@ -2,6 +2,11 @@
 
 import { IBatchAction, IInstanceAction, IInstanceViewAction } from "./Action";
 import { IStoreHierarchyChecklist } from "./Hierarchy";
+import { InstanceId } from "./InstanceId";
+import { ITianyuStoreInterface } from "./Interface";
+import { IInstanceListener, StoreEventTriggerCallback } from "./Listener";
+import { IterableType } from "./Model";
+import { IInstanceSelector, SelectorProvider } from "./Selector";
 
 /**
  * Tianyu Store Interface
@@ -13,13 +18,17 @@ import { IStoreHierarchyChecklist } from "./Hierarchy";
  */
 export interface IStore {
     applyHierarchyChecklist(checklist?: IStoreHierarchyChecklist): void;
+    registerInterface(impl: ITianyuStoreInterface): void;
 
-    registerInterface(): void;
+    startListen(listener: IInstanceListener<any>): void;
+    stopListen(listener: IInstanceListener<any>): void;
+    doSubscribe<STATE extends IterableType, RESULT>(
+        instanceId: InstanceId,
+        selectorProvider: SelectorProvider<STATE, RESULT>,
+        eventTrigger: StoreEventTriggerCallback<RESULT>,
+    ): any;
 
-    startListen(): void;
-    stopListen(): void;
-
-    doSubscribe(): any;
+    doSelecte<RESULT>(selector: IInstanceSelector<RESULT>): RESULT;
 
     dispatch(action: IInstanceAction | IBatchAction): Promise<void>;
     dispatchForView(action: IInstanceViewAction | IBatchAction): Promise<void>;

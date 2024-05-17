@@ -1,6 +1,6 @@
 /**@format */
 
-import { InstanceId } from "./Instance";
+import { InstanceId } from "./InstanceId";
 import { IterableType, ReturnableType } from "./Model";
 
 /**

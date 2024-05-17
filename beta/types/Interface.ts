@@ -1,7 +1,7 @@
 /**@format */
 
 import { CreateStoreActionCreator, DestroyStoreActionCreator, IActionProvider, IActionProviderBase } from "./Action";
-import { SelectorProviderBase } from "./Selector";
+import { ISelectorProviderBase } from "./Selector";
 
 /**
  * Tianyu Store Interface Type
@@ -24,5 +24,5 @@ export interface ITianyuStoreInterface extends ITianyuStoreInterfaceImplementati
  * Define a iterable Object
  */
 export interface ITianyuStoreInterfaceImplementation {
-    [part: string]: IActionProviderBase | SelectorProviderBase | ITianyuStoreInterfaceImplementation | undefined;
+    [part: string]: IActionProviderBase | ISelectorProviderBase | ITianyuStoreInterfaceImplementation | undefined;
 }

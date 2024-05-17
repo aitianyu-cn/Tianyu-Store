@@ -1,6 +1,6 @@
 /**@format */
 
-import { InstanceId } from "./Instance";
+import { InstanceId } from "./InstanceId";
 import { IOperator, IterableType, Missing } from "./Model";
 
 /**
@@ -8,7 +8,7 @@ import { IOperator, IterableType, Missing } from "./Model";
  *
  * Selector Instance is generated from a selector instance provider
  */
-export interface IInstanceSelector {
+export interface IInstanceSelector<RESULT> {
     /** Selector id */
     id: string;
     /** Selector Full Name */
@@ -59,7 +59,7 @@ export interface RawParameterSelector<STATE extends IterableType, PARAMETER_TYPE
 }
 
 /** Tianyu Store Base Selector Definition */
-export interface SelectorProviderBase extends IOperator {
+export interface ISelectorProviderBase extends IOperator {
     /** Store Selector Id */
     id: string;
     /** Store Selector Unified Name (Same as Id currently) */
@@ -72,14 +72,14 @@ export interface SelectorProviderBase extends IOperator {
  * @template STATE the type of store state
  * @template RETURN_TYPE the type of selector return value
  */
-export interface SelectorProvider<STATE extends IterableType, RETURN_TYPE> extends SelectorProviderBase {
+export interface SelectorProvider<STATE extends IterableType, RETURN_TYPE> extends ISelectorProviderBase {
     /**
      * Store Selector Instance Creator to generate a store selector instance
      *
      * @param instanceId store instance that indicates the state which should be gotten from
      * @returns return a selector instance
      */
-    (instanceId: InstanceId): IInstanceSelector;
+    (instanceId: InstanceId): IInstanceSelector<RETURN_TYPE>;
     /** Store Selector Execution Function */
     getter: RawSelector<STATE, RETURN_TYPE>;
 }
@@ -92,7 +92,7 @@ export interface SelectorProvider<STATE extends IterableType, RETURN_TYPE> exten
  * @template RETURN_TYPE the type of selector return value
  */
 export interface ParameterSelectorProvider<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE>
-    extends SelectorProviderBase {
+    extends ISelectorProviderBase {
     /**
      * Store Parameter Selector Instance Creator to generate a store selector instance
      *
@@ -100,7 +100,7 @@ export interface ParameterSelectorProvider<STATE extends IterableType, PARAMETER
      * @param params parameter of created selector instance
      * @returns return a selector instance
      */
-    (instanceId: InstanceId, params: PARAMETER_TYPE): IInstanceSelector;
+    (instanceId: InstanceId, params: PARAMETER_TYPE): IInstanceSelector<RETURN_TYPE>;
     /** Store Selector Execution Function */
     getter: RawParameterSelector<STATE, PARAMETER_TYPE, RETURN_TYPE>;
 }

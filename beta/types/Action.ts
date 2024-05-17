@@ -1,7 +1,7 @@
 /**@format */
 
 import { ActionHandlerFunction } from "./Handler";
-import { InstanceId } from "./Instance";
+import { InstanceId } from "./InstanceId";
 import { IOperator, IterableType, ReturnableType } from "./Model";
 import { ReducerFunction } from "./Reducer";
 

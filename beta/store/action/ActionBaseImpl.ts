@@ -3,10 +3,9 @@
 import { defaultInfoGenerator } from "beta/common/OperatorHelper";
 import { ActionType, IActionProviderBase, IInstanceAction } from "beta/types/Action";
 import { ActionHandlerFunction } from "beta/types/Handler";
-import { InstanceId } from "beta/types/Instance";
+import { InstanceId } from "beta/types/InstanceId";
 import { IterableType, OperatorInfoType, ReturnableType } from "beta/types/Model";
 import { ReducerFunction } from "beta/types/Reducer";
-import { actionHandlerImpl } from "./ActionHandlerImpl";
 
 export function actionBaseImpl<
     STATE extends IterableType,
