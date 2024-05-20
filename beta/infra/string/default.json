@@ -1,3 +1,6 @@
 {
-    "TIANYU_STORE_CURRENT_LANGUAGE": "unknown"
+    "TIANYU_STORE_CURRENT_LANGUAGE": "unknown",
+    "ACTION_VIRTUAL_NO_HANDLER": "",
+    "ACTION_VIRTUAL_NO_REDUCER": "",
+    "GET_NEW_STATE_LOST_OBJECT": "object {0} is not found"
 }

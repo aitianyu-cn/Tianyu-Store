@@ -1,13 +1,14 @@
 /**@format */
 
 import { ObjectHelper } from "@aitianyu.cn/types";
+import { MessageBundle } from "beta/infra/Message";
 
 function setState(oldState: any, newState: any, forceObj: boolean): void {
     for (const key of Object.keys(newState)) {
         const value = newState[key];
         if (!oldState[key]) {
             if (forceObj) {
-                throw new Error(`object ${key} is not found`);
+                throw new Error(MessageBundle.getText("GET_NEW_STATE_LOST_OBJECT", key));
             } else {
                 oldState[key] = {};
             }

@@ -58,8 +58,12 @@ export interface RawParameterSelector<STATE extends IterableType, PARAMETER_TYPE
     (state: STATE, params: PARAMETER_TYPE): RETURN_TYPE;
 }
 
-/** Tianyu Store Base Selector Definition */
-export interface ISelectorProviderBase extends IOperator {
+/**
+ * Tianyu Store Base Selector Definition
+ *
+ * @template _STATE the state type of selector provider (placeholder for type checking)
+ */
+export interface ISelectorProviderBase<_STATE extends IterableType> extends IOperator {
     /** Store Selector Id */
     id: string;
     /** Store Selector Unified Name (Same as Id currently) */
@@ -72,7 +76,7 @@ export interface ISelectorProviderBase extends IOperator {
  * @template STATE the type of store state
  * @template RETURN_TYPE the type of selector return value
  */
-export interface SelectorProvider<STATE extends IterableType, RETURN_TYPE> extends ISelectorProviderBase {
+export interface SelectorProvider<STATE extends IterableType, RETURN_TYPE> extends ISelectorProviderBase<STATE> {
     /**
      * Store Selector Instance Creator to generate a store selector instance
      *
@@ -92,7 +96,7 @@ export interface SelectorProvider<STATE extends IterableType, RETURN_TYPE> exten
  * @template RETURN_TYPE the type of selector return value
  */
 export interface ParameterSelectorProvider<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE>
-    extends ISelectorProviderBase {
+    extends ISelectorProviderBase<STATE> {
     /**
      * Store Parameter Selector Instance Creator to generate a store selector instance
      *

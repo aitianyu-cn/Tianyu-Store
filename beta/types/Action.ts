@@ -62,8 +62,12 @@ export enum ActionType {
     DESTROY,
 }
 
-/** Tianyu Store Action Basic Type */
-export interface IActionProviderBase extends IOperator {
+/**
+ * Tianyu Store Action Basic Type
+ *
+ * @template _STATE the state type of action provider (placeholder for type checking)
+ */
+export interface IActionProviderBase<_STATE extends IterableType> extends IOperator {
     /** Store Action Id */
     id: string;
     /** Store Action Unified Name (Same as Id currently) */
@@ -90,7 +94,7 @@ export interface IActionProvider<
     STATE extends IterableType,
     PARAMETER_TYPE extends IterableType | undefined,
     RETURN_TYPE extends ReturnableType,
-> extends IActionProviderBase {
+> extends IActionProviderBase<STATE> {
     /**
      * To create an action instance
      *
@@ -107,15 +111,24 @@ export interface IActionProvider<
     reducer: ReducerFunction<STATE, RETURN_TYPE>;
 }
 
-/** Tianyu Store Action Creator to create a new store entity */
-export interface CreateStoreActionCreator extends IActionProvider<any, any, undefined> {
+/**
+ * Tianyu Store Action Creator to create a new store entity
+ *
+ * @template STATE the store state type of this action
+ */
+export interface CreateStoreActionCreator<STATE extends IterableType = any>
+    extends IActionProvider<STATE, any, undefined> {
     /**
      * Function to add a custom reducer and get a new Action Provider
      *
      * @param reducer provided reducer function
      * @returns return a new create store action provider
+     *
+     * @template REDUCER_STATE the store state type of this reducer
      */
-    withReducer(reducer: ReducerFunction<any, any>): ActionProvider<any, any, any>;
+    withReducer<REDUCER_STATE extends IterableType = STATE>(
+        reducer: ReducerFunction<REDUCER_STATE, REDUCER_STATE>,
+    ): ActionProvider<REDUCER_STATE, any, any>;
 }
 
 /** Tianyu Store Action Creator to destroy a store entity */

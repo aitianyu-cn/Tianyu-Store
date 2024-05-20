@@ -7,6 +7,21 @@
 export interface InstanceId {
     /** Instance Id Structure */
     id: string;
+    /** Get the current instance id */
+    instanceId: string;
+    /** Get the current store type */
+    storeType: string;
+    /**
+     * Get a parent instance id from current instance id
+     * Return current instance id if current instance is root.
+     */
+    parent: InstanceId;
+    /**
+     * Get current store instance id is valid or not
+     *
+     * @returns return true if current instance id is valid, otherwise false
+     */
+    isValid(): boolean;
     /**
      * Formate the instance id into string
      *

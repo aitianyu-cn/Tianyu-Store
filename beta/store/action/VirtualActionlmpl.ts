@@ -5,6 +5,7 @@ import { ActionType, IActionProvider } from "beta/types/Action";
 import { IterableType, ReturnableType } from "beta/types/Model";
 import { actionBaseImpl } from "./ActionBaseImpl";
 import { IActionHandlerParameter } from "beta/types/Handler";
+import { MessageBundle } from "beta/infra/Message";
 
 export function virtualActionImpl<
     STATE extends IterableType,
@@ -14,10 +15,10 @@ export function virtualActionImpl<
     const handler = function* (
         _action: IActionHandlerParameter<PARAMETER_TYPE>,
     ): Generator<IActionHandlerParameter<PARAMETER_TYPE>, RETURN_TYPE, IActionHandlerParameter<PARAMETER_TYPE>> {
-        throw new Error();
+        throw new Error(MessageBundle.getText("ACTION_VIRTUAL_NO_HANDLER"));
     };
     const reducer = function (_state: STATE, _data: RETURN_TYPE): STATE {
-        throw new Error();
+        throw new Error(MessageBundle.getText("ACTION_VIRTUAL_NO_REDUCER"));
     };
     const actionInstanceCaller = <IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
         actionBaseImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(guid(), handler, reducer, ActionType.ACTION_CREATOR)

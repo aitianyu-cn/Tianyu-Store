@@ -1,6 +1,7 @@
 /**@format */
 
 import { ObjectHelper } from "@aitianyu.cn/types";
+import { MessageBundle } from "beta/infra/Message";
 import { StateChangePair, StateChangesTrie } from "beta/types/Utils";
 
 /** this function is used to generate a changed values trie */
@@ -31,7 +32,7 @@ function setState(operator: any, nodes: Record<string, StateChangesTrie>, forceO
         const value = nodes[key];
         if (!operator[key]) {
             if (forceObj) {
-                throw new Error(`object ${key} is not found`);
+                throw new Error(MessageBundle.getText("GET_NEW_STATE_LOST_OBJECT", key));
             } else {
                 operator[key] = {};
             }
