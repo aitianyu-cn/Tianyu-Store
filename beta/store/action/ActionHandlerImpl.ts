@@ -1,12 +1,13 @@
 /**@format */
 
 import { ActionProvider, ActionHandlerProvider, ActionType } from "beta/types/Action";
-import { ActionHandlerFunction } from "beta/types/Handler";
+import { ActionHandlerFunction } from "beta/types/ActionHandler";
 import { IterableType, ReturnableType } from "beta/types/Model";
 import { ReducerFunction } from "beta/types/Reducer";
 import { actionImpl } from "./ActionImpl";
 import { actionBaseImpl } from "./ActionBaseImpl";
 import { createDefaultReducer } from "beta/common/ActionHelper";
+import { ExternalOperatorFunction } from "beta/types/ExternalObject";
 
 export function actionHandlerImpl<
     STATE extends IterableType,
@@ -14,6 +15,7 @@ export function actionHandlerImpl<
     RETURN_TYPE extends ReturnableType,
 >(
     id: string,
+    external: ExternalOperatorFunction,
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
 ): ActionHandlerProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     const actionInstanceCaller = <ActionHandlerProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
@@ -21,6 +23,7 @@ export function actionHandlerImpl<
             id,
             handler,
             createDefaultReducer<STATE, RETURN_TYPE>(),
+            external,
             ActionType.ACTION_HANDLER,
         )
     );
@@ -31,6 +34,7 @@ export function actionHandlerImpl<
             actionInstanceCaller.id,
             actionInstanceCaller.handler,
             reducer,
+            actionInstanceCaller.external,
         );
     };
 

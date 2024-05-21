@@ -9,12 +9,18 @@ import {
     IInstanceViewAction,
     ViewActionProvider,
 } from "beta/types/Action";
-import { ActionHandlerFunction } from "beta/types/Handler";
+import { ActionHandlerFunction } from "beta/types/ActionHandler";
 import { InstanceId } from "beta/types/InstanceId";
 import { IterableType, ReturnableType } from "beta/types/Model";
 import { ReducerFunction } from "beta/types/Reducer";
 import { actionBaseImpl } from "./ActionBaseImpl";
-import { createDefaultReducer, createUndefinedHandler } from "beta/common/ActionHelper";
+import {
+    createDefaultExternalOperator,
+    createDefaultReducer,
+    createNonHandler,
+    createUndefinedHandler,
+} from "beta/common/ActionHelper";
+import { ExternalOperatorFunction } from "beta/types/ExternalObject";
 
 export function actionImpl<
     STATE extends IterableType,
@@ -24,9 +30,10 @@ export function actionImpl<
     id: string,
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
     reducer: ReducerFunction<STATE, RETURN_TYPE>,
+    external: ExternalOperatorFunction,
 ): ActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     const actionInstanceCaller = <ActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
-        actionBaseImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(id, handler, reducer, ActionType.ACTION)
+        actionBaseImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(id, handler, reducer, external, ActionType.ACTION)
     );
 
     actionInstanceCaller.asViewAction = function (): ViewActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
@@ -34,6 +41,7 @@ export function actionImpl<
             actionInstanceCaller.id,
             actionInstanceCaller.handler,
             actionInstanceCaller.reducer,
+            actionInstanceCaller.external,
         );
     };
 
@@ -48,6 +56,7 @@ export function viewActionImpl<
     id: string,
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
     reducer: ReducerFunction<STATE, RETURN_TYPE>,
+    external: ExternalOperatorFunction,
 ): ViewActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     const actionInstanceCaller = <ViewActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
         function (instanceId: InstanceId, params: PARAMETER_TYPE, viewInstanceId: InstanceId): IInstanceViewAction {
@@ -66,6 +75,7 @@ export function viewActionImpl<
     actionInstanceCaller.actionId = actionInstanceCaller.id;
     actionInstanceCaller.handler = handler;
     actionInstanceCaller.reducer = reducer;
+    actionInstanceCaller.external = external;
     actionInstanceCaller.getType = function (): ActionType {
         return ActionType.VIEW_ACTION;
     };
@@ -73,19 +83,28 @@ export function viewActionImpl<
     return actionInstanceCaller;
 }
 
-export function createStoreActionCreatorImpl(): CreateStoreActionCreator {
-    const actionInstanceCaller = <CreateStoreActionCreator>(
-        actionBaseImpl<any, any, undefined>(
+export function createStoreActionCreatorImpl<
+    STATE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined,
+>(): CreateStoreActionCreator<STATE, PARAMETER_TYPE> {
+    const actionInstanceCaller = <CreateStoreActionCreator<STATE, PARAMETER_TYPE>>(
+        actionBaseImpl<STATE, PARAMETER_TYPE, PARAMETER_TYPE>(
             guid(),
-            createUndefinedHandler<any>(),
-            createDefaultReducer<any, undefined>(),
+            createNonHandler<PARAMETER_TYPE>(),
+            createDefaultReducer<STATE, PARAMETER_TYPE>(),
+            createDefaultExternalOperator(),
             ActionType.CREATE,
         )
     );
     actionInstanceCaller.withReducer = function (
-        reducer: ReducerFunction<any, undefined>,
-    ): ActionProvider<any, any, undefined> {
-        return actionImpl<any, any, undefined>(actionInstanceCaller.id, actionInstanceCaller.handler, reducer);
+        reducer: ReducerFunction<STATE, PARAMETER_TYPE>,
+    ): ActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
+        return actionImpl<STATE, PARAMETER_TYPE, PARAMETER_TYPE>(
+            actionInstanceCaller.id,
+            actionInstanceCaller.handler,
+            reducer,
+            actionInstanceCaller.external,
+        );
     };
 
     return actionInstanceCaller;
@@ -97,13 +116,19 @@ export function destroyStoreActionCreatorImpl(): DestroyStoreActionCreator {
             guid(),
             createUndefinedHandler<any>(),
             createDefaultReducer<any, undefined>(),
+            createDefaultExternalOperator(),
             ActionType.DESTROY,
         )
     );
     actionInstanceCaller.withReducer = function (
         reducer: ReducerFunction<any, undefined>,
     ): ActionProvider<any, undefined, undefined> {
-        return actionImpl<any, undefined, undefined>(actionInstanceCaller.id, actionInstanceCaller.handler, reducer);
+        return actionImpl<any, undefined, undefined>(
+            actionInstanceCaller.id,
+            actionInstanceCaller.handler,
+            reducer,
+            actionInstanceCaller.external,
+        );
     };
 
     return actionInstanceCaller;

@@ -1,7 +1,8 @@
 /**@format */
 
 import { ActionHandlerProvider } from "beta/types/Action";
-import { ActionHandlerFunction, IActionHandlerParameter } from "beta/types/Handler";
+import { ExternalOperatorFunction, IExternalObjectRegister } from "beta/types/ExternalObject";
+import { ActionHandlerFunction, IActionHandlerParameter } from "beta/types/ActionHandler";
 import { IterableType, ReturnableType } from "beta/types/Model";
 import { ReducerFunction } from "beta/types/Reducer";
 
@@ -34,4 +35,8 @@ export function createNonHandler<PARAMETER_TYPE extends IterableType | undefined
     ): Generator<IActionHandlerParameter<PARAMETER_TYPE>, PARAMETER_TYPE, IActionHandlerParameter<PARAMETER_TYPE>> {
         return action.params;
     };
+}
+
+export function createDefaultExternalOperator(): ExternalOperatorFunction {
+    return function (_register: IExternalObjectRegister) {};
 }

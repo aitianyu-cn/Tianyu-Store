@@ -1,35 +1,33 @@
 /**@format */
 
 import { guid } from "@aitianyu.cn/types";
+import { createNonHandler, createDefaultReducer } from "beta/common/ActionHelper";
 import {
-    ActionProvider,
-    ActionCreatorProvider,
+    ActionExternalProvider,
     ActionHandlerProvider,
+    ActionProvider,
     ActionType,
     ViewActionProvider,
-    ActionExternalProvider,
 } from "beta/types/Action";
 import { ActionHandlerFunction } from "beta/types/ActionHandler";
 import { IterableType, ReturnableType } from "beta/types/Model";
 import { ReducerFunction } from "beta/types/Reducer";
+import { actionBaseImpl } from "./ActionBaseImpl";
 import { actionHandlerImpl } from "./ActionHandlerImpl";
 import { actionImpl, viewActionImpl } from "./ActionImpl";
-import { actionBaseImpl } from "./ActionBaseImpl";
-import { createDefaultExternalOperator, createDefaultReducer, createNonHandler } from "beta/common/ActionHelper";
 import { ExternalOperatorFunction } from "beta/types/ExternalObject";
-import { actionExternalImpl } from "./ActionExternalImpl";
 
-export function actionCreatorImpl<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined,
->(): ActionCreatorProvider<STATE, PARAMETER_TYPE> {
-    const actionInstanceCaller = <ActionCreatorProvider<STATE, PARAMETER_TYPE>>(
+export function actionExternalImpl<STATE extends IterableType, PARAMETER_TYPE extends IterableType | undefined>(
+    id: string,
+    external: ExternalOperatorFunction,
+): ActionExternalProvider<STATE, PARAMETER_TYPE> {
+    const actionInstanceCaller = <ActionExternalProvider<STATE, PARAMETER_TYPE>>(
         actionBaseImpl<STATE, PARAMETER_TYPE, PARAMETER_TYPE>(
-            guid(),
+            id,
             createNonHandler<PARAMETER_TYPE>(),
             createDefaultReducer<STATE, PARAMETER_TYPE>(),
-            createDefaultExternalOperator(),
-            ActionType.ACTION_CREATOR,
+            external,
+            ActionType.ACTION_EXTERNAL,
         )
     );
 
@@ -52,12 +50,6 @@ export function actionCreatorImpl<
             reducer,
             actionInstanceCaller.external,
         );
-    };
-
-    actionInstanceCaller.withExternal = function (
-        externalOperator: ExternalOperatorFunction,
-    ): ActionExternalProvider<STATE, PARAMETER_TYPE> {
-        return actionExternalImpl<STATE, PARAMETER_TYPE>(actionInstanceCaller.id, externalOperator);
     };
 
     actionInstanceCaller.asViewAction = function (): ViewActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {

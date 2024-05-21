@@ -4,7 +4,7 @@ import { ActionFactor } from "beta/store/ActionFactor";
 import { ITianyuStoreInterface } from "beta/types/Interface";
 import { registerExpose } from "./utils/InterfaceUtils";
 
-const _CreateAction = ActionFactor.makeCreateStoreAction();
+const _CreateAction = ActionFactor.makeCreateStoreAction<any>();
 const _DestroyAction = ActionFactor.makeDestroyStoreAction();
 
 /**

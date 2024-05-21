@@ -2,6 +2,7 @@
 
 import { InstanceId } from "./InstanceId";
 import { IterableType, ReturnableType } from "./Model";
+import { AnyHandleResult } from "./Utils";
 
 /**
  * Tianyu Store Action Handler Parameter Package
@@ -26,10 +27,10 @@ export interface ActionHandlerFunction<
     RETURN_TYPE extends ReturnableType,
 > {
     /**
-     * @param action input handler parameter
+     * @param actionParameter input handler parameter
      * @returns return a execution generator (support sync and async)
      */
-    (action: IActionHandlerParameter<PARAMETER_TYPE>):
-        | Generator<IActionHandlerParameter<PARAMETER_TYPE>, RETURN_TYPE, IActionHandlerParameter<PARAMETER_TYPE>>
-        | AsyncGenerator<IActionHandlerParameter<PARAMETER_TYPE>, RETURN_TYPE, IActionHandlerParameter<PARAMETER_TYPE>>;
+    (actionParameter: IActionHandlerParameter<PARAMETER_TYPE>):
+        | Generator<AnyHandleResult, RETURN_TYPE, any>
+        | AsyncGenerator<AnyHandleResult, RETURN_TYPE, any>;
 }

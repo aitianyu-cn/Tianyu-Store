@@ -27,7 +27,10 @@ export class ActionFactor {
         return virtualActionImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>();
     }
 
-    public static makeCreateStoreAction(): CreateStoreActionCreator {
+    public static makeCreateStoreAction<
+        STATE extends IterableType,
+        PARAMETER_TYPE extends IterableType | undefined = undefined,
+    >(): CreateStoreActionCreator<STATE, PARAMETER_TYPE> {
         return createStoreActionCreatorImpl();
     }
 

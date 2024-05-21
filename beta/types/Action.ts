@@ -1,6 +1,7 @@
 /**@format */
 
-import { ActionHandlerFunction } from "./Handler";
+import { ExternalOperatorFunction } from "./ExternalObject";
+import { ActionHandlerFunction } from "./ActionHandler";
 import { InstanceId } from "./InstanceId";
 import { IOperator, IterableType, ReturnableType } from "./Model";
 import { ReducerFunction } from "./Reducer";
@@ -56,6 +57,8 @@ export enum ActionType {
     ACTION_CREATOR,
     /** The action is a handler with default reducer */
     ACTION_HANDLER,
+    /** The action is an external handler */
+    ACTION_EXTERNAL,
     /** Store Entity Create Action */
     CREATE,
     /** Store Entity Destroy Action */
@@ -105,10 +108,12 @@ export interface IActionProvider<
      */
     (instanceId: InstanceId, param: PARAMETER_TYPE): IInstanceAction;
 
-    /** Action Handler Exectuor */
+    /** Action Handler Executor */
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>;
-    /** Action Reducer Exectuor */
+    /** Action Reducer Executor */
     reducer: ReducerFunction<STATE, RETURN_TYPE>;
+    /** Action External Operator Executor */
+    external: ExternalOperatorFunction;
 }
 
 /**
@@ -116,19 +121,17 @@ export interface IActionProvider<
  *
  * @template STATE the store state type of this action
  */
-export interface CreateStoreActionCreator<STATE extends IterableType = any>
-    extends IActionProvider<STATE, any, undefined> {
+export interface CreateStoreActionCreator<
+    STATE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined = undefined,
+> extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
     /**
      * Function to add a custom reducer and get a new Action Provider
      *
      * @param reducer provided reducer function
      * @returns return a new create store action provider
-     *
-     * @template REDUCER_STATE the store state type of this reducer
      */
-    withReducer<REDUCER_STATE extends IterableType = STATE>(
-        reducer: ReducerFunction<REDUCER_STATE, REDUCER_STATE>,
-    ): ActionProvider<REDUCER_STATE, any, any>;
+    withReducer(reducer: ReducerFunction<STATE, PARAMETER_TYPE>): ActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE>;
 }
 
 /** Tianyu Store Action Creator to destroy a store entity */
@@ -151,6 +154,45 @@ export interface DestroyStoreActionCreator extends IActionProvider<any, undefine
  * @template PARAMETER_TYPE the type of store reduer parameter
  */
 export interface ActionCreatorProvider<STATE extends IterableType, PARAMETER_TYPE extends IterableType | undefined>
+    extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
+    /**
+     * Function to add a custom action handler and get a new action provider
+     *
+     * @template RETURN_TYPE the type of handler return value
+     *
+     * @param handler provided handler function
+     * @returns return a new action provider
+     */
+    withHandler<RETURN_TYPE extends ReturnableType>(
+        handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
+    ): ActionHandlerProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>;
+
+    /**
+     * Function to add a custom state reducer and get a new Action Provider
+     *
+     * @param reducer provided reducer function
+     * @returns return a new action provider
+     */
+    withReducer(reducer: ReducerFunction<STATE, PARAMETER_TYPE>): ActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE>;
+    /**
+     * Function to add a custom external operator and get a new action provider
+     *
+     * @param externalOperator provided external operator function
+     * @returns return a new action provider
+     */
+    withExternal(externalOperator: ExternalOperatorFunction): ActionExternalProvider<STATE, PARAMETER_TYPE>;
+
+    /**
+     * @deprecated
+     *
+     * Function to create a view action provider
+     *
+     * @returns return a new view action provider
+     */
+    asViewAction(): ViewActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE>;
+}
+
+export interface ActionExternalProvider<STATE extends IterableType, PARAMETER_TYPE extends IterableType | undefined>
     extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
     /**
      * Function to add a custom action handler and get a new action provider

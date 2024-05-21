@@ -1,13 +1,23 @@
 /**@format */
 
-import { IBatchAction, IInstanceAction, IInstanceViewAction } from "./Action";
+import { IActionProvider, IBatchAction, IInstanceAction, IInstanceViewAction } from "./Action";
+import { IExternalObjectRegister } from "./ExternalObject";
 import { IStoreHierarchyChecklist } from "./Hierarchy";
 import { InstanceId } from "./InstanceId";
 import { ITianyuStoreInterface, ITianyuStoreInterfaceMap } from "./Interface";
 import { IInstanceListener, StoreEventTriggerCallback } from "./Listener";
 import { IterableType } from "./Model";
-import { IInstanceSelector, SelectorProvider } from "./Selector";
+import { IInstanceSelector, ISelectorProviderBase, SelectorProvider, SelectorResult } from "./Selector";
 import { Unsubscribe } from "./Subscribe";
+
+export interface IStoreExecution {
+    getAction(id: string): IActionProvider<any, any, any>;
+    getExternalRegister(): IExternalObjectRegister;
+    getState(instanceId: InstanceId): any;
+    getSelector(id: string): ISelectorProviderBase<any>;
+
+    pushStateChange(action: IInstanceAction, newState: any): void;
+}
 
 /**
  * Tianyu Store Interface
@@ -45,15 +55,58 @@ export interface IStore {
      * @param listener to be registered listener instance
      */
     startListen(listener: IInstanceListener<any>): void;
+    /**
+     * To stop an event listen.
+     * The event listener will be removed from store instance
+     *
+     * @param listener to be removed listener instance
+     */
     stopListen(listener: IInstanceListener<any>): void;
+
+    /**
+     * To subscribe a selector.
+     * The event trigger will be called when the selector state is changed.
+     *
+     * @param instanceId instance id of selector bind instance
+     * @param selectorProvider the selector provider
+     * @param eventTrigger the event callback when selector state is changed
+     *
+     * @returns return an unsubscribe function
+     */
     subscribe<STATE extends IterableType, RESULT>(
         instanceId: InstanceId,
         selectorProvider: SelectorProvider<STATE, RESULT>,
         eventTrigger: StoreEventTriggerCallback<RESULT>,
     ): Unsubscribe;
 
-    selecte<RESULT>(selector: IInstanceSelector<RESULT>): RESULT;
+    /**
+     * To select a state value
+     *
+     * @param selector the selector instance
+     *
+     * @returns return selected value
+     */
+    selecte<RESULT>(selector: IInstanceSelector<RESULT>): SelectorResult<RESULT>;
 
+    /**
+     * To dispatch an action or actions.
+     * This dispatch is a transaction executor.
+     *
+     * @param action to be dispatched action or action batch
+     *
+     * @returns return a promise to wait actions done
+     *
+     * WARNING: PLEASE DO NOT EXECUTE A VIEW ACTION DURING THIS DISPATCH EXECUTION,
+     * BECAUSE IF THE UNDO, REDO IS APPLIED, STORE STATE MIGHT NOT CHANGED CORRECTLY.
+     */
     dispatch(action: IInstanceAction | IBatchAction): Promise<void>;
-    dispatchForView(action: IInstanceViewAction | IBatchAction): Promise<void>;
+    /**
+     * To dispatch a ui action or actions.
+     * This dispatch is not a transaction executor.
+     *
+     * @param action to be dispatched action or action batch
+     *
+     * @returns return a promise to wait actions done
+     */
+    dispatchForView(action: IInstanceViewAction | IBatchAction): void;
 }
