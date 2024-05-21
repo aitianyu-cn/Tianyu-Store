@@ -3,36 +3,39 @@
 import { MessageBundle } from "beta/infra/Message";
 import { IBatchAction, IInstanceAction } from "beta/types/Action";
 import { IStoreExecution } from "beta/types/Store";
+import { doSelecting } from "./Selecting";
 import {
-    ActionHandleResult,
-    AnyHandleResult,
-    ExternalObjectHandleResult,
-    HandleType,
-    SelectorHandleResult,
-} from "beta/types/Utils";
-import { doSelecting } from "./DoSelecting";
+    AnyStoreHandle,
+    StoreActionHandle,
+    StoreExternalObjectHandle,
+    StoreHandleType,
+    StoreSelectorHandle,
+} from "beta/types/StoreHandler";
 
-export async function dispatching(store: IStoreExecution, actionOrActionBatch: IInstanceAction | IBatchAction) {
+export async function dispatching(
+    store: IStoreExecution,
+    actionOrActionBatch: IInstanceAction | IBatchAction,
+): Promise<IInstanceAction[]> {
     const actions = Array.isArray((actionOrActionBatch as IBatchAction).actions)
         ? (actionOrActionBatch as IBatchAction).actions
         : [actionOrActionBatch as IInstanceAction];
 
     for (const action of actions) {
         const actionImpl = store.getAction(action.action);
-        await actionImpl.external(store.getExternalRegister());
+        await actionImpl.external(store.getExternalRegister(action.instanceId));
         const iterator = actionImpl.handler(action);
 
-        const fnGetNextValue = async (handleResult: AnyHandleResult) => {
+        const fnGetNextValue = async (handleResult: AnyStoreHandle) => {
             switch (handleResult.type) {
-                case HandleType.ACTION:
-                    const subAction = handleResult as ActionHandleResult;
+                case StoreHandleType.ACTION:
+                    const subAction = handleResult as StoreActionHandle;
                     return await dispatching(store, subAction.action);
-                case HandleType.SELECTOR:
-                    const selectedValue = doSelecting(store, (handleResult as SelectorHandleResult<any>).selector);
+                case StoreHandleType.SELECTOR:
+                    const selectedValue = doSelecting(store, (handleResult as StoreSelectorHandle<any>).selector);
                     return selectedValue;
-                case HandleType.EXTERNAL_OBJ:
-                    const externalGetter = (handleResult as ExternalObjectHandleResult<any>).handler(
-                        store.getExternalRegister(),
+                case StoreHandleType.EXTERNAL_OBJ:
+                    const externalGetter = (handleResult as StoreExternalObjectHandle<any>).handler(
+                        store.getExternalRegister(action.instanceId),
                     );
                     return externalGetter;
                 default:
@@ -55,5 +58,5 @@ export async function dispatching(store: IStoreExecution, actionOrActionBatch: I
         await fnGeneratorRunner(action);
     }
 
-    return actionOrActionBatch;
+    return actions;
 }

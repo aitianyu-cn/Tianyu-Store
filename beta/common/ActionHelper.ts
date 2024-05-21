@@ -1,10 +1,10 @@
 /**@format */
 
-import { ActionHandlerProvider } from "beta/types/Action";
 import { ExternalOperatorFunction, IExternalObjectRegister } from "beta/types/ExternalObject";
 import { ActionHandlerFunction, IActionHandlerParameter } from "beta/types/ActionHandler";
 import { IterableType, ReturnableType } from "beta/types/Model";
 import { ReducerFunction } from "beta/types/Reducer";
+import { AnyStoreHandle } from "beta/types/StoreHandler";
 
 export function createDefaultReducer<
     STATE extends IterableType,
@@ -21,7 +21,7 @@ export function createUndefinedHandler<PARAMETER_TYPE extends IterableType | und
 > {
     return function* (
         _action: IActionHandlerParameter<PARAMETER_TYPE>,
-    ): Generator<IActionHandlerParameter<PARAMETER_TYPE>, undefined, IActionHandlerParameter<PARAMETER_TYPE>> {
+    ): Generator<AnyStoreHandle, undefined, IActionHandlerParameter<PARAMETER_TYPE>> {
         return undefined;
     };
 }
@@ -32,7 +32,7 @@ export function createNonHandler<PARAMETER_TYPE extends IterableType | undefined
 > {
     return function* (
         action: IActionHandlerParameter<PARAMETER_TYPE>,
-    ): Generator<IActionHandlerParameter<PARAMETER_TYPE>, PARAMETER_TYPE, IActionHandlerParameter<PARAMETER_TYPE>> {
+    ): Generator<AnyStoreHandle, PARAMETER_TYPE, IActionHandlerParameter<PARAMETER_TYPE>> {
         return action.params;
     };
 }

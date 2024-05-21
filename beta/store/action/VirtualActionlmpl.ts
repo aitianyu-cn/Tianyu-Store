@@ -7,7 +7,7 @@ import { actionBaseImpl } from "./ActionBaseImpl";
 import { IActionHandlerParameter } from "beta/types/ActionHandler";
 import { MessageBundle } from "beta/infra/Message";
 import { IExternalObjectRegister } from "beta/types/ExternalObject";
-import { AnyHandleResult } from "beta/types/Utils";
+import { AnyStoreHandle } from "beta/types/StoreHandler";
 
 export function virtualActionImpl<
     STATE extends IterableType,
@@ -16,7 +16,7 @@ export function virtualActionImpl<
 >(): IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     const handler = function* (
         _action: IActionHandlerParameter<PARAMETER_TYPE>,
-    ): Generator<AnyHandleResult, RETURN_TYPE, IActionHandlerParameter<PARAMETER_TYPE>> {
+    ): Generator<AnyStoreHandle, RETURN_TYPE, IActionHandlerParameter<PARAMETER_TYPE>> {
         throw new Error(MessageBundle.getText("ACTION_VIRTUAL_NO_HANDLER"));
     };
     const reducer = function (_state: STATE, _data: RETURN_TYPE): STATE {

@@ -10,9 +10,10 @@ import { IterableType } from "./Model";
 import { IInstanceSelector, ISelectorProviderBase, SelectorProvider, SelectorResult } from "./Selector";
 import { Unsubscribe } from "./Subscribe";
 
+/** this is for internal using */
 export interface IStoreExecution {
     getAction(id: string): IActionProvider<any, any, any>;
-    getExternalRegister(): IExternalObjectRegister;
+    getExternalRegister(instanceId: InstanceId): IExternalObjectRegister;
     getState(instanceId: InstanceId): any;
     getSelector(id: string): ISelectorProviderBase<any>;
 

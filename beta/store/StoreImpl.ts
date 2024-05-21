@@ -1,12 +1,12 @@
 /**@format */
 
 import { InstanceId } from "beta/types/InstanceId";
-import { IStore } from "beta/types/Store";
+import { IStore, IStoreExecution } from "beta/types/Store";
 import { guid } from "@aitianyu.cn/types";
 import { IInstance } from "beta/types/StoreInstance";
 import { InvalidInstance } from "./StoreInstanceImpl";
 
-export class StoreImpl implements IStore {
+export class StoreImpl implements IStore, IStoreExecution {
     private instanceIdMap: Map<string, string>;
     private instanceMap: Map<string, IInstance>;
 

@@ -24,26 +24,3 @@ export interface StateChangesTrie {
     /** sub-level of changing */
     children: Record<string, StateChangesTrie>;
 }
-
-export enum HandleType {
-    ACTION,
-    SELECTOR,
-    EXTERNAL_OBJ,
-}
-
-export interface ActionHandleResult {
-    type: HandleType;
-    action: IInstanceAction;
-}
-
-export interface SelectorHandleResult<RESULT> {
-    type: HandleType;
-    selector: IInstanceSelector<RESULT>;
-}
-
-export interface ExternalObjectHandleResult<RESULT> {
-    type: HandleType;
-    handler: ExternalObjectHandleFunction<RESULT>;
-}
-
-export type AnyHandleResult = ActionHandleResult | SelectorHandleResult<any> | ExternalObjectHandleResult<any>;

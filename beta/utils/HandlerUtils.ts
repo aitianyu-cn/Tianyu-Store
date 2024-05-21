@@ -1,22 +1,48 @@
 /**@format */
 
-import { IInstanceAction } from "beta/types/Action";
+import { ActionCreatorProvider, IInstanceAction } from "beta/types/Action";
 import { ExternalObjectHandleFunction } from "beta/types/ExternalObject";
 import { IInstanceSelector } from "beta/types/Selector";
-import { ActionHandleResult, ExternalObjectHandleResult, HandleType, SelectorHandleResult } from "beta/types/Utils";
+import {
+    StoreActionHandle,
+    StoreExternalObjectHandle,
+    StoreHandleType,
+    StoreSelectorHandle,
+} from "beta/types/StoreHandler";
 
-export function* doAction(action: IInstanceAction): Generator<ActionHandleResult, void, void> {
-    return yield { type: HandleType.ACTION, action };
+/**
+ * To create an action generator to execute.
+ * This API only valid in Action Handler to support recursive dispatching
+ *
+ * @param action to be generated action instance
+ * @returns return a generator for action
+ */
+export function* doAction(action: IInstanceAction): Generator<StoreActionHandle, void, void> {
+    return yield { type: StoreHandleType.ACTION, action };
 }
 
+/**
+ * To create a selector generator to execute.
+ * This API only valid in Action Handler to support recursive dispatching
+ *
+ * @param action to be generated selector instance
+ * @returns return a generator for selector
+ */
 export function* doSelector<RESULT>(
     selector: IInstanceSelector<RESULT>,
-): Generator<SelectorHandleResult<RESULT>, void, void> {
-    return yield { type: HandleType.SELECTOR, selector };
+): Generator<StoreSelectorHandle<RESULT>, void, void> {
+    return yield { type: StoreHandleType.SELECTOR, selector };
 }
 
+/**
+ * To create an external object reader generator to execute.
+ * This API only valid in Action Handler to support recursive dispatching
+ *
+ * @param action to be generated external object reader function
+ * @returns return a generator for reading external object
+ */
 export function* doReadExternal<RESULT>(
     handler: ExternalObjectHandleFunction<RESULT>,
-): Generator<ExternalObjectHandleResult<RESULT>, void, void> {
-    return yield { type: HandleType.EXTERNAL_OBJ, handler };
+): Generator<StoreExternalObjectHandle<RESULT>, void, void> {
+    return yield { type: StoreHandleType.EXTERNAL_OBJ, handler };
 }

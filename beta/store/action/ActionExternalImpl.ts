@@ -1,6 +1,5 @@
 /**@format */
 
-import { guid } from "@aitianyu.cn/types";
 import { createNonHandler, createDefaultReducer } from "beta/common/ActionHelper";
 import {
     ActionExternalProvider,
