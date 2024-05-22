@@ -21,6 +21,13 @@ export interface IStoreExecution {
 }
 
 /**
+ * Tianyu Store Configuration
+ *
+ * This is used to configure tianyu store when creating
+ */
+export type StoreConfiguration = {};
+
+/**
  * Tianyu Store Interface
  *
  * Tianyu Store is not a template interface due to the inner instances can
@@ -110,4 +117,9 @@ export interface IStore {
      * @returns return a promise to wait actions done
      */
     dispatchForView(action: IInstanceViewAction | IBatchAction): void;
+
+    /** To revert the last change and set all the states into previous state */
+    undo(): void;
+    /** To set the store state into next state which is before undo*/
+    redo(): void;
 }

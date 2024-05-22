@@ -13,11 +13,14 @@ const _DestroyAction = ActionFactor.makeDestroyStoreAction();
  *
  * WARNING: PLEASE DO NOT TO USE THIS FUNCTION, THERE WILL BE UNKNOWN ISSUE HAPPEN
  */
-export const TianyuStoreEntityExpose: ITianyuStoreInterface<any> = {
+export const TianyuStoreEntityExpose = {
     core: {
         creator: _CreateAction,
         destroy: _DestroyAction,
     },
 };
+
+// to ensure the entity type
+TianyuStoreEntityExpose as ITianyuStoreInterface<any>;
 
 registerExpose(TianyuStoreEntityExpose);

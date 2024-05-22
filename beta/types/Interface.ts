@@ -42,7 +42,7 @@ export interface ITianyuStoreInterfaceImplementation<STATE extends IterableType 
  * Combine multi-types store type into this map and to support to search by store type
  */
 export interface ITianyuStoreInterfaceMap {
-    [storeType: string]: ITianyuStoreInterfaceImplementation;
+    [storeType: string]: ITianyuStoreInterfaceImplementation | undefined;
 }
 
 /**

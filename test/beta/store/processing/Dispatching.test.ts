@@ -9,34 +9,35 @@ import { ISelectorProviderBase } from "beta/types/Selector";
 import { IStoreExecution } from "beta/types/Store";
 import { createBatchAction } from "beta/utils/BatchActionUtils";
 import { registerInterface } from "beta/utils/InterfaceUtils";
+import { EXTERNAL_OBJ_NAME_STAMP, EXTERNAL_OBJ_NAME_TIMEER } from "test/beta/content/dispatching-test/Types";
 import { TestInterface } from "test/beta/content/DispatchingTestContent";
 
 describe("aitianyu-cn.node-module.tianyu-store.beta.store.processing.Dispatching", () => {
     const interfaceList = registerInterface(TestInterface, "dispatching_test_content");
     const instanceId = generateInstanceId("dispatching_test_content", "instance");
 
-    const externalObjMap: any = {};
-
-    const register: IExternalObjectRegister = {
-        get: function <T = any>(key: string): T | undefined {
-            return externalObjMap[key];
-        },
-        add: function (key: string, obj: any): void {
-            externalObjMap[key] = obj;
-        },
-        remove: function (key: string): void {
-            if (externalObjMap[key]) {
-                delete externalObjMap[key];
-            }
-        },
-    };
-
     const instance: {
         state: any;
         changeList: any[];
+        externalObjMap: any;
     } = {
         state: {},
         changeList: [],
+        externalObjMap: {},
+    };
+
+    const register: IExternalObjectRegister = {
+        get: function <T = any>(key: string): T | undefined {
+            return instance.externalObjMap[key];
+        },
+        add: function (key: string, obj: any): void {
+            instance.externalObjMap[key] = obj;
+        },
+        remove: function (key: string): void {
+            if (instance.externalObjMap[key]) {
+                delete instance.externalObjMap[key];
+            }
+        },
     };
 
     const store: IStoreExecution = {
@@ -60,6 +61,12 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.processing.Dispatching
         },
     };
 
+    beforeEach(() => {
+        instance.changeList = [];
+        instance.state = {};
+        instance.externalObjMap = {};
+    });
+
     it("correct case", async () => {
         await dispatching(
             store,
@@ -72,6 +79,9 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.processing.Dispatching
         const state = store.getState(instanceId);
         expect(state.stamp).toBe(2);
         expect(state.actionCount).toBe(2);
+        const externalObjects = Object.keys(instance.externalObjMap);
+        expect(externalObjects.includes(EXTERNAL_OBJ_NAME_STAMP));
+        expect(externalObjects.includes(EXTERNAL_OBJ_NAME_TIMEER));
     });
 
     it("failed case", async () => {
