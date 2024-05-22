@@ -1,7 +1,7 @@
 /**@format */
 
 import { AreaCode } from "@aitianyu.cn/types";
-import { Infra, InfraEnvironment } from "../../../beta/infra/Infra";
+import { Infra, InfraEnvironment } from "beta/infra/Infra";
 
 describe("aitianyu-cn.node-module.tianyu-store.infra.Infra", () => {
     let preProcess = process;

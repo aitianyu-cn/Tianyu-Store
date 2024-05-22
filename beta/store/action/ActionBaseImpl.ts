@@ -25,6 +25,7 @@ export function actionBaseImpl<
                 id: actionInstanceCaller.actionId,
                 action: actionInstanceCaller.info.fullName,
                 storeType: actionInstanceCaller.info.storeType,
+                actionType: actionInstanceCaller.getType(),
                 instanceId,
                 params,
             };

@@ -14,7 +14,7 @@ import { createStoreActionCreatorImpl, destroyStoreActionCreatorImpl } from "./a
 export class ActionFactor {
     public static makeActionCreator<
         STATE extends IterableType,
-        PARAMETER_TYPE extends IterableType,
+        PARAMETER_TYPE extends IterableType | undefined,
     >(): ActionCreatorProvider<STATE, PARAMETER_TYPE> {
         return actionCreatorImpl<STATE, PARAMETER_TYPE>();
     }

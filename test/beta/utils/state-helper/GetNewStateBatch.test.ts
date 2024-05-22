@@ -1,9 +1,9 @@
 /**@format */
 
-import { StateChangesTrie } from "../../beta/interface/Utils";
-import { getNewStateBatch } from "../../../beta/utils/StateHelper/GetNewStateBatch";
+import { StateChangesTrie } from "beta/types/Utils";
+import { getNewStateBatch } from "beta/utils/state-helper/GetNewStateBatch";
 
-describe("aitianyu-cn.node-module.tianyu-store.utils.GetNewStateBatch", () => {
+describe("aitianyu-cn.node-module.tianyu-store.beta.utils.state-helper.GetNewStateBatch", () => {
     const rawState = {
         a: "a",
         num: 123,

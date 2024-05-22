@@ -1,8 +1,8 @@
 /**@format */
 
-import { getNewState } from "../../../beta/utils/StateHelper/GetNewState";
+import { getNewState } from "beta/utils/state-helper/GetNewState";
 
-describe("aitianyu-cn.node-module.tianyu-store.utils.GetNewState", () => {
+describe("aitianyu-cn.node-module.tianyu-store.beta.utils.state-helper.GetNewState", () => {
     const rawState = {
         a: "a",
         num: 123,

@@ -2,15 +2,15 @@
 
 /** Utils Part */
 
-import * as GetNewStateImport from "./utils/StateHelper/GetNewState";
-import * as GetNewStateBatchImport from "./utils/StateHelper/GetNewStateBatch";
-import * as MergeStateImport from "./utils/StateHelper/MergeState";
+import * as GetNewStateImport from "./utils/state-helper/GetNewState";
+import * as GetNewStateBatchImport from "./utils/state-helper/GetNewStateBatch";
+import * as MergeStateImport from "./utils/state-helper/MergeState";
 
 import * as ObjectUtilsImport from "./utils/ObjectUtils";
 
 import * as InterfaceUtilsImport from "./utils/InterfaceUtils";
 
-import * as HandlerUtilsImport from "./utils/HandlerUtils";
+import * as HandlerUtilsImport from "./utils/StoreHandlerUtils";
 
 export namespace StoreUtils {
     export namespace State {

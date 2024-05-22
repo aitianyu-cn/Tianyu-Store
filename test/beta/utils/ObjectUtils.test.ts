@@ -1,0 +1,18 @@
+/** @format */
+
+import { parseJsonString } from "beta/utils/ObjectUtils";
+
+describe("aitianyu-cn.node-module.tianyu-store.beta.utils.ObjectUtils.test", () => {
+    it("parse success", () => {
+        const result = parseJsonString("[123,234]");
+        expect(Array.isArray(result)).toBeTruthy();
+        expect(result.length).toBe(2);
+        expect(result[0]).toEqual(123);
+        expect(result[1]).toEqual(234);
+    });
+
+    it("parse has error", () => {
+        const result = parseJsonString("a");
+        expect(result).toBeUndefined();
+    });
+});

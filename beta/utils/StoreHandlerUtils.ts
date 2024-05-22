@@ -1,6 +1,6 @@
 /**@format */
 
-import { ActionCreatorProvider, IInstanceAction } from "beta/types/Action";
+import { IInstanceAction } from "beta/types/Action";
 import { ExternalObjectHandleFunction } from "beta/types/ExternalObject";
 import { IInstanceSelector } from "beta/types/Selector";
 import {
@@ -17,7 +17,7 @@ import {
  * @param action to be generated action instance
  * @returns return a generator for action
  */
-export function* doAction(action: IInstanceAction): Generator<StoreActionHandle, void, void> {
+export function* doAction(action: IInstanceAction): Generator<StoreActionHandle, StoreActionHandle, StoreActionHandle> {
     return yield { type: StoreHandleType.ACTION, action };
 }
 
@@ -30,7 +30,7 @@ export function* doAction(action: IInstanceAction): Generator<StoreActionHandle,
  */
 export function* doSelector<RESULT>(
     selector: IInstanceSelector<RESULT>,
-): Generator<StoreSelectorHandle<RESULT>, void, void> {
+): Generator<StoreSelectorHandle<RESULT>, RESULT, RESULT> {
     return yield { type: StoreHandleType.SELECTOR, selector };
 }
 
@@ -43,6 +43,6 @@ export function* doSelector<RESULT>(
  */
 export function* doReadExternal<RESULT>(
     handler: ExternalObjectHandleFunction<RESULT>,
-): Generator<StoreExternalObjectHandle<RESULT>, void, void> {
+): Generator<StoreExternalObjectHandle<RESULT>, RESULT, RESULT> {
     return yield { type: StoreHandleType.EXTERNAL_OBJ, handler };
 }

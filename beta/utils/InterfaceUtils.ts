@@ -2,7 +2,6 @@
 
 import { IActionProviderBase } from "beta/types/Action";
 import { ITianyuStoreInterfaceImplementation, ITianyuStoreInterfaceList } from "beta/types/Interface";
-import { IOperator } from "beta/types/Model";
 import { ISelectorProviderBase } from "beta/types/Selector";
 
 /**
@@ -28,11 +27,11 @@ export function registerInterface(
 }
 
 function checkSelector(obj: any): boolean {
-    return typeof obj === "object" && !!(obj as ISelectorProviderBase<any>).selector;
+    return typeof obj !== "undefined" && !!(obj as ISelectorProviderBase<any>)?.selector;
 }
 
 function checkAction(obj: any): boolean {
-    return typeof obj === "object" && !!(obj as IActionProviderBase<any>).actionId;
+    return typeof obj !== "undefined" && !!(obj as IActionProviderBase<any>)?.actionId;
 }
 
 function _registerExposeInternal(

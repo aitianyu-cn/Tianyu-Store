@@ -19,3 +19,5 @@ export interface IInstance {
      */
     isValid(): boolean;
 }
+
+export type IStoreParentChildRelation = Map<string, InstanceId[]>;

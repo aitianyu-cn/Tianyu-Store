@@ -22,7 +22,7 @@ export interface IterableType {
  * Tianyu Store Returnable Type Definition.
  * Used for constraint the action handler returns
  *
- * Mix: string, boolean, number, IterableType, null, undefined and array type of them
+ * Mix: string, boolean, number, IterableType, null, undefined, void and array type of them
  */
 export type ReturnableType =
     | string
@@ -31,7 +31,8 @@ export type ReturnableType =
     | IterableType
     | null
     | undefined
-    | (string | boolean | number | IterableType | null | undefined | IterableType)[];
+    | void
+    | (string | boolean | number | IterableType | null | undefined | IterableType | void)[];
 
 /**
  * Tianyu Store Missing type.

@@ -33,6 +33,8 @@ export interface IInstanceAction {
     instanceId: InstanceId;
     /** Additional Parameter */
     params: any;
+    /** Action Type */
+    actionType: ActionType;
 }
 
 /**
