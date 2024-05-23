@@ -7,8 +7,8 @@ export const CreateStoreActionCreator = ActionFactor.makeCreateStoreAction<IStor
 
 export const DestroyStoreActionCreator = ActionFactor.makeDestroyStoreAction();
 
-export const OperateStampActionCreator = ActionFactor.makeActionCreator<IStoreState, undefined>();
+export const OperateStampActionCreator = ActionFactor.makeActionCreator<IStoreState>();
 
-export const InsertExternalObjActionCreator = ActionFactor.makeActionCreator<IStoreState, undefined>();
+export const InsertExternalObjActionCreator = ActionFactor.makeActionCreator<IStoreState>();
 
-export const ErrorIteratorActionCreator = ActionFactor.makeActionCreator<IStoreState, undefined>();
+export const ErrorIteratorActionCreator = ActionFactor.makeActionCreator<IStoreState>();

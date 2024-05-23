@@ -58,4 +58,13 @@ export class InstanceIdImpl implements InstanceId {
     public structure(): IInstancePair[] {
         return JSON.parse(this.instanceKey);
     }
+
+    public equals(other: InstanceId): boolean {
+        return other.id === this.id;
+    }
+
+    public compareTo(other: InstanceId): number {
+        const otherStr = other.id;
+        return otherStr < this.id ? 1 : otherStr > this.id ? -1 : 0;
+    }
 }

@@ -18,6 +18,8 @@ export interface IStoreExecution {
     getSelector(id: string): ISelectorProviderBase<any>;
 
     pushStateChange(action: IInstanceAction, newState: any): void;
+
+    validateActionInstance(action: IInstanceAction): void;
 }
 
 /**
@@ -25,7 +27,16 @@ export interface IStoreExecution {
  *
  * This is used to configure tianyu store when creating
  */
-export type StoreConfiguration = {};
+export type StoreConfiguration = {
+    /**
+     * Indicates the dispatch action should wait for all operation done (listener and subscribe trigger)
+     * or only wait for action exectution done
+     *
+     * TRUE: await store.dispatch should wait for listener and subscribe trigger done
+     * FLASE: await store.dispatch only wait for action execution done
+     */
+    waitForAll?: boolean;
+};
 
 /**
  * Tianyu Store Interface

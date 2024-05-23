@@ -1,9 +1,9 @@
 /** @format */
 
 import { generateInstanceId } from "beta/InstanceId";
-import { InvalidInstance, createStoreInstance } from "beta/store/StoreInstanceImpl";
+import { InvalidInstance, createStoreInstance } from "beta/store/impl/StoreInstanceImpl";
 
-describe("aitianyu-cn.node-module.tianyu-store.beta.store.StoreInstanceImpl", () => {
+describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl", () => {
     it("InvalidInstance", () => {
         expect(InvalidInstance.isValid()).toBeFalsy();
         expect(InvalidInstance.state).toBeUndefined();

@@ -1,7 +1,7 @@
 /**@format */
 
 import { guid } from "@aitianyu.cn/types";
-import { InstanceIdImpl } from "beta/store/InstanceIdImpl";
+import { InstanceIdImpl } from "beta/store/impl/InstanceIdImpl";
 import { InstanceId } from "beta/types/InstanceId";
 
 /**

@@ -31,6 +31,9 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.processing.Selecting",
         pushStateChange: function (action: IInstanceAction, newState: any): void {
             throw new Error("Function not implemented.");
         },
+        validateActionInstance: function (action: IInstanceAction): void {
+            throw new Error("Function not implemented.");
+        },
     };
 
     it("get select result success", () => {

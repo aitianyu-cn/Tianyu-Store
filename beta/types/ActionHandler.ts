@@ -9,7 +9,7 @@ import { AnyStoreHandle } from "./StoreHandler";
  *
  * @template PARAMETER_TYPE the type of parameter
  */
-export interface IActionHandlerParameter<PARAMETER_TYPE extends IterableType | undefined> {
+export interface IActionHandlerParameter<PARAMETER_TYPE extends IterableType | undefined | void> {
     /** Store Instance Id */
     instanceId: InstanceId;
     /** Action Handler Parameter Value */
@@ -23,7 +23,7 @@ export interface IActionHandlerParameter<PARAMETER_TYPE extends IterableType | u
  * @template RETURN_TYPE the type of handler returns
  */
 export interface ActionHandlerFunction<
-    PARAMETER_TYPE extends IterableType | undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void,
     RETURN_TYPE extends ReturnableType,
 > {
     /**

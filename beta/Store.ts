@@ -1,6 +1,6 @@
 /** @format */
 
-import { StoreImpl } from "./store/StoreImpl";
+import { StoreImpl } from "./store/impl/StoreImpl.old";
 import { IStore, StoreConfiguration } from "./types/Store";
 
 /**

@@ -10,7 +10,7 @@ import { ReducerFunction } from "beta/types/Reducer";
 
 export function actionBaseImpl<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void,
     RETURN_TYPE extends ReturnableType,
 >(
     id: string,

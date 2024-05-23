@@ -5,6 +5,7 @@ import { ActionHandlerFunction } from "./ActionHandler";
 import { InstanceId } from "./InstanceId";
 import { IOperator, IterableType, ReturnableType } from "./Model";
 import { ReducerFunction } from "./Reducer";
+import { IInstanceState } from "./Internal";
 
 // ================================================================================
 // executable action is created from an ActionCreator
@@ -55,16 +56,14 @@ export enum ActionType {
     ACTION,
     /** View Action Type */
     VIEW_ACTION,
-    /** The action is a creator with default handler and reducer */
-    ACTION_CREATOR,
-    /** The action is a handler with default reducer */
-    ACTION_HANDLER,
-    /** The action is an external handler */
-    ACTION_EXTERNAL,
     /** Store Entity Create Action */
     CREATE,
     /** Store Entity Destroy Action */
     DESTROY,
+    /** Store Entity Undo Action */
+    UNDO,
+    /** Store Entity Redo Action */
+    REDO,
 }
 
 /**
@@ -97,7 +96,7 @@ export interface IActionProviderBase<_STATE extends IterableType> extends IOpera
  */
 export interface IActionProvider<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void,
     RETURN_TYPE extends ReturnableType,
 > extends IActionProviderBase<STATE> {
     /**
@@ -125,7 +124,7 @@ export interface IActionProvider<
  */
 export interface CreateStoreActionCreator<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined = undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void = void,
 > extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
     /**
      * Function to add a custom reducer and get a new Action Provider
@@ -148,6 +147,50 @@ export interface DestroyStoreActionCreator extends IActionProvider<any, undefine
 }
 
 /**
+ * Tianyu Store Undo Action Provider Interface
+ *
+ * This is an undo action provider
+ *
+ * @template STATE the type of store state
+ */
+export interface StoreUndoActionCreator<
+    STATE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined | void = void,
+> extends IActionProvider<IInstanceState<STATE>, PARAMETER_TYPE, void> {
+    /**
+     * Function to add a custom action handler and get a new action provider
+     *
+     * @param handler provided handler function
+     * @returns return a new action provider
+     */
+    withHandler(
+        handler: ActionHandlerFunction<PARAMETER_TYPE, void>,
+    ): ActionProvider<IInstanceState<STATE>, PARAMETER_TYPE, void>;
+}
+
+/**
+ * Tianyu Store redo Action Provider Interface
+ *
+ * This is a redo action provider
+ *
+ * @template STATE the type of store state
+ */
+export interface StoreRedoActionCreator<
+    STATE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined | void = void,
+> extends IActionProvider<IInstanceState<STATE>, PARAMETER_TYPE, void> {
+    /**
+     * Function to add a custom action handler and get a new action provider
+     *
+     * @param handler provided handler function
+     * @returns return a new action provider
+     */
+    withHandler(
+        handler: ActionHandlerFunction<PARAMETER_TYPE, void>,
+    ): ActionProvider<IInstanceState<STATE>, PARAMETER_TYPE, void>;
+}
+
+/**
  * Tianyu Store Action Creator Provider
  *
  * To be a default action instance provider with default handler and reducer
@@ -155,8 +198,10 @@ export interface DestroyStoreActionCreator extends IActionProvider<any, undefine
  * @template STATE the type of store state
  * @template PARAMETER_TYPE the type of store reduer parameter
  */
-export interface ActionCreatorProvider<STATE extends IterableType, PARAMETER_TYPE extends IterableType | undefined>
-    extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
+export interface ActionCreatorProvider<
+    STATE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined | void,
+> extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
     /**
      * Function to add a custom action handler and get a new action provider
      *
@@ -194,8 +239,10 @@ export interface ActionCreatorProvider<STATE extends IterableType, PARAMETER_TYP
     asViewAction(): ViewActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE>;
 }
 
-export interface ActionExternalProvider<STATE extends IterableType, PARAMETER_TYPE extends IterableType | undefined>
-    extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
+export interface ActionExternalProvider<
+    STATE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined | void,
+> extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
     /**
      * Function to add a custom action handler and get a new action provider
      *
@@ -237,7 +284,7 @@ export interface ActionExternalProvider<STATE extends IterableType, PARAMETER_TY
  */
 export interface ActionHandlerProvider<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void,
     RETURN_TYPE extends ReturnableType,
 > extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     /**
@@ -260,7 +307,7 @@ export interface ActionHandlerProvider<
  */
 export interface ActionProvider<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void,
     RETURN_TYPE extends ReturnableType,
 > extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     /**
@@ -284,7 +331,7 @@ export interface ActionProvider<
  */
 export interface ViewActionProvider<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void,
     RETURN_TYPE extends ReturnableType,
 > extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     /**

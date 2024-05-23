@@ -11,7 +11,7 @@ import { ExternalOperatorFunction } from "beta/types/ExternalObject";
 
 export function actionHandlerImpl<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void,
     RETURN_TYPE extends ReturnableType,
 >(
     id: string,
@@ -24,7 +24,7 @@ export function actionHandlerImpl<
             handler,
             createDefaultReducer<STATE, RETURN_TYPE>(),
             external,
-            ActionType.ACTION_HANDLER,
+            ActionType.ACTION,
         )
     );
     actionInstanceCaller.withReducer = function (

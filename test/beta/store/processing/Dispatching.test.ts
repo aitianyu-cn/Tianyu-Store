@@ -59,6 +59,9 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.processing.Dispatching
         pushStateChange: function (action: IInstanceAction, newState: any): void {
             instance.changeList.push({ action, newState });
         },
+        validateActionInstance: function (action: IInstanceAction): void {
+            //
+        },
     };
 
     beforeEach(() => {
@@ -68,13 +71,18 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.processing.Dispatching
     });
 
     it("correct case", async () => {
-        await dispatching(
+        const actions = await dispatching(
             store,
             createBatchAction([
                 TestInterface.core.creator(instanceId, undefined),
                 TestInterface.action.OperateStampAction(instanceId, undefined),
             ]),
         );
+
+        expect(actions.length).toBe(3);
+        expect(actions[0].action).toEqual("dispatching_test_content.core.creator");
+        expect(actions[1].action).toEqual("dispatching_test_content.action.OperateStampAction");
+        expect(actions[2].action).toEqual("dispatching_test_content.action.InsertExternalObjAction");
 
         const state = store.getState(instanceId);
         expect(state.stamp).toBe(2);

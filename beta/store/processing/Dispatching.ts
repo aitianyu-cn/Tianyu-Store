@@ -16,11 +16,16 @@ export async function dispatching(
     store: IStoreExecution,
     actionOrActionBatch: IInstanceAction | IBatchAction,
 ): Promise<IInstanceAction[]> {
+    const ranActions: IInstanceAction[] = [];
+
     const actions = Array.isArray((actionOrActionBatch as IBatchAction).actions)
         ? (actionOrActionBatch as IBatchAction).actions
         : [actionOrActionBatch as IInstanceAction];
 
     for (const action of actions) {
+        store.validateActionInstance(action);
+
+        ranActions.push(action);
         const actionImpl = store.getAction(action.action);
         await actionImpl.external(store.getExternalRegister(action.instanceId));
         const iterator = actionImpl.handler(action);
@@ -29,7 +34,9 @@ export async function dispatching(
             switch (handleResult.type) {
                 case StoreHandleType.ACTION:
                     const subAction = handleResult as StoreActionHandle;
-                    return await dispatching(store, subAction.action);
+                    const subRanActions = await dispatching(store, subAction.action);
+                    ranActions.push(...subRanActions);
+                    return subRanActions;
                 case StoreHandleType.SELECTOR:
                     const selectedValue = doSelecting(store, (handleResult as StoreSelectorHandle<any>).selector);
                     return selectedValue;
@@ -58,5 +65,5 @@ export async function dispatching(
         await fnGeneratorRunner(action);
     }
 
-    return actions;
+    return ranActions;
 }

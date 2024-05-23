@@ -6,12 +6,12 @@ import { ActionType } from "beta/types/Action";
 describe("aitianyu-cn.node-module.tianyu-store.beta.store.ActionFactor", () => {
     it("makeActionCreator", () => {
         const creator = ActionFactor.makeActionCreator<any, any>();
-        expect(creator.getType()).toEqual(ActionType.ACTION_CREATOR);
+        expect(creator.getType()).toEqual(ActionType.ACTION);
     });
 
     it("makeVirtualAction", () => {
         const creator = ActionFactor.makeVirtualAction<any, any, any>();
-        expect(creator.getType()).toEqual(ActionType.ACTION_CREATOR);
+        expect(creator.getType()).toEqual(ActionType.ACTION);
     });
 
     it("makeCreateStoreAction", () => {

@@ -21,7 +21,7 @@ import { actionExternalImpl } from "./ActionExternalImpl";
 
 export function actionCreatorImpl<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void,
 >(): ActionCreatorProvider<STATE, PARAMETER_TYPE> {
     const actionInstanceCaller = <ActionCreatorProvider<STATE, PARAMETER_TYPE>>(
         actionBaseImpl<STATE, PARAMETER_TYPE, PARAMETER_TYPE>(
@@ -29,7 +29,7 @@ export function actionCreatorImpl<
             createNonHandler<PARAMETER_TYPE>(),
             createDefaultReducer<STATE, PARAMETER_TYPE>(),
             createDefaultExternalOperator(),
-            ActionType.ACTION_CREATOR,
+            ActionType.ACTION,
         )
     );
 

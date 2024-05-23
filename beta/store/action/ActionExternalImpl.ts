@@ -16,7 +16,7 @@ import { actionHandlerImpl } from "./ActionHandlerImpl";
 import { actionImpl, viewActionImpl } from "./ActionImpl";
 import { ExternalOperatorFunction } from "beta/types/ExternalObject";
 
-export function actionExternalImpl<STATE extends IterableType, PARAMETER_TYPE extends IterableType | undefined>(
+export function actionExternalImpl<STATE extends IterableType, PARAMETER_TYPE extends IterableType | undefined | void>(
     id: string,
     external: ExternalOperatorFunction,
 ): ActionExternalProvider<STATE, PARAMETER_TYPE> {
@@ -26,7 +26,7 @@ export function actionExternalImpl<STATE extends IterableType, PARAMETER_TYPE ex
             createNonHandler<PARAMETER_TYPE>(),
             createDefaultReducer<STATE, PARAMETER_TYPE>(),
             external,
-            ActionType.ACTION_EXTERNAL,
+            ActionType.ACTION,
         )
     );
 

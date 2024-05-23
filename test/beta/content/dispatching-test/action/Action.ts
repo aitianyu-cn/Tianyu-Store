@@ -30,7 +30,7 @@ export const OperateStampAction = OperateStampActionCreator.withExternal(functio
     }
 })
     .withHandler(function* (action) {
-        yield* doAction(InsertExternalObjAction(action.instanceId, undefined));
+        yield* doAction(InsertExternalObjAction(action.instanceId));
         const time = yield* doReadExternal(function (register): Date {
             const time = register.get(EXTERNAL_OBJ_NAME_TIMEER);
             return time || new Date(0);

@@ -1,9 +1,9 @@
 /** @format */
 
-import { InstanceIdImpl } from "beta/store/InstanceIdImpl";
+import { InstanceIdImpl } from "beta/store/impl/InstanceIdImpl";
 import { IInstancePair } from "beta/types/InstanceId";
 
-describe("aitianyu-cn.node-module.tianyu-store.beta.store.InstanceIdImpl", () => {
+describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.InstanceIdImpl", () => {
     describe("constructor", () => {
         it("constructor", () => {
             const instancePairs: IInstancePair[] = [{ storeType: "story", entityId: "instance" }];
@@ -74,6 +74,33 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.InstanceIdImpl", () =>
             expect(pairs[0].entityId).toBe("instance");
             expect(pairs[1].storeType).toBe("container");
             expect(pairs[1].entityId).toBe("instance2");
+        });
+
+        it("equals", () => {
+            expect(constantInstanceId.equals(new InstanceIdImpl(instancePairs))).toBeTruthy();
+
+            const pairs: IInstancePair[] = [{ storeType: "story", entityId: "instance" }];
+            expect(constantInstanceId.equals(new InstanceIdImpl(pairs))).toBeFalsy();
+        });
+
+        describe("compareTo", () => {
+            it("equals", () => {
+                expect(constantInstanceId.compareTo(new InstanceIdImpl(instancePairs))).toBe(0);
+            });
+
+            it("less", () => {
+                const pairs: IInstancePair[] = [{ storeType: "story", entityId: "instance" }];
+                expect(constantInstanceId.compareTo(new InstanceIdImpl(pairs))).toBe(-1);
+            });
+
+            it("greater", () => {
+                const pairs: IInstancePair[] = [
+                    { storeType: "story", entityId: "instance" },
+                    { storeType: "container", entityId: "instance2" },
+                    { storeType: "container2", entityId: "instance3" },
+                ];
+                expect(constantInstanceId.compareTo(new InstanceIdImpl(pairs))).toBe(1);
+            });
         });
     });
 

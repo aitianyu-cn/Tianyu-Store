@@ -131,7 +131,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.ActionImpl", () => {
             const external = function () {};
 
             const actionHandler = actionHandlerImpl("actionId", external, handler);
-            expect(actionHandler.getType()).toEqual(ActionType.ACTION_HANDLER);
+            expect(actionHandler.getType()).toEqual(ActionType.ACTION);
 
             const action = actionHandler.withReducer(function (state) {
                 return state;
@@ -145,12 +145,12 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.ActionImpl", () => {
             const external = function () {};
 
             const actionExternal = actionExternalImpl("actionId", external);
-            expect(actionExternal.getType()).toBe(ActionType.ACTION_EXTERNAL);
+            expect(actionExternal.getType()).toBe(ActionType.ACTION);
 
             const actionHandler = actionExternal.withHandler(function* () {
                 return {};
             });
-            expect(actionHandler.getType()).toBe(ActionType.ACTION_HANDLER);
+            expect(actionHandler.getType()).toBe(ActionType.ACTION);
 
             const actionProvider = actionExternal.withReducer(function (state) {
                 return state;
@@ -165,15 +165,15 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.ActionImpl", () => {
     describe("ActionCreatorImpl", () => {
         it("actionCreatorImpl", () => {
             const actionCreator = actionCreatorImpl();
-            expect(actionCreator.getType()).toBe(ActionType.ACTION_CREATOR);
+            expect(actionCreator.getType()).toBe(ActionType.ACTION);
 
             const actionExternal = actionCreator.withExternal(function () {});
-            expect(actionExternal.getType()).toBe(ActionType.ACTION_EXTERNAL);
+            expect(actionExternal.getType()).toBe(ActionType.ACTION);
 
             const actionHandler = actionCreator.withHandler(function* () {
                 return {};
             });
-            expect(actionHandler.getType()).toBe(ActionType.ACTION_HANDLER);
+            expect(actionHandler.getType()).toBe(ActionType.ACTION);
 
             const actionProvider = actionCreator.withReducer(function (state) {
                 return state;

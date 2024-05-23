@@ -11,7 +11,7 @@ import { AnyStoreHandle } from "beta/types/StoreHandler";
 
 export function virtualActionImpl<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined | void,
     RETURN_TYPE extends ReturnableType,
 >(): IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     const handler = function* (
@@ -26,13 +26,7 @@ export function virtualActionImpl<
         throw new Error(MessageBundle.getText("ACTION_VIRTUAL_NO_EXTERNAL_OPERATOR"));
     };
     const actionInstanceCaller = <IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
-        actionBaseImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(
-            guid(),
-            handler,
-            reducer,
-            external,
-            ActionType.ACTION_CREATOR,
-        )
+        actionBaseImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(guid(), handler, reducer, external, ActionType.ACTION)
     );
 
     return actionInstanceCaller;

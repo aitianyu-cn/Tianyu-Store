@@ -7,6 +7,8 @@ import {
     CreateStoreActionCreator,
     DestroyStoreActionCreator,
     IInstanceViewAction,
+    StoreRedoActionCreator,
+    StoreUndoActionCreator,
     ViewActionProvider,
 } from "beta/types/Action";
 import { ActionHandlerFunction } from "beta/types/ActionHandler";
@@ -16,16 +18,19 @@ import { ReducerFunction } from "beta/types/Reducer";
 import { actionBaseImpl } from "./ActionBaseImpl";
 import {
     createDefaultExternalOperator,
+    createDefaultRedoReducer,
     createDefaultReducer,
+    createDefaultUndoReducer,
     createNonHandler,
     createUndefinedHandler,
 } from "beta/common/ActionHelper";
 import { ExternalOperatorFunction } from "beta/types/ExternalObject";
 import { defaultInfoGenerator } from "beta/common/OperatorHelper";
+import { IInstanceState } from "beta/types/Internal";
 
 export function actionImpl<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void,
     RETURN_TYPE extends ReturnableType,
 >(
     id: string,
@@ -59,7 +64,7 @@ export function actionImpl<
 
 export function viewActionImpl<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void,
     RETURN_TYPE extends ReturnableType,
 >(
     id: string,
@@ -97,7 +102,7 @@ export function viewActionImpl<
 
 export function createStoreActionCreatorImpl<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined,
+    PARAMETER_TYPE extends IterableType | undefined | void,
 >(): CreateStoreActionCreator<STATE, PARAMETER_TYPE> {
     const actionInstanceCaller = <CreateStoreActionCreator<STATE, PARAMETER_TYPE>>(
         actionBaseImpl<STATE, PARAMETER_TYPE, PARAMETER_TYPE>(
@@ -142,6 +147,62 @@ export function destroyStoreActionCreatorImpl(): DestroyStoreActionCreator {
             reducer,
             actionInstanceCaller.external,
             ActionType.DESTROY,
+        );
+    };
+
+    return actionInstanceCaller;
+}
+
+export function storeUndoActionCreatorImpl<
+    STATE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined | void = void,
+>(): StoreUndoActionCreator<STATE, PARAMETER_TYPE> {
+    const actionInstanceCaller = <StoreUndoActionCreator<STATE, PARAMETER_TYPE>>(
+        actionBaseImpl<any, any, undefined>(
+            guid(),
+            createUndefinedHandler<STATE>(),
+            createDefaultUndoReducer<IInstanceState<STATE>>(),
+            createDefaultExternalOperator(),
+            ActionType.UNDO,
+        )
+    );
+    actionInstanceCaller.withHandler = function (
+        handler: ActionHandlerFunction<PARAMETER_TYPE, void>,
+    ): ActionProvider<IInstanceState<STATE>, PARAMETER_TYPE, void> {
+        return actionImpl<IInstanceState<STATE>, PARAMETER_TYPE, void>(
+            actionInstanceCaller.id,
+            handler,
+            actionInstanceCaller.reducer,
+            actionInstanceCaller.external,
+            ActionType.UNDO,
+        );
+    };
+
+    return actionInstanceCaller;
+}
+
+export function storeRedoActionCreatorImpl<
+    STATE extends IterableType,
+    PARAMETER_TYPE extends IterableType | undefined | void = void,
+>(): StoreRedoActionCreator<STATE, PARAMETER_TYPE> {
+    const actionInstanceCaller = <StoreRedoActionCreator<STATE, PARAMETER_TYPE>>(
+        actionBaseImpl<any, any, undefined>(
+            guid(),
+            createUndefinedHandler<STATE>(),
+            createDefaultRedoReducer<IInstanceState<STATE>>(),
+            createDefaultExternalOperator(),
+            ActionType.REDO,
+        )
+    );
+    actionInstanceCaller.withHandler = function (
+        handler: ActionHandlerFunction<PARAMETER_TYPE, void>,
+    ): ActionProvider<IInstanceState<STATE>, PARAMETER_TYPE, void> {
+        return actionImpl<IInstanceState<STATE>, PARAMETER_TYPE, void>(
+            actionInstanceCaller.id,
+            handler,
+            actionInstanceCaller.reducer,
+            actionInstanceCaller.external,
+            ActionType.REDO,
         );
     };
 

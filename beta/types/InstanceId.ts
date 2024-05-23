@@ -1,5 +1,7 @@
 /**@format */
 
+import { IComparable } from "@aitianyu.cn/types";
+
 /**
  * Tianyu Store Instance Id
  * A base type for all instance id
@@ -34,6 +36,20 @@ export interface InstanceId {
      * @returns return the hierarchy as an array
      */
     structure(): IInstancePair[];
+    /**
+     * Compare an instance id does equal to current instance id
+     *
+     * @param other another instance id
+     * @returns return true if the another instance id and current instance id indicate same instance, otherwise false
+     */
+    equals(other: InstanceId): boolean;
+    /**
+     * Compare the size of a given instance id and current instance id
+     *
+     * @param other the given instance id
+     * @returns return 0 is the given instance id is samed as current, return -1 is the given is bigger than current, return 1 is the given is less than current
+     */
+    compareTo(other: InstanceId): number;
 }
 
 /** Instance Id hierarchy item */
