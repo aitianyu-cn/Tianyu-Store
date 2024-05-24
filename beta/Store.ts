@@ -5,6 +5,11 @@ import { generateInstanceId } from "./InstanceId";
 import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "./types/Defs";
 import { InstanceId } from "./types/InstanceId";
 import { IStore, StoreConfiguration } from "./types/Store";
+import { StoreImpl } from "./store/impl/StoreImpl";
+
+const DefaultConfig: StoreConfiguration = {
+    waitForAll: true,
+};
 
 /**
  * Create a new Tianyu Store
@@ -12,7 +17,7 @@ import { IStore, StoreConfiguration } from "./types/Store";
  * @returns return a tianyu store instance
  */
 export function createStore(config?: StoreConfiguration): IStore {
-    throw new Error();
+    return new StoreImpl(config || DefaultConfig);
 }
 
 export function generateNewStoreInstance(): InstanceId {

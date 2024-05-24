@@ -12,7 +12,7 @@ import {
     SelectorType,
 } from "beta/types/Selector";
 import { defaultInfoGenerator } from "./OperatorHelper";
-import { ExternalObjectHandleFunction, ExternalOperatorFunction } from "beta/types/ExternalObject";
+import { ExternalObjectHandleFunction } from "beta/types/ExternalObject";
 import { createDefaultExternalOperator } from "./ActionHelper";
 
 function fillSelectorInstanceCaller<

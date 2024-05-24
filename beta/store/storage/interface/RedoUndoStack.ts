@@ -17,16 +17,31 @@ export interface IDifferencesInfo extends IterableType {
     added?: true;
 }
 
+export enum DifferenceChangeType {
+    Change,
+    Create,
+    Delete,
+}
+
 export interface IDifferences extends IterableType {
-    [path: string]: IDifferencesInfo;
+    [storeType: string]: {
+        [instanceId: string]: {
+            old: any;
+            new: any;
+            type: DifferenceChangeType;
+        };
+    };
 }
 
 export interface IRedoUndoStack {
     canRedo: boolean;
     canUndo: boolean;
 
-    doRedo(): IDifferences;
-    doUndo(): IDifferences;
+    record(diff: IDifferences): void;
+
+    doRedo(): IDifferences | undefined;
+    doUndo(): IDifferences | undefined;
 
     cleanHistory(): void;
+    getCurrent(): IDifferences | undefined;
 }

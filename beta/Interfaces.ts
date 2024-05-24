@@ -7,14 +7,16 @@ import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "./types/Defs";
 import { storeRedoActionCreatorImpl, storeUndoActionCreatorImpl } from "./store/storage/RedoUndoActionImpl";
 import { IStoreState } from "./store/storage/interface/StoreState";
 import { SelectorFactor } from "./store/SelectorFactor";
+import { IStoreInstanceCreateConfig } from "./types/Store";
 
-const CreateAction = ActionFactor.makeCreateStoreAction<IStoreState, IStoreState | undefined>();
+const CreateAction = ActionFactor.makeCreateStoreAction<IStoreState, IStoreInstanceCreateConfig | undefined>();
 const DestroyAction = ActionFactor.makeDestroyStoreAction();
 
 const CleanStackAction = ActionFactor.makeVirtualAction();
 
 const GetRedoAvailable = SelectorFactor.makeVirtualSelector<IStoreState, boolean>();
 const GetUndoAvailable = SelectorFactor.makeVirtualSelector<IStoreState, boolean>();
+const GetRedoUndoEnabledSelector = SelectorFactor.makeVirtualSelector<IStoreState, boolean>();
 
 /**
  * Tianyu Store default operator
@@ -33,6 +35,7 @@ export const TianyuStoreRedoUndoExpose = {
 
         getRedoAvailable: GetRedoAvailable,
         getUndoAvailable: GetUndoAvailable,
+        getRedoUndoEnabled: GetRedoUndoEnabledSelector,
 
         cleanStackAction: CleanStackAction,
     },

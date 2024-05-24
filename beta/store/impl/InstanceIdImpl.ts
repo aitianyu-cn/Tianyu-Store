@@ -83,4 +83,8 @@ export class InstanceIdImpl implements InstanceId {
         const otherStr = other.id;
         return otherStr < this.id ? 1 : otherStr > this.id ? -1 : 0;
     }
+
+    public static isAncestor(instanceId: InstanceId): boolean {
+        return instanceId.id === instanceId.ancestor.id;
+    }
 }

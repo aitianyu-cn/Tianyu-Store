@@ -1,5 +1,6 @@
 /**@format */
 
+import { IDifferences } from "beta/store/storage/interface/RedoUndoStack";
 import { IActionProvider, IBatchAction, IInstanceAction, IInstanceViewAction } from "./Action";
 import { IExternalObjectRegister } from "./ExternalObject";
 import { IStoreHierarchyChecklist } from "./Hierarchy";
@@ -9,17 +10,30 @@ import { IInstanceListener, StoreEventTriggerCallback } from "./Listener";
 import { IterableType } from "./Model";
 import { IInstanceSelector, ISelectorProviderBase, SelectorProvider, SelectorResult } from "./Selector";
 import { Unsubscribe } from "./Subscribe";
+import { IStoreState } from "beta/store/storage/interface/StoreState";
 
 /** this is for internal using */
 export interface IStoreExecution {
-    getAction(id: string): IActionProvider<any, any, any>;
     getExternalRegister(instanceId: InstanceId): IExternalObjectRegister;
     getState(instanceId: InstanceId): any;
-    getSelector(id: string): ISelectorProviderBase<any>;
+    getOriginState(instanceId: InstanceId): any;
+    getRecentChanges(): IDifferences;
 
-    pushStateChange(action: IInstanceAction, newState: any): void;
+    applyChanges(): void;
+    discardChanges(): void;
+    pushStateChange(action: IInstanceAction, newState: any, notRedoUndo: boolean): void;
 
     validateActionInstance(action: IInstanceAction): void;
+}
+
+export interface IStoreManager {
+    getAction(id: string): IActionProvider<any, any, any>;
+    getSelector(id: string): ISelectorProviderBase<any>;
+
+    createEntity(instanceId: InstanceId, state: IStoreState): void;
+    destroyEntity(instanceId: InstanceId): void;
+
+    getEntity(entity: string): IStoreExecution;
 }
 
 /**
@@ -37,6 +51,10 @@ export type StoreConfiguration = {
      */
     waitForAll?: boolean;
 };
+
+export interface IStoreInstanceCreateConfig extends IterableType {
+    redoUndo?: boolean;
+}
 
 /**
  * Tianyu Store Interface
@@ -128,9 +146,4 @@ export interface IStore {
      * @returns return a promise to wait actions done
      */
     dispatchForView(action: IInstanceViewAction | IBatchAction): void;
-
-    /** To revert the last change and set all the states into previous state */
-    undo(): void;
-    /** To set the store state into next state which is before undo*/
-    redo(): void;
 }

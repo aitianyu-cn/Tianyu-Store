@@ -2,7 +2,7 @@
 
 import { ITianyuStoreInterfaceImplementation } from "beta/types/Interface";
 import { storeRedoActionCreatorImpl, storeUndoActionCreatorImpl } from "./storage/RedoUndoActionImpl";
-import { IStoreState, STORE_STATE_EXTERNAL_STOREAGE } from "./storage/interface/StoreState";
+import { IStoreState, STORE_STATE_SYSTEM } from "./storage/interface/StoreState";
 import { IExternalObjectRegister } from "beta/types/ExternalObject";
 import { SelectorFactor } from "./SelectorFactor";
 import { IRedoUndoStack, STORE_STATE_EXTERNAL_REDOUNDO_STACK } from "./storage/interface/RedoUndoStack";
@@ -20,33 +20,38 @@ const CleanRedoUndoStackAction = ActionFactor.makeActionCreator().withHandler(fu
     redoUndoStack?.cleanHistory();
 });
 
-const GetRedoAvailable = SelectorFactor.makeSelector<IStoreState, boolean, boolean>(
+const GetRedoAvailableSelector = SelectorFactor.makeSelector<IStoreState, boolean, boolean>(
     function (_state: IStoreState, externalResult?: boolean | void): boolean {
         return typeof externalResult === "boolean" ? externalResult : false;
     },
     function (register: IExternalObjectRegister): boolean {
-        const storage = register.get<IRedoUndoStack>(STORE_STATE_EXTERNAL_STOREAGE);
-        return Boolean(storage?.canRedo);
+        const redoUndoStack = register.get<IRedoUndoStack>(STORE_STATE_EXTERNAL_REDOUNDO_STACK);
+        return Boolean(redoUndoStack?.canRedo);
     },
 );
 
-const GetUndoAvailable = SelectorFactor.makeSelector(
+const GetUndoAvailableSelector = SelectorFactor.makeSelector(
     function (_state: IStoreState, externalResult?: boolean | void): boolean {
         return typeof externalResult === "boolean" ? externalResult : false;
     },
     function (register: IExternalObjectRegister): boolean {
-        const storage = register.get<IRedoUndoStack>(STORE_STATE_EXTERNAL_STOREAGE);
-        return Boolean(storage?.canUndo);
+        const redoUndoStack = register.get<IRedoUndoStack>(STORE_STATE_EXTERNAL_REDOUNDO_STACK);
+        return Boolean(redoUndoStack?.canUndo);
     },
 );
+
+const GetRedoUndoEnabledSelector = SelectorFactor.makeSelector(function (state: IStoreState): boolean {
+    return Boolean(state[STORE_STATE_SYSTEM].redoUndo);
+});
 
 export const TianyuStoreRedoUndoInterface = {
     stack: {
         redoAction: RedoActionCreator,
         undoAction: UndoActionCreator,
 
-        getRedoAvailable: GetRedoAvailable,
-        getUndoAvailable: GetUndoAvailable,
+        getRedoAvailable: GetRedoAvailableSelector,
+        getUndoAvailable: GetUndoAvailableSelector,
+        getRedoUndoEnabled: GetRedoUndoEnabledSelector,
 
         cleanStackAction: CleanRedoUndoStackAction,
     },

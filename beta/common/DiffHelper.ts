@@ -1,43 +1,111 @@
 /** @format */
 
-import { ObjectCalculater } from "@aitianyu.cn/types";
-import { IDifferences } from "beta/store/storage/interface/RedoUndoStack";
-import { IStoreState } from "beta/store/storage/interface/StoreState";
-import { StateChangePair } from "beta/types/Utils";
+import { ObjectHelper } from "@aitianyu.cn/types";
+import { DifferenceChangeType, IDifferences } from "beta/store/storage/interface/RedoUndoStack";
+import { IStoreState, STORE_STATE_INSTANCE } from "beta/store/storage/interface/StoreState";
 
 export function getDifference(pre: IStoreState, next: IStoreState): IDifferences {
     const diffs: IDifferences = {};
 
-    const diffMap = ObjectCalculater.calculateDiff(pre, next);
-    for (const item of diffMap) {
-        const path = item[0];
-        const diff = item[1];
-        if (!path || !diff) {
-            continue;
+    const preStores = pre[STORE_STATE_INSTANCE];
+    const nextStores = next[STORE_STATE_INSTANCE];
+
+    for (const storeType of Object.keys(preStores)) {
+        // for store state, when the store register a new store type
+        // the store type will be updated to ensure contain all store type
+        // so the store type that is same between pre and next.
+        // and for the difference calc, only save the changes when the instance changed.
+
+        const preStoreInstances = preStores[storeType];
+        const nextStoreInstances = nextStores[storeType];
+
+        const preStoreInstanceIds = Object.keys(preStoreInstances);
+        const nextStoreInstanceIds = Object.keys(nextStoreInstances);
+
+        // for this loop, to find changed and deleted
+        for (const instance of preStoreInstanceIds) {
+            // get new state from next state
+            const nextState = nextStoreInstances[instance];
+
+            // if next state does not exist, the state is deleted
+            const isDeleted = !nextState;
+            // if next state is deleted or has value changed, the changed state is true
+            const hasChanged =
+                isDeleted || ObjectHelper.compareObjects(preStoreInstances[instance], nextState) === "different";
+
+            if (isDeleted || hasChanged) {
+                diffs[storeType] = {
+                    ...(diffs[storeType] || {}),
+                    [instance]: {
+                        old: preStoreInstances[instance],
+                        new: isDeleted ? undefined : nextState,
+                        type: isDeleted ? DifferenceChangeType.Delete : DifferenceChangeType.Change,
+                    },
+                };
+            }
         }
 
-        diffs[diff.path] = { ...diff };
-    }
-    return {};
-}
+        // for this loop, to find added
+        for (const instance of nextStoreInstanceIds) {
+            // get new state which are not in old
+            if (!preStoreInstances[instance]) {
+                // this is pre instance does not exist
 
-function reverseDiff(diff: IDifferences): IDifferences {
-    const newDiff: IDifferences = {};
-    for (const path of Object.keys(diff)) {
-        const diffItem = diff[path];
-        newDiff[path] = {
-            new: diffItem.old,
-            old: diffItem.new,
-            path: diffItem.path,
-            added: diffItem.deleted,
-            deleted: diffItem.added,
-        };
+                diffs[storeType] = {
+                    ...(diffs[storeType] || {}),
+                    [instance]: {
+                        old: undefined,
+                        new: nextStoreInstances[instance],
+                        type: DifferenceChangeType.Create,
+                    },
+                };
+            }
+        }
     }
-
-    return newDiff;
+    return diffs;
 }
 
 export function mergeDiff(state: IStoreState, diff: IDifferences, reverse?: boolean): IStoreState {
-    const stateChanges: StateChangePair<any>[] = [];
-    const;
+    const newState = ObjectHelper.clone(state) as IStoreState;
+
+    for (const storeType of Object.keys(diff)) {
+        const storeInstances = diff[storeType];
+
+        for (const instanceId of Object.keys(storeInstances)) {
+            const diffItem = storeInstances[instanceId];
+            if (
+                (!reverse && diffItem.type === DifferenceChangeType.Create) ||
+                (reverse && diffItem.type === DifferenceChangeType.Delete)
+            ) {
+                // in normal mode and the change type is create
+                // in reverse mode and the change type is delete
+                // to do the create
+
+                // if normal create, set the new state as state
+                // if delete, set the old state as state
+                newState[STORE_STATE_INSTANCE][storeType] = {
+                    ...(newState[STORE_STATE_INSTANCE][storeType] || {}),
+                    [instanceId]: diffItem.type === DifferenceChangeType.Create ? diffItem.new : diffItem.old,
+                };
+            } else if (
+                (!reverse && diffItem.type === DifferenceChangeType.Delete) ||
+                (reverse && diffItem.type === DifferenceChangeType.Create)
+            ) {
+                // in normal mode and the change type is delete
+                // in reverse mode and the change type is create
+                // to do the delete
+
+                if (newState[STORE_STATE_INSTANCE][storeType][instanceId]) {
+                    delete newState[STORE_STATE_INSTANCE][storeType][instanceId];
+                }
+            } else {
+                newState[STORE_STATE_INSTANCE][storeType] = {
+                    ...(newState[STORE_STATE_INSTANCE][storeType] || {}),
+                    [instanceId]: reverse ? diffItem.old : diffItem.new,
+                };
+            }
+        }
+    }
+
+    return newState;
 }
