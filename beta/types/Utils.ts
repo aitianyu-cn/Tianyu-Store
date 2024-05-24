@@ -2,6 +2,12 @@
 
 import { IterableType } from "./Model";
 
+export enum ChangedType {
+    CHANGE,
+    CREATE,
+    DELETE,
+}
+
 /**
  * Store State change item
  *
@@ -12,6 +18,7 @@ export interface StateChangePair<T extends IterableType> {
     path: string[];
     /** new change value */
     value: T;
+    type: ChangedType;
 }
 
 /** State Changed Map */

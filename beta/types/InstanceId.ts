@@ -19,6 +19,13 @@ export interface InstanceId {
      */
     parent: InstanceId;
     /**
+     * Get an ancestor intance id from current instance id
+     * The ancestor instance is that the entity inditaces
+     */
+    ancestor: InstanceId;
+    /** Get current store entity basic id */
+    entity: string;
+    /**
      * Get current store instance id is valid or not
      *
      * @returns return true if current instance id is valid, otherwise false

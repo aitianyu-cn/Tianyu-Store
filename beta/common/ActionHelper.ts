@@ -1,12 +1,14 @@
 /**@format */
 
-import { ExternalOperatorFunction, IExternalObjectRegister } from "beta/types/ExternalObject";
+import {
+    ExternalObjectHandleFunction,
+    ExternalOperatorFunction,
+    IExternalObjectRegister,
+} from "beta/types/ExternalObject";
 import { ActionHandlerFunction, IActionHandlerParameter } from "beta/types/ActionHandler";
 import { IterableType, ReturnableType } from "beta/types/Model";
 import { ReducerFunction } from "beta/types/Reducer";
 import { AnyStoreHandle } from "beta/types/StoreHandler";
-import { IInstanceState } from "beta/types/Internal";
-import { ObjectHelper } from "@aitianyu.cn/types";
 
 export function createDefaultReducer<
     STATE extends IterableType,
@@ -41,26 +43,4 @@ export function createNonHandler<PARAMETER_TYPE extends IterableType | undefined
 
 export function createDefaultExternalOperator(): ExternalOperatorFunction {
     return function (_register: IExternalObjectRegister) {};
-}
-
-export function createDefaultUndoReducer<STATE extends IInstanceState<any>>(): ReducerFunction<STATE, void> {
-    return function (state: STATE) {
-        const newState = ObjectHelper.clone(state) as STATE;
-        if (newState.previous.length > 0) {
-            newState.future.push(newState.current);
-            newState.current = newState.previous.pop();
-        }
-        return newState;
-    };
-}
-
-export function createDefaultRedoReducer<STATE extends IInstanceState<any>>(): ReducerFunction<STATE, void> {
-    return function (state: STATE) {
-        const newState = ObjectHelper.clone(state) as STATE;
-        if (newState.future.length > 0) {
-            newState.previous.push(newState.current);
-            newState.current = newState.future.pop();
-        }
-        return newState;
-    };
 }

@@ -5,7 +5,6 @@ import { ActionHandlerFunction } from "./ActionHandler";
 import { InstanceId } from "./InstanceId";
 import { IOperator, IterableType, ReturnableType } from "./Model";
 import { ReducerFunction } from "./Reducer";
-import { IInstanceState } from "./Internal";
 
 // ================================================================================
 // executable action is created from an ActionCreator
@@ -144,50 +143,6 @@ export interface DestroyStoreActionCreator extends IActionProvider<any, undefine
      * @returns return a new destroy store action provider
      */
     withReducer(reducer: ReducerFunction<any, undefined>): ActionProvider<any, undefined, undefined>;
-}
-
-/**
- * Tianyu Store Undo Action Provider Interface
- *
- * This is an undo action provider
- *
- * @template STATE the type of store state
- */
-export interface StoreUndoActionCreator<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void = void,
-> extends IActionProvider<IInstanceState<STATE>, PARAMETER_TYPE, void> {
-    /**
-     * Function to add a custom action handler and get a new action provider
-     *
-     * @param handler provided handler function
-     * @returns return a new action provider
-     */
-    withHandler(
-        handler: ActionHandlerFunction<PARAMETER_TYPE, void>,
-    ): ActionProvider<IInstanceState<STATE>, PARAMETER_TYPE, void>;
-}
-
-/**
- * Tianyu Store redo Action Provider Interface
- *
- * This is a redo action provider
- *
- * @template STATE the type of store state
- */
-export interface StoreRedoActionCreator<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void = void,
-> extends IActionProvider<IInstanceState<STATE>, PARAMETER_TYPE, void> {
-    /**
-     * Function to add a custom action handler and get a new action provider
-     *
-     * @param handler provided handler function
-     * @returns return a new action provider
-     */
-    withHandler(
-        handler: ActionHandlerFunction<PARAMETER_TYPE, void>,
-    ): ActionProvider<IInstanceState<STATE>, PARAMETER_TYPE, void>;
 }
 
 /**

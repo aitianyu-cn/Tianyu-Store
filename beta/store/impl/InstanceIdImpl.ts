@@ -1,5 +1,6 @@
 /**@format */
 
+import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "beta/types/Defs";
 import { IInstancePair, InstanceId } from "beta/types/InstanceId";
 import { parseJsonString } from "beta/utils/ObjectUtils";
 
@@ -47,8 +48,23 @@ export class InstanceIdImpl implements InstanceId {
         return new InstanceIdImpl(parentPair);
     }
 
+    public get ancestor(): InstanceId {
+        const pair = this.structure();
+        return pair.length > 0 && pair[0].storeType === TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE
+            ? new InstanceIdImpl([pair[0]])
+            : new InstanceIdImpl([]);
+    }
+
+    public get entity(): string {
+        const pair = this.structure();
+        return pair.length > 0 && pair[0].storeType === TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE
+            ? pair[0].entityId
+            : "";
+    }
+
     public isValid(): boolean {
-        return this.structure().length > 0;
+        const pair = this.structure();
+        return pair.length > 0 && pair[0].storeType === TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE;
     }
 
     public toString(): string {

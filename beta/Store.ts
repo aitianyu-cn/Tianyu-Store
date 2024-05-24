@@ -1,6 +1,9 @@
 /** @format */
 
-import { StoreImpl } from "./store/impl/StoreImpl.old";
+import { guid } from "@aitianyu.cn/types";
+import { generateInstanceId } from "./InstanceId";
+import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "./types/Defs";
+import { InstanceId } from "./types/InstanceId";
 import { IStore, StoreConfiguration } from "./types/Store";
 
 /**
@@ -9,5 +12,9 @@ import { IStore, StoreConfiguration } from "./types/Store";
  * @returns return a tianyu store instance
  */
 export function createStore(config?: StoreConfiguration): IStore {
-    return new StoreImpl(config);
+    throw new Error();
+}
+
+export function generateNewStoreInstance(): InstanceId {
+    return generateInstanceId(TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, guid());
 }

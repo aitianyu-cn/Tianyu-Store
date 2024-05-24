@@ -1,5 +1,6 @@
 /**@format */
 
+import { ExternalObjectHandleFunction, ExternalOperatorFunction } from "./ExternalObject";
 import { InstanceId } from "./InstanceId";
 import { IOperator, IterableType, Missing } from "./Model";
 
@@ -21,6 +22,11 @@ export interface IInstanceSelector<RESULT> {
     params: any;
 }
 
+export enum SelectorType {
+    NORMAL,
+    PARAMETER,
+}
+
 /**
  * Type of Tianyu Store Selector Returned result.
  * Combine Missing type and specified type together.
@@ -34,12 +40,12 @@ export type SelectorResult<RETURN_TYPE> = Missing | RETURN_TYPE;
  * @template STATE the type of store state
  * @template RETURN_TYPE the type of selector returns
  */
-export interface RawSelector<STATE extends IterableType, RETURN_TYPE> {
+export interface RawSelector<STATE extends IterableType, RETURN_TYPE, EXTERNAL_RESULT = any> {
     /**
      * @param state the input state of store
      * @returns return values
      */
-    (state: STATE): RETURN_TYPE;
+    (state: STATE, externalReaderResult?: EXTERNAL_RESULT | void): RETURN_TYPE;
 }
 
 /**
@@ -49,13 +55,13 @@ export interface RawSelector<STATE extends IterableType, RETURN_TYPE> {
  * @template PARAMETER_TYPE the type of selector parameter
  * @template RETURN_TYPE the type of selector returns
  */
-export interface RawParameterSelector<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE> {
+export interface RawParameterSelector<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE, EXTERNAL_RESULT = any> {
     /**
      * @param state the input state of store
      * @param params the parameter of selector
      * @returns return values
      */
-    (state: STATE, params: PARAMETER_TYPE): RETURN_TYPE;
+    (state: STATE, params: PARAMETER_TYPE, externalReaderResult?: EXTERNAL_RESULT | void): RETURN_TYPE;
 }
 
 /**
@@ -68,6 +74,9 @@ export interface ISelectorProviderBase<_STATE extends IterableType> extends IOpe
     id: string;
     /** Store Selector Unified Name (Same as Id currently) */
     selector: string;
+    type: SelectorType;
+    /** Store Seletor External Object Operator */
+    external: ExternalObjectHandleFunction<any>;
 }
 
 /**

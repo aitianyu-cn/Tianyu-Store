@@ -15,7 +15,7 @@ export interface ITianyuStoreInterface<STATE extends IterableType> extends ITian
     /** Core part of Store Interface which is necessary for each interface implementation */
     core: {
         /** Store create action */
-        creator: IActionProvider<STATE, any, undefined> | CreateStoreActionCreator<STATE>;
+        creator: IActionProvider<STATE, any, any> | CreateStoreActionCreator<STATE, any>;
         /** Store destroy action */
         destroy: IActionProvider<STATE, undefined, undefined> | DestroyStoreActionCreator;
     };
