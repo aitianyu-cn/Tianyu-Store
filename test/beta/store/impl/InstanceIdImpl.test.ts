@@ -1,14 +1,19 @@
 /** @format */
 
 import { InstanceIdImpl } from "beta/store/impl/InstanceIdImpl";
+import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "beta/types/Defs";
 import { IInstancePair } from "beta/types/InstanceId";
 
 describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.InstanceIdImpl", () => {
     describe("constructor", () => {
         it("constructor", () => {
-            const instancePairs: IInstancePair[] = [{ storeType: "story", entityId: "instance" }];
+            const instancePairs: IInstancePair[] = [
+                { storeType: TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, entityId: "instance" },
+            ];
             const instanceId = new InstanceIdImpl(instancePairs);
-            expect(instanceId.id).toEqual('[{"storeType":"story","entityId":"instance"}]');
+            expect(instanceId.id).toEqual(
+                `[{"storeType":"${TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE}","entityId":"instance"}]`,
+            );
 
             const instanceId2 = new InstanceIdImpl(instanceId);
             expect(instanceId2.id).toEqual(instanceId.id);
@@ -25,7 +30,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.InstanceIdImpl", 
 
     describe("methods", () => {
         const instancePairs: IInstancePair[] = [
-            { storeType: "story", entityId: "instance" },
+            { storeType: TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, entityId: "instance" },
             { storeType: "container", entityId: "instance2" },
         ];
         const constantInstanceId = new InstanceIdImpl(instancePairs);
@@ -33,7 +38,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.InstanceIdImpl", 
         it("id", () => {
             const id = constantInstanceId.id;
             expect(id).toEqual(
-                '[{"storeType":"story","entityId":"instance"},{"storeType":"container","entityId":"instance2"}]',
+                `[{"storeType":"${TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE}","entityId":"instance"},{"storeType":"container","entityId":"instance2"}]`,
             );
         });
 
@@ -50,7 +55,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.InstanceIdImpl", 
         it("parent", () => {
             const parent = constantInstanceId.parent;
             expect(parent.instanceId).toEqual("instance");
-            expect(parent.storeType).toEqual("story");
+            expect(parent.storeType).toEqual(TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE);
 
             const ancestor = parent.parent;
             expect(ancestor.id).toEqual(parent.id);
@@ -63,14 +68,14 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.InstanceIdImpl", 
         it("toString", () => {
             const value = constantInstanceId.toString();
             expect(value).toEqual(
-                '[{"storeType":"story","entityId":"instance"},{"storeType":"container","entityId":"instance2"}]',
+                `[{"storeType":"${TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE}","entityId":"instance"},{"storeType":"container","entityId":"instance2"}]`,
             );
         });
 
         it("structure", () => {
             const pairs = constantInstanceId.structure();
             expect(pairs.length).toBe(2);
-            expect(pairs[0].storeType).toBe("story");
+            expect(pairs[0].storeType).toBe(TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE);
             expect(pairs[0].entityId).toBe("instance");
             expect(pairs[1].storeType).toBe("container");
             expect(pairs[1].entityId).toBe("instance2");
@@ -89,13 +94,15 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.InstanceIdImpl", 
             });
 
             it("less", () => {
-                const pairs: IInstancePair[] = [{ storeType: "story", entityId: "instance" }];
+                const pairs: IInstancePair[] = [
+                    { storeType: TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, entityId: "instance" },
+                ];
                 expect(constantInstanceId.compareTo(new InstanceIdImpl(pairs))).toBe(-1);
             });
 
             it("greater", () => {
                 const pairs: IInstancePair[] = [
-                    { storeType: "story", entityId: "instance" },
+                    { storeType: TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, entityId: "instance" },
                     { storeType: "container", entityId: "instance2" },
                     { storeType: "container2", entityId: "instance3" },
                 ];

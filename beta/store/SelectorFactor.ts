@@ -1,6 +1,7 @@
 /**@format */
 
 import { selectorCreator, parameterSelectorCreator } from "beta/common/SelectorHelper";
+import { MessageBundle } from "beta/infra/Message";
 import { ExternalObjectHandleFunction } from "beta/types/ExternalObject";
 import { IterableType } from "beta/types/Model";
 import { ParameterSelectorProvider, RawParameterSelector, RawSelector, SelectorProvider } from "beta/types/Selector";
@@ -27,7 +28,7 @@ export class SelectorFactor {
 
     public static makeVirtualSelector<STATE extends IterableType, RETURN_TYPE>(): SelectorProvider<STATE, RETURN_TYPE> {
         return selectorCreator<STATE, RETURN_TYPE>(function (_state: STATE): RETURN_TYPE {
-            throw new Error();
+            throw new Error(MessageBundle.getText("SELECTOR_VIRTUAL_NO_RANNABLE"));
         });
     }
 
@@ -40,7 +41,7 @@ export class SelectorFactor {
             _state: STATE,
             _params: PARAMETER_TYPE,
         ): RETURN_TYPE {
-            throw new Error();
+            throw new Error(MessageBundle.getText("SELECTOR_VIRTUAL_NO_RANNABLE"));
         });
     }
 }

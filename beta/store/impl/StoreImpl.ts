@@ -14,7 +14,7 @@ import { IterableType, Missing } from "beta/types/Model";
 import { SelectorProvider, IInstanceSelector, SelectorResult, ISelectorProviderBase } from "beta/types/Selector";
 import { IStore, IStoreExecution, IStoreManager, StoreConfiguration } from "beta/types/Store";
 import { Unsubscribe } from "beta/types/Subscribe";
-import { StoreInstanceChecker } from "../modules/StoreInstanceChecker";
+// import { StoreInstanceChecker } from "../modules/StoreInstanceChecker";
 import { registerInterface } from "beta/utils/InterfaceUtils";
 import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "beta/types/Defs";
 import { TianyuStoreRedoUndoInterface } from "../RedoUndoFactor";
@@ -27,6 +27,8 @@ import { IStoreState, STORE_STATE_INSTANCE } from "../storage/interface/StoreSta
 import { IExternalObjectRegister } from "beta/types/ExternalObject";
 import { dispatching } from "../processing/Dispatching";
 import { IDifferences } from "../storage/interface/RedoUndoStack";
+import { formatTransactionType, TransactionManager } from "../modules/Transaction";
+import { TransactionType } from "beta/types/Transaction";
 
 interface IInstanceSubscribe {
     id: string;
@@ -49,7 +51,7 @@ function isChangesEmpty(changes: IDifferences): boolean {
 export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     private config: StoreConfiguration;
 
-    private hierarchyChecker: StoreInstanceChecker;
+    // private hierarchyChecker: StoreInstanceChecker;
     private operationList: ITianyuStoreInterfaceList;
     private storyTypes: string[];
 
@@ -62,7 +64,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     public constructor(config: StoreConfiguration) {
         this.config = config;
 
-        this.hierarchyChecker = new StoreInstanceChecker();
+        // this.hierarchyChecker = new StoreInstanceChecker();
         this.operationList = {};
         this.storyTypes = [];
         this.entityMap = new Map<string, StoreInstanceImpl>();
@@ -111,7 +113,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     }
     createEntity(instanceId: InstanceId, state: IStoreState): void {
         if (this.entityMap.has(instanceId.entity)) {
-            throw new Error();
+            throw new Error(MessageBundle.getText("STORE_CREATE_ENTITY_DUP", instanceId.entity, instanceId.id));
         }
 
         // before setting, to add all the story types
@@ -133,7 +135,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     }
 
     applyHierarchyChecklist(checklist?: IStoreHierarchyChecklist | undefined): void {
-        this.hierarchyChecker.apply(checklist || {});
+        // this.hierarchyChecker.apply(checklist || {});
     }
     registerInterface<STATE extends IterableType>(
         interfaceMapOrStoreType: string | ITianyuStoreInterfaceMap,
@@ -150,7 +152,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
             if (types === TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE) {
                 // the registered operations could not be in tianyu-store-entity
                 // due to this is the system using
-                throw new Error();
+                throw new Error(MessageBundle.getText("STORE_SHOULD_NOT_REGISTER_SYSTEM_ENTITY"));
             }
 
             const interfaceOfStore = interfaceMap[types];
@@ -173,7 +175,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
         const entityId = listener.selector.instanceId.entity;
         const entityListeners = this.instanceListener.get(entityId);
         if (!entityListeners) {
-            throw new Error();
+            throw new Error(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", entityId));
         }
 
         const instanceId = listener.selector.instanceId.toString();
@@ -213,7 +215,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
         const entityId = instanceId.entity;
         const entityListeners = this.instanceSubscribe.get(entityId);
         if (!entityListeners) {
-            throw new Error();
+            throw new Error(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", entityId));
         }
 
         const instanceId2String = instanceId.toString();
@@ -241,9 +243,10 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
         return unSub;
     }
     selecte<RESULT>(selector: IInstanceSelector<RESULT>): SelectorResult<RESULT> {
-        const entity = this.entityMap.get(selector.instanceId.entity);
+        const entityId = selector.instanceId.entity;
+        const entity = this.entityMap.get(entityId);
         if (!entity) {
-            throw new Error();
+            throw new Error(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", entityId));
         }
 
         return doSelecting<RESULT>(entity, this, selector);
@@ -272,7 +275,8 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                 const executor = this.getEntity(entity);
                 try {
                     const actions = await dispatching(executor, this, action, notRedoUndo);
-                    // todo: transaction
+                    // transaction
+                    TransactionManager.dispatched(actions);
 
                     if (!this.config.waitForAll) {
                         resolved = true;
@@ -294,7 +298,8 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                         resolve();
                     }
                 } catch (e) {
-                    // todo: console error
+                    // records error
+                    TransactionManager.error(e as any, TransactionType.Action);
 
                     // if action run failed, to discard all changes of current action batch
                     executor.discardChanges();
@@ -334,8 +339,23 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                             oldState instanceof Missing ? undefined : oldState,
                             newState instanceof Missing ? undefined : newState,
                         );
-                    } catch {
-                        // todo console error
+                    } catch (e) {
+                        TransactionManager.error(
+                            MessageBundle.getText(
+                                "STORE_EVENT_LISTENER_TRIGGER_FAILED",
+                                typeof e === "string"
+                                    ? e
+                                    : e instanceof Error
+                                    ? e.message
+                                    : MessageBundle.getText(
+                                          "TRANSACTION_ERROR_RECORDING_UNKNOWN_ERROR",
+                                          formatTransactionType(TransactionType.Listener),
+                                      ),
+                                listener.id,
+                                listener.selector.selector,
+                            ),
+                            TransactionType.Listener,
+                        );
                     }
                 });
             }
@@ -362,8 +382,23 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                             oldState instanceof Missing ? undefined : oldState,
                             newState instanceof Missing ? undefined : newState,
                         );
-                    } catch {
-                        // todo console error
+                    } catch (e) {
+                        TransactionManager.error(
+                            MessageBundle.getText(
+                                "STORE_EVENT_SUBSCRIBE_TRIGGER_FAILED",
+                                typeof e === "string"
+                                    ? e
+                                    : e instanceof Error
+                                    ? e.message
+                                    : MessageBundle.getText(
+                                          "TRANSACTION_ERROR_RECORDING_UNKNOWN_ERROR",
+                                          formatTransactionType(TransactionType.Subscribe),
+                                      ),
+                                listener.id,
+                                listener.selector.selector,
+                            ),
+                            TransactionType.Subscribe,
+                        );
                     }
                 });
             }

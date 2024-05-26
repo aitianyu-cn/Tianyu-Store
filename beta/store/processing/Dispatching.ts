@@ -65,12 +65,14 @@ function verifyInstanceSameAncestor(...s: InstanceId[]): string {
     }
 
     const first = s[0];
+    let other = s[0];
     const differentAncestor = s.some((value) => {
+        other = value;
         return first.entity !== value.entity;
     });
     if (differentAncestor) {
         // to throw error when the two instance belongs to different ancestor
-        throw new Error();
+        throw new Error(MessageBundle.getText("DISPATCHING_ACTIONS_DIFFERENT_ANCESTOR", first.entity, other.entity));
     }
 
     return first.entity;
@@ -81,7 +83,7 @@ function verifyActionInstances(s: IInstanceAction[]): string {
     const instanceIds = s.map((value) => {
         if (actionCount > 1 && value.actionType in [ActionType.REDO, ActionType.UNDO]) {
             // throw an error when redo undo operation is not atom
-            throw new Error();
+            throw new Error(MessageBundle.getText("DISPATCHING_REDO_UNDO_NOT_ATOM", value.action));
         }
         if (
             actionCount > 1 &&
@@ -89,11 +91,18 @@ function verifyActionInstances(s: IInstanceAction[]): string {
             value.actionType in [ActionType.CREATE, ActionType.DESTROY]
         ) {
             // throw an error when create or destroy an entity is not atom
-            throw new Error();
+            throw new Error(MessageBundle.getText("DISPATCHING_SYSTEM_LIFECYCLE_NOT_ATOM", value.action));
         }
         if (value.storeType !== value.instanceId.storeType) {
             // throw an error when try to use a different store type instance to run action
-            throw new Error();
+            throw new Error(
+                MessageBundle.getText(
+                    "DISPATCHING_ACTION_INSTANCE_NOT_MATCH",
+                    value.storeType,
+                    value.instanceId.storeType,
+                    value.action,
+                ),
+            );
         }
         return value.instanceId;
     });

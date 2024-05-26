@@ -1,7 +1,7 @@
 /**@format */
 
 /** Tianyu Store Default Type Name */
-export const TIANYU_STORE_TYPE_NAME = "tianyu-store";
+export const TIANYU_STORE_NAME = "tianyu-store";
 
 /**
  * Tianyu Store Instance Id basic name

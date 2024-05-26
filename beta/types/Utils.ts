@@ -18,7 +18,6 @@ export interface StateChangePair<T extends IterableType> {
     path: string[];
     /** new change value */
     value: T;
-    type: ChangedType;
 }
 
 /** State Changed Map */

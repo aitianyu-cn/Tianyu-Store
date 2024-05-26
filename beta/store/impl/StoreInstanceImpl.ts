@@ -16,6 +16,7 @@ import { mergeDiff } from "beta/common/DiffHelper";
 import { ExternalRegister } from "../modules/ExternalRegister";
 import { InstanceIdImpl } from "./InstanceIdImpl";
 import { RedoUndoStackImpl } from "../storage/RedoUndoStackImpl";
+import { MessageBundle } from "beta/infra/Message";
 
 interface IStoreChangeInstance {
     [storeType: string]: {
@@ -69,7 +70,7 @@ export class StoreInstanceImpl implements IStoreExecution {
     getExternalRegister(instanceId: InstanceId): IExternalObjectRegister {
         const externalObject = this.externalObjectMap.get(instanceId);
         if (!externalObject) {
-            throw new Error(/** todo: throw error */);
+            throw new Error(MessageBundle.getText("STORE_INSTANCE_EXTRERNAL_MANAGER_NOT_FOUND", instanceId.toString()));
         }
 
         return externalObject;
@@ -82,22 +83,22 @@ export class StoreInstanceImpl implements IStoreExecution {
             return this.storeState;
         }
 
+        const instanceId2String = instanceId.toString();
         const storeType = instanceId.storeType;
         if (!storeType) {
-            throw new Error(/** todo: throw error */);
+            throw new Error(MessageBundle.getText("INSTANCE_ID_NOT_VALID", instanceId2String));
         }
 
-        const instanceId2String = instanceId.toString();
         const cachedState = this.changeCache[storeType]?.[instanceId2String];
         if (cachedState?.type === DifferenceChangeType.Delete) {
             // instance is deleted and it does not be able to be used
-            throw new Error();
+            throw new Error(MessageBundle.getText("STORE_INSTANCE_USE_DELETED", storeType, instanceId2String));
         }
 
         const instances = this.storeState[STORE_STATE_INSTANCE][storeType];
         const ins = cachedState || instances[instanceId2String];
         if (!ins) {
-            throw new Error(/** todo: throw error */);
+            throw new Error(MessageBundle.getText("STORE_INSTANCE_NOT_EXIST", instanceId2String));
         }
 
         return ins;
@@ -111,15 +112,16 @@ export class StoreInstanceImpl implements IStoreExecution {
             return this.storeState;
         }
 
+        const instanceId2String = instanceId.toString();
         const storeType = instanceId.storeType;
         if (!storeType) {
-            throw new Error(/** todo: throw error */);
+            throw new Error(MessageBundle.getText("INSTANCE_ID_NOT_VALID", instanceId2String));
         }
 
         const instances = this.storeState[STORE_STATE_INSTANCE][storeType];
-        const ins = instances[instanceId.toString()];
+        const ins = instances[instanceId2String];
         if (!ins) {
-            throw new Error(/** todo: throw error */);
+            MessageBundle.getText("STORE_INSTANCE_NOT_EXIST", instanceId2String);
         }
 
         return ins;

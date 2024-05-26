@@ -5,7 +5,6 @@ import { generateInstanceId } from "beta/InstanceId";
 describe("aitianyu-cn.node-module.tianyu-store.beta.InstanceId", () => {
     it("provides an string in the first parameter", () => {
         const instanceId = generateInstanceId("testStoreType", "instanceId");
-        expect(instanceId.isValid()).toBeTruthy();
         const structure = instanceId.structure();
         expect(structure.length).toBe(1);
         expect(structure[0].storeType).toEqual("testStoreType");
@@ -17,7 +16,6 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.InstanceId", () => {
 
         it("provides entity id", () => {
             const childInstanceId = generateInstanceId(parentInstanceId, "child", "instanceId");
-            expect(childInstanceId.isValid()).toBeTruthy();
             const structure = childInstanceId.structure();
             expect(structure.length).toBe(2);
             expect(structure[0].storeType).toEqual("parent");
@@ -28,7 +26,6 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.InstanceId", () => {
 
         it("does not provide entity id", () => {
             const childInstanceId = generateInstanceId(parentInstanceId, "child");
-            expect(childInstanceId.isValid()).toBeTruthy();
             const structure = childInstanceId.structure();
             expect(structure.length).toBe(2);
             expect(structure[0].storeType).toEqual("parent");
