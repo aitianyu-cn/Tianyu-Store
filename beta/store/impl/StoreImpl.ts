@@ -78,23 +78,6 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
         this.registerInterfaceInternal(TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, TianyuStoreEntityInterface);
     }
 
-    getExternalRegister(instanceId: InstanceId): IExternalObjectRegister {
-        throw new Error("Method not implemented.");
-    }
-    getState(instanceId: InstanceId) {
-        return {};
-    }
-    getOriginState(instanceId: InstanceId) {
-        return {};
-    }
-    getRecentChanges(): IDifferences {
-        return {};
-    }
-    applyChanges(): void {}
-    discardChanges(): void {}
-    pushStateChange(action: IInstanceAction, newState: any, notRedoUndo: boolean): void {}
-    validateActionInstance(action: IInstanceAction): void {}
-
     getAction(id: string): IActionProvider<any, any, any> {
         const action = this.operationList[id] as IActionProvider<any, any, any>;
         if (!action?.actionId) {
@@ -127,7 +110,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     destroyEntity(instanceId: InstanceId): void {
         this.entityMap.delete(instanceId.entity);
         this.instanceListener.delete(instanceId.entity);
-        this.instanceListener.delete(instanceId.entity);
+        this.instanceSubscribe.delete(instanceId.entity);
     }
 
     getEntity(entity: string): IStoreExecution {
@@ -198,7 +181,8 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
             return value.id === listener.id;
         });
         if (-1 !== listenerIndex) {
-            entityListeners[instanceId] = listeners.splice(listenerIndex, 1);
+            listeners.splice(listenerIndex, 1);
+            entityListeners[instanceId] = listeners;
         }
     }
     subscribe<STATE extends IterableType, RESULT>(
@@ -206,17 +190,17 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
         selectorProvider: SelectorProvider<STATE, RESULT>,
         eventTrigger: StoreEventTriggerCallback<RESULT>,
     ): Unsubscribe {
-        const subscribeInstance: IInstanceSubscribe = {
-            id: guid(),
-            selector: selectorProvider(instanceId),
-            trigger: eventTrigger,
-        };
-
         const entityId = instanceId.entity;
         const entityListeners = this.instanceSubscribe.get(entityId);
         if (!entityListeners) {
             throw new Error(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", entityId));
         }
+
+        const subscribeInstance: IInstanceSubscribe = {
+            id: guid(),
+            selector: selectorProvider(instanceId),
+            trigger: eventTrigger,
+        };
 
         const instanceId2String = instanceId.toString();
         const subscribes = entityListeners[instanceId2String] || [];
@@ -227,6 +211,9 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
 
         const unSub = () => {
             const entityListeners = this.instanceSubscribe.get(entityId);
+
+            // this 'if' should not accessed
+            /* istanbul ignore if  */
             if (!entityListeners) {
                 return;
             }
@@ -236,7 +223,8 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                 return value.id === subscribeInstance.id;
             });
             if (-1 !== subscribeIndex) {
-                entityListeners[instanceId2String] = subscribes.splice(subscribeIndex, 1);
+                subscribes.splice(subscribeIndex, 1);
+                entityListeners[instanceId2String] = subscribes;
             }
         };
 
@@ -278,13 +266,13 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                     // transaction
                     TransactionManager.dispatched(actions);
 
+                    // apply changes
+                    executor.applyChanges();
+
                     if (!this.config.waitForAll) {
                         resolved = true;
                         resolve();
                     }
-
-                    // apply changes
-                    executor.applyChanges();
 
                     // fire events
                     const changes = executor.getRecentChanges();
@@ -304,8 +292,8 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                     // if action run failed, to discard all changes of current action batch
                     executor.discardChanges();
 
-                    resolved = true;
                     !resolved && resolve();
+                    resolved = true;
                 }
             });
         });
@@ -404,4 +392,25 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
             }
         }
     }
+
+    // ================================================================================================================
+    // unused methods
+    // ================================================================================================================
+
+    getExternalRegister(instanceId: InstanceId): IExternalObjectRegister {
+        throw new Error("Method not implemented.");
+    }
+    getState(instanceId: InstanceId) {
+        return {};
+    }
+    getOriginState(instanceId: InstanceId) {
+        return {};
+    }
+    getRecentChanges(): IDifferences {
+        return {};
+    }
+    applyChanges(): void {}
+    discardChanges(): void {}
+    pushStateChange(action: IInstanceAction, newState: any, notRedoUndo: boolean): void {}
+    validateActionInstance(action: IInstanceAction): void {}
 }
