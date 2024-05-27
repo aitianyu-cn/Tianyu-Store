@@ -4,7 +4,7 @@ import { guid } from "@aitianyu.cn/types";
 import { Log } from "beta/infra/Log";
 import { MessageBundle } from "beta/infra/Message";
 import { IInstanceAction } from "beta/types/Action";
-import { TIANYU_STORE_NAME } from "beta/types/Defs";
+import { STORE_TRANSACTION, TIANYU_STORE_NAME } from "beta/types/Defs";
 import { IInstanceSelector } from "beta/types/Selector";
 import {
     ITransaction,
@@ -94,7 +94,7 @@ const Transaction = new TransactionImpl();
 if (typeof global.window !== "undefined") {
     const window = global.window as any;
     window[TIANYU_STORE_NAME] = {
-        transaction: {
+        [STORE_TRANSACTION]: {
             getDispatched: function (): TransactionOperationRecord<IInstanceAction>[] {
                 return Transaction.getDispatched();
             },

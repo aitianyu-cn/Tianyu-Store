@@ -1,6 +1,6 @@
 /** @format */
 
-import { ObjectHelper } from "@aitianyu.cn/types";
+import { ArrayHelper, ObjectHelper } from "@aitianyu.cn/types";
 import { DifferenceChangeType, IDifferences } from "beta/store/storage/interface/RedoUndoStack";
 import { IStoreState, STORE_STATE_INSTANCE } from "beta/store/storage/interface/StoreState";
 
@@ -10,14 +10,15 @@ export function getDifference(pre: IStoreState, next: IStoreState): IDifferences
     const preStores = pre[STORE_STATE_INSTANCE];
     const nextStores = next[STORE_STATE_INSTANCE];
 
-    for (const storeType of Object.keys(preStores)) {
+    const storeTypes = ArrayHelper.merge(Object.keys(preStores), Object.keys(nextStores));
+    for (const storeType of storeTypes) {
         // for store state, when the store register a new store type
         // the store type will be updated to ensure contain all store type
         // so the store type that is same between pre and next.
         // and for the difference calc, only save the changes when the instance changed.
 
-        const preStoreInstances = preStores[storeType];
-        const nextStoreInstances = nextStores[storeType];
+        const preStoreInstances = preStores[storeType] || {};
+        const nextStoreInstances = nextStores[storeType] || {};
 
         const preStoreInstanceIds = Object.keys(preStoreInstances);
         const nextStoreInstanceIds = Object.keys(nextStoreInstances);
@@ -33,7 +34,7 @@ export function getDifference(pre: IStoreState, next: IStoreState): IDifferences
             const hasChanged =
                 isDeleted || ObjectHelper.compareObjects(preStoreInstances[instance], nextState) === "different";
 
-            if (isDeleted || hasChanged) {
+            if (hasChanged) {
                 diffs[storeType] = {
                     ...(diffs[storeType] || {}),
                     [instance]: {

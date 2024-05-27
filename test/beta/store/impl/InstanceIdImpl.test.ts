@@ -109,6 +109,32 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.InstanceIdImpl", 
                 expect(constantInstanceId.compareTo(new InstanceIdImpl(pairs))).toBe(1);
             });
         });
+
+        describe("ancestor", () => {
+            it("invalid instance", () => {
+                const instanceId = new InstanceIdImpl([{ storeType: "test", entityId: "test" }]);
+                const ancestor = instanceId.ancestor;
+                expect(ancestor.id).toEqual("[]");
+            });
+
+            it("valid instance", () => {
+                const ancestor = constantInstanceId.ancestor;
+                expect(ancestor.id).toEqual(
+                    `[{"storeType":"${TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE}","entityId":"instance"}]`,
+                );
+            });
+        });
+
+        describe("entity", () => {
+            it("invalid instance", () => {
+                const instanceId = new InstanceIdImpl([{ storeType: "test", entityId: "test" }]);
+                expect(instanceId.entity).toEqual("");
+            });
+
+            it("valid instance", () => {
+                expect(constantInstanceId.entity).toEqual("instance");
+            });
+        });
     });
 
     describe("invalid instance", () => {
@@ -119,6 +145,40 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.InstanceIdImpl", 
 
         it("storeType", () => {
             expect(instanceId.storeType).toEqual("");
+        });
+    });
+
+    describe("static methods", () => {
+        it("isAncestor", () => {
+            const instancePairs1: IInstancePair[] = [
+                { storeType: TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, entityId: "instance" },
+                { storeType: "container", entityId: "instance2" },
+            ];
+            const instanceId1 = new InstanceIdImpl(instancePairs1);
+
+            const instancePairs2: IInstancePair[] = [
+                { storeType: TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, entityId: "instance" },
+                { storeType: "container", entityId: "instance2" },
+                { storeType: "container2", entityId: "instance3" },
+            ];
+            const instanceId2 = new InstanceIdImpl(instancePairs2);
+
+            const instancePairs3: IInstancePair[] = [
+                { storeType: TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, entityId: "instance-1" },
+                { storeType: "container", entityId: "instance2" },
+                { storeType: "container2", entityId: "instance3" },
+            ];
+            const instanceId3 = new InstanceIdImpl(instancePairs3);
+
+            const instancePairsAncestor: IInstancePair[] = [
+                { storeType: TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, entityId: "instance" },
+            ];
+            const ancestor = new InstanceIdImpl(instancePairsAncestor);
+
+            expect(InstanceIdImpl.isAncestor(instanceId1)).toBeFalsy();
+            expect(InstanceIdImpl.isAncestor(instanceId2)).toBeFalsy();
+            expect(InstanceIdImpl.isAncestor(instanceId3)).toBeFalsy();
+            expect(InstanceIdImpl.isAncestor(ancestor)).toBeTruthy();
         });
     });
 });

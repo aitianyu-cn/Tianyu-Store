@@ -2,11 +2,13 @@
 
 import { generateInstanceId } from "beta/InstanceId";
 import { dispatching } from "beta/store/processing/Dispatching";
+import { IDifferences } from "beta/store/storage/interface/RedoUndoStack";
+import { IStoreState } from "beta/store/storage/interface/StoreState";
 import { IActionProvider, IInstanceAction } from "beta/types/Action";
 import { IExternalObjectRegister } from "beta/types/ExternalObject";
 import { InstanceId } from "beta/types/InstanceId";
 import { ISelectorProviderBase } from "beta/types/Selector";
-import { IStoreExecution } from "beta/types/Store";
+import { IStoreExecution, IStoreManager } from "beta/types/Store";
 import { createBatchAction } from "beta/utils/BatchActionUtils";
 import { registerInterface } from "beta/utils/InterfaceUtils";
 import { EXTERNAL_OBJ_NAME_STAMP, EXTERNAL_OBJ_NAME_TIMEER } from "test/beta/content/dispatching-test/Types";
@@ -41,9 +43,6 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.processing.Dispatching
     };
 
     const store: IStoreExecution = {
-        getAction: function (id: string): IActionProvider<any, any, any> {
-            return interfaceList[id] as IActionProvider<any, any, any>;
-        },
         getExternalRegister: function (instanceId: InstanceId): IExternalObjectRegister {
             return register;
         },
@@ -53,14 +52,41 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.processing.Dispatching
             }
             return instance.state;
         },
-        getSelector: function (id: string): ISelectorProviderBase<any> {
-            return interfaceList[id] as ISelectorProviderBase<any>;
+        getOriginState: function (instanceId: InstanceId) {
+            throw new Error("Function not implemented.");
         },
-        pushStateChange: function (action: IInstanceAction, newState: any): void {
-            instance.changeList.push({ action, newState });
+        getRecentChanges: function (): IDifferences {
+            throw new Error("Function not implemented.");
+        },
+        applyChanges: function (): void {
+            throw new Error("Function not implemented.");
+        },
+        discardChanges: function (): void {
+            throw new Error("Function not implemented.");
+        },
+        pushStateChange: function (action: IInstanceAction, newState: any, notRedoUndo: boolean): void {
+            throw new Error("Function not implemented.");
         },
         validateActionInstance: function (action: IInstanceAction): void {
-            //
+            throw new Error("Function not implemented.");
+        },
+    };
+
+    const storeManager: IStoreManager = {
+        getAction: function (id: string): IActionProvider<any, any, any> {
+            return interfaceList[id] as IActionProvider<any, any, any>;
+        },
+        getSelector: function (id: string): ISelectorProviderBase<any> {
+            throw new Error("Function not implemented.");
+        },
+        createEntity: function (instanceId: InstanceId, state: IStoreState): void {
+            throw new Error("Function not implemented.");
+        },
+        destroyEntity: function (instanceId: InstanceId): void {
+            throw new Error("Function not implemented.");
+        },
+        getEntity: function (entity: string): IStoreExecution {
+            throw new Error("Function not implemented.");
         },
     };
 
@@ -71,13 +97,10 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.processing.Dispatching
     });
 
     it("correct case", async () => {
-        const actions = await dispatching(
-            store,
-            createBatchAction([
-                TestInterface.core.creator(instanceId, undefined),
-                TestInterface.action.OperateStampAction(instanceId, undefined),
-            ]),
-        );
+        const actions = await dispatching(store, storeManager, [
+            TestInterface.core.creator(instanceId, undefined),
+            TestInterface.action.OperateStampAction(instanceId, undefined),
+        ]);
 
         expect(actions.length).toBe(3);
         expect(actions[0].action).toEqual("dispatching_test_content.core.creator");
@@ -94,7 +117,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.processing.Dispatching
 
     it("failed case", async () => {
         try {
-            await dispatching(store, TestInterface.action.ErrorIteratorAction(instanceId, undefined));
+            await dispatching(store, storeManager, [TestInterface.action.ErrorIteratorAction(instanceId, undefined)]);
             expect(true).toBeFalsy();
         } catch {
             expect(true).toBeTruthy();

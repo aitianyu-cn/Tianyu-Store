@@ -53,6 +53,8 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.common.ActionHelper", () => 
     });
 
     it("createDefaultExternalOperator", () => {
-        expect(createDefaultExternalOperator()).toBeDefined();
+        const fnExternalOperator = createDefaultExternalOperator();
+        expect(fnExternalOperator).toBeDefined();
+        fnExternalOperator({} as any);
     });
 });

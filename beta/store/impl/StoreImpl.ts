@@ -166,7 +166,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                 // if the interfaces are not added before,
                 this.storyTypes.push(types);
                 this.entityMap.forEach((value) => {
-                    value.addStoryType(types);
+                    value.addStoreType(types);
                 });
             }
         }

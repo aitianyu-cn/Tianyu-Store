@@ -61,7 +61,7 @@ export class StoreInstanceImpl implements IStoreExecution {
         return redoUndoStack?.getCurrent() || {};
     }
 
-    public addStoryType(storeType: string): void {
+    public addStoreType(storeType: string): void {
         if (!this.storeState[STORE_STATE_INSTANCE][storeType]) {
             this.storeState[STORE_STATE_INSTANCE][storeType] = {};
         }
@@ -96,7 +96,7 @@ export class StoreInstanceImpl implements IStoreExecution {
         }
 
         const instances = this.storeState[STORE_STATE_INSTANCE][storeType];
-        const ins = cachedState || instances[instanceId2String];
+        const ins = cachedState?.state || instances[instanceId2String];
         if (!ins) {
             throw new Error(MessageBundle.getText("STORE_INSTANCE_NOT_EXIST", instanceId2String));
         }
@@ -121,7 +121,7 @@ export class StoreInstanceImpl implements IStoreExecution {
         const instances = this.storeState[STORE_STATE_INSTANCE][storeType];
         const ins = instances[instanceId2String];
         if (!ins) {
-            MessageBundle.getText("STORE_INSTANCE_NOT_EXIST", instanceId2String);
+            throw new Error(MessageBundle.getText("STORE_INSTANCE_NOT_EXIST", instanceId2String));
         }
 
         return ins;
@@ -193,7 +193,7 @@ export class StoreInstanceImpl implements IStoreExecution {
                     ? DifferenceChangeType.Delete
                     : DifferenceChangeType.Change,
             redoUndo: !notRedoUndo && action.actionType !== ActionType.VIEW_ACTION,
-            record: !(action.actionType in [ActionType.REDO, ActionType.UNDO]),
+            record: action.actionType !== ActionType.REDO && action.actionType !== ActionType.UNDO,
         };
 
         if (action.actionType === ActionType.CREATE) {
