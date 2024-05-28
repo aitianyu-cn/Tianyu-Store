@@ -14,8 +14,8 @@ import { IStoreState } from "beta/store/storage/interface/StoreState";
 
 /** this is for internal using */
 export interface IStoreExecution {
-    getExternalRegister(instanceId: InstanceId): IExternalObjectRegister;
-    getState(instanceId: InstanceId): any;
+    getExternalRegister(instanceId: InstanceId, creating?: boolean): IExternalObjectRegister;
+    getState(instanceId: InstanceId, creating?: boolean): any;
     getOriginState(instanceId: InstanceId): any;
     getRecentChanges(): IDifferences;
 

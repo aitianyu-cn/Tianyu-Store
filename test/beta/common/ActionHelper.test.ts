@@ -6,6 +6,7 @@ import {
     createDefaultReducer,
     createNonHandler,
     createUndefinedHandler,
+    createVoidHandler,
 } from "beta/common/ActionHelper";
 import { IterableType } from "beta/types/Model";
 
@@ -18,6 +19,22 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.common.ActionHelper", () => 
         const reducer = createDefaultReducer<any, any>();
         const state = {};
         expect(reducer(state, {})).toBe(state);
+    });
+
+    it("createVoidHandler", async () => {
+        const handler = createVoidHandler();
+
+        const iterator = handler({
+            instanceId: generateInstanceId("", ""),
+            params: undefined,
+        });
+
+        let result = await iterator.next();
+        if (!result.done) {
+            result = await iterator.next(result.value);
+        }
+
+        expect(result.value).toBeUndefined();
     });
 
     it("createUndefinedHandler", async () => {

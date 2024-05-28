@@ -9,7 +9,7 @@ import { IStoreState } from "./store/storage/interface/StoreState";
 import { SelectorFactor } from "./store/SelectorFactor";
 import { IStoreInstanceCreateConfig } from "./types/Store";
 
-const CreateAction = ActionFactor.makeCreateStoreAction<IStoreState, IStoreInstanceCreateConfig | undefined>();
+const CreateAction = ActionFactor.makeCreateStoreAction<IStoreState, IStoreInstanceCreateConfig | void>();
 const DestroyAction = ActionFactor.makeDestroyStoreAction();
 
 const CleanStackAction = ActionFactor.makeVirtualAction();

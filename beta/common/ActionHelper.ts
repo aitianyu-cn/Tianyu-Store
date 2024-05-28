@@ -19,6 +19,14 @@ export function createDefaultReducer<
     };
 }
 
+export function createVoidHandler(): ActionHandlerFunction<void, void> {
+    return function* (
+        _action: IActionHandlerParameter<void>,
+    ): Generator<AnyStoreHandle, undefined, IActionHandlerParameter<void>> {
+        return;
+    };
+}
+
 export function createUndefinedHandler<PARAMETER_TYPE extends IterableType | undefined>(): ActionHandlerFunction<
     PARAMETER_TYPE,
     undefined

@@ -17,6 +17,7 @@ import { ExternalRegister } from "../modules/ExternalRegister";
 import { InstanceIdImpl } from "./InstanceIdImpl";
 import { RedoUndoStackImpl } from "../storage/RedoUndoStackImpl";
 import { MessageBundle } from "beta/infra/Message";
+import { InvalidExternalRegister } from "./InvalidExternalRegisterImpl";
 
 interface IStoreChangeInstance {
     [storeType: string]: {
@@ -67,15 +68,19 @@ export class StoreInstanceImpl implements IStoreExecution {
         }
     }
 
-    getExternalRegister(instanceId: InstanceId): IExternalObjectRegister {
+    getExternalRegister(instanceId: InstanceId, creating?: boolean): IExternalObjectRegister {
         const externalObject = this.externalObjectMap.get(instanceId);
         if (!externalObject) {
+            if (creating) {
+                return InvalidExternalRegister;
+            }
+
             throw new Error(MessageBundle.getText("STORE_INSTANCE_EXTRERNAL_MANAGER_NOT_FOUND", instanceId.toString()));
         }
 
         return externalObject;
     }
-    getState(instanceId: InstanceId) {
+    getState(instanceId: InstanceId, creating?: boolean) {
         if (InstanceIdImpl.isAncestor(instanceId)) {
             // if the instance id indicates an entity it self
             // return whole store state
@@ -97,7 +102,7 @@ export class StoreInstanceImpl implements IStoreExecution {
 
         const instances = this.storeState[STORE_STATE_INSTANCE][storeType];
         const ins = cachedState?.state || instances[instanceId2String];
-        if (!ins) {
+        if (!ins && !creating) {
             throw new Error(MessageBundle.getText("STORE_INSTANCE_NOT_EXIST", instanceId2String));
         }
 

@@ -20,7 +20,7 @@ import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "beta/types/Defs";
 import { TianyuStoreRedoUndoInterface } from "../RedoUndoFactor";
 import { TianyuStoreEntityInterface } from "../SystemActionFactor";
 import { StoreInstanceImpl } from "./StoreInstanceImpl";
-import { guid } from "@aitianyu.cn/types";
+import { ObjectHelper, guid } from "@aitianyu.cn/types";
 import { doSelecting, doSelectingWithState } from "../processing/Selecting";
 import { MessageBundle } from "beta/infra/Message";
 import { IStoreState, STORE_STATE_INSTANCE } from "../storage/interface/StoreState";
@@ -29,6 +29,8 @@ import { dispatching } from "../processing/Dispatching";
 import { IDifferences } from "../storage/interface/RedoUndoStack";
 import { formatTransactionType, TransactionManager } from "../modules/Transaction";
 import { TransactionType } from "beta/types/Transaction";
+import { ExternalRegister } from "../modules/ExternalRegister";
+import { InvalidExternalRegister } from "./InvalidExternalRegisterImpl";
 
 interface IInstanceSubscribe {
     id: string;
@@ -323,10 +325,11 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                         const oldState = doSelectingWithState(changeItem.old, executor, this, listener.selector);
                         const newState = doSelectingWithState(changeItem.new, executor, this, listener.selector);
 
-                        listener.listener(
-                            oldState instanceof Missing ? undefined : oldState,
-                            newState instanceof Missing ? undefined : newState,
-                        );
+                        const oldNoMissing = oldState instanceof Missing ? undefined : oldState;
+                        const newNoMissing = newState instanceof Missing ? undefined : newState;
+                        const isChanged = ObjectHelper.compareObjects(oldState, newState) === "different";
+
+                        isChanged && listener.listener(oldNoMissing, newNoMissing);
                     } catch (e) {
                         TransactionManager.error(
                             MessageBundle.getText(
@@ -366,10 +369,11 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                         const oldState = doSelectingWithState(changeItem.old, executor, this, listener.selector);
                         const newState = doSelectingWithState(changeItem.new, executor, this, listener.selector);
 
-                        listener.trigger(
-                            oldState instanceof Missing ? undefined : oldState,
-                            newState instanceof Missing ? undefined : newState,
-                        );
+                        const oldNoMissing = oldState instanceof Missing ? undefined : oldState;
+                        const newNoMissing = newState instanceof Missing ? undefined : newState;
+                        const isChanged = ObjectHelper.compareObjects(oldState, newState) === "different";
+
+                        isChanged && listener.trigger(oldNoMissing, newNoMissing);
                     } catch (e) {
                         TransactionManager.error(
                             MessageBundle.getText(
@@ -398,7 +402,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     // ================================================================================================================
 
     getExternalRegister(instanceId: InstanceId): IExternalObjectRegister {
-        throw new Error("Method not implemented.");
+        return InvalidExternalRegister;
     }
     getState(instanceId: InstanceId) {
         return {};

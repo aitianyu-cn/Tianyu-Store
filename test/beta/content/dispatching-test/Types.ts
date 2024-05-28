@@ -2,11 +2,16 @@
 
 import { IterableType } from "beta/types/Model";
 
-export interface IStoreState extends IterableType {
-    stamp: number;
-    actionCount: number;
+export interface ITestUserState extends IterableType {
+    logon: boolean;
+    user: string;
+    token: string;
+    operations: string[];
 }
 
-export const EXTERNAL_OBJ_NAME_STAMP = "test_stamp_external";
+export interface ITestPageState extends IterableType {
+    index: number;
+}
 
-export const EXTERNAL_OBJ_NAME_TIMEER = "test_timer_external";
+export const USER_CONNECTION_EXTERNAL_OBJ = "user-connection";
+export const USER_OPTIONS_EXTERNAL_OBJ = "user-options";

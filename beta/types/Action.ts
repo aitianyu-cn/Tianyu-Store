@@ -135,14 +135,14 @@ export interface CreateStoreActionCreator<
 }
 
 /** Tianyu Store Action Creator to destroy a store entity */
-export interface DestroyStoreActionCreator extends IActionProvider<any, undefined, undefined> {
+export interface DestroyStoreActionCreator extends IActionProvider<any, void, void> {
     /**
      * Function to add a custom reducer and get a new Action Provider
      *
      * @param reducer provided reducer function
      * @returns return a new destroy store action provider
      */
-    withReducer(reducer: ReducerFunction<any, undefined>): ActionProvider<any, undefined, undefined>;
+    withReducer(reducer: ReducerFunction<any, void>): ActionProvider<any, void, void>;
 }
 
 /**

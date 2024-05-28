@@ -6,17 +6,19 @@ import { generateInstanceId } from "beta/InstanceId";
 import { createStore, generateNewStoreInstance } from "beta/Store";
 import { StoreImpl } from "beta/store/impl/StoreImpl";
 import { StoreInstanceImpl } from "beta/store/impl/StoreInstanceImpl";
-import { TransactionManager } from "beta/store/modules/Transaction";
-import { STORE_STATE_SYSTEM, STORE_STATE_INSTANCE, IStoreInstance } from "beta/store/storage/interface/StoreState";
+import { formatTransactionType, TransactionManager } from "beta/store/modules/Transaction";
+import { SelectorFactor } from "beta/store/SelectorFactor";
+import { DifferenceChangeType, IDifferences } from "beta/store/storage/interface/RedoUndoStack";
+import { STORE_STATE_SYSTEM, STORE_STATE_INSTANCE } from "beta/store/storage/interface/StoreState";
 import { ActionType, IInstanceAction, IInstanceViewAction } from "beta/types/Action";
 import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "beta/types/Defs";
 import { InstanceId } from "beta/types/InstanceId";
 import { ITianyuStoreInterfaceMap } from "beta/types/Interface";
 import { IInstanceListener } from "beta/types/Listener";
-import { IInstanceSelector } from "beta/types/Selector";
-import { ITransaction, ITransactionInternal } from "beta/types/Transaction";
+import { Missing } from "beta/types/Model";
+import { ITransaction, TransactionType } from "beta/types/Transaction";
 import { createBatchAction } from "beta/utils/BatchActionUtils";
-import { TestInterface } from "test/beta/content/DispatchingTestContent";
+import { TestUserStateInterface } from "test/beta/content/DispatchingTestContent";
 
 describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () => {
     const store = createStore({
@@ -40,16 +42,18 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
         expect(((store as any).instanceListener as Map<any, any>).get(baseInstanceId.entity)).toBeDefined();
         expect(((store as any).instanceSubscribe as Map<any, any>).get(baseInstanceId.entity)).toBeDefined();
 
-        store.registerInterface("test", TestInterface);
+        store.registerInterface("test", TestUserStateInterface);
         expect((store as any).storyTypes.includes("test")).toBeTruthy();
     });
 
     describe("store internal functions", () => {
         describe("unused methods", () => {
             it("getExternalRegister", () => {
-                expect(() => {
-                    storeInternal.getExternalRegister(generateInstanceId("", ""));
-                }).toThrow("Method not implemented.");
+                const register = storeInternal.getExternalRegister(generateInstanceId("", ""));
+                expect(register).toBeDefined();
+                expect(register.add).toThrow();
+                expect(register.get).toThrow();
+                expect(register.remove).toThrow();
             });
 
             it("getState", () => {
@@ -113,8 +117,8 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
             });
 
             it("action is defined", () => {
-                const action = storeInternal.getAction(TestInterface.action.ErrorIteratorAction.info.fullName);
-                expect(action.info.name).toEqual("ErrorIteratorAction");
+                const action = storeInternal.getAction(TestUserStateInterface.action.userLogonAction.info.fullName);
+                expect(action.info.name).toEqual("userLogonAction");
             });
         });
 
@@ -126,8 +130,8 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
             });
 
             it("selector is defined", () => {
-                const selector = storeInternal.getSelector(TestInterface.selector.ActionCountSelector.info.fullName);
-                expect(selector.info.name).toEqual("ActionCountSelector");
+                const selector = storeInternal.getSelector(TestUserStateInterface.selector.getUser.info.fullName);
+                expect(selector.info.name).toEqual("getUser");
             });
         });
 
@@ -217,13 +221,13 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
         describe("registerInterface", () => {
             it("register store basic interface should throw error", () => {
                 expect(() => {
-                    store.registerInterface(TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, TestInterface);
+                    store.registerInterface(TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, TestUserStateInterface);
                 }).toThrow(MessageBundle.getText("STORE_SHOULD_NOT_REGISTER_SYSTEM_ENTITY"));
             });
 
             it("register successful", () => {
                 const interfaceMap: ITianyuStoreInterfaceMap = {
-                    test: TestInterface,
+                    test: TestUserStateInterface,
                     undefined: undefined,
                 };
 
@@ -339,7 +343,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
             const newInstanceId = generateNewStoreInstance();
 
             expect(() => {
-                store.subscribe(newInstanceId, TestInterface.selector.ActionCountSelector, () => {});
+                store.subscribe(newInstanceId, TestUserStateInterface.selector.getUser, () => {});
             }).toThrow(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", newInstanceId.entity));
         });
 
@@ -356,7 +360,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
                 listener: () => {},
             };
 
-            const unsub = store.subscribe(baseInstanceId, TestInterface.selector.ActionCountSelector, () => {});
+            const unsub = store.subscribe(baseInstanceId, TestUserStateInterface.selector.getUser, () => {});
 
             {
                 const subscribes = (store as any).instanceSubscribe.get(baseInstanceId.entity);
@@ -375,7 +379,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
     describe("selecte", () => {
         it("entity not exist", () => {
             const newInstanceId = generateNewStoreInstance();
-            const selectorInstance = TestInterface.selector.ActionCountSelector(newInstanceId);
+            const selectorInstance = TestUserStateInterface.selector.getUser(newInstanceId);
 
             expect(() => {
                 store.selecte(selectorInstance);
@@ -384,7 +388,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
 
         it("do selecting", () => {
             const Processsing = require("beta/store/processing/Selecting");
-            const selectorInstance = TestInterface.selector.ActionCountSelector(baseInstanceId);
+            const selectorInstance = TestUserStateInterface.selector.getUser(baseInstanceId);
 
             jest.spyOn(Processsing, "doSelecting").mockReturnValue(123);
             const selectResult = store.selecte(selectorInstance);
@@ -398,20 +402,20 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
         });
 
         it("action instance", async () => {
-            const action = TestInterface.action.OperateStampAction(baseInstanceId);
+            const action = TestUserStateInterface.action.userLifecycleAction(baseInstanceId);
             await store.dispatch(action);
             expect((store as any).dispatchInternal).toHaveBeenCalledWith([action], false);
         });
 
         it("action batch", async () => {
-            const action = TestInterface.action.OperateStampAction(baseInstanceId);
+            const action = TestUserStateInterface.action.userLifecycleAction(baseInstanceId);
             await store.dispatch(createBatchAction([action]));
             expect((store as any).dispatchInternal).toHaveBeenCalledWith([action], false);
         });
 
         it("view action instance", () => {
             const action = {
-                ...TestInterface.action.OperateStampAction(baseInstanceId),
+                ...TestUserStateInterface.action.userLifecycleAction(baseInstanceId),
                 transaction: false,
             } as IInstanceViewAction;
             store.dispatchForView(action);
@@ -419,7 +423,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
         });
 
         it("view action batch", () => {
-            const action = TestInterface.action.OperateStampAction(baseInstanceId);
+            const action = TestUserStateInterface.action.userLifecycleAction(baseInstanceId);
             store.dispatchForView(createBatchAction([action]));
             expect((store as any).dispatchInternal).toHaveBeenCalledWith([action], true);
         });
@@ -446,7 +450,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
         });
 
         it("dispatch success", (done) => {
-            const action = TestInterface.action.OperateStampAction(generateNewStoreInstance());
+            const action = TestUserStateInterface.action.userLifecycleAction(generateNewStoreInstance());
 
             dispatchingSpyOn.mockImplementation(async () => {
                 return Promise.resolve();
@@ -461,7 +465,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
         });
 
         it("dispatch failed", (done) => {
-            const action = TestInterface.action.OperateStampAction(generateNewStoreInstance());
+            const action = TestUserStateInterface.action.userLifecycleAction(generateNewStoreInstance());
 
             dispatchingSpyOn.mockImplementation(async () => {
                 return Promise.reject();
@@ -476,7 +480,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
         });
 
         it("dispatch with not wait all", (done) => {
-            const action = TestInterface.action.OperateStampAction(generateNewStoreInstance());
+            const action = TestUserStateInterface.action.userLifecycleAction(generateNewStoreInstance());
 
             (store as any).config.waitForAll = false;
 
@@ -494,6 +498,413 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
                 .finally(() => {
                     (store as any).config.waitForAll = true;
                 });
+        });
+    });
+
+    describe("fireListeners", () => {
+        const Processsing = require("beta/store/processing/Selecting");
+        const selectingSpyOn = jest.spyOn(Processsing, "doSelectingWithState");
+
+        const instanceId = generateInstanceId(baseInstanceId, "test", "instance");
+
+        const listener = {
+            id: guid(),
+            selector: {
+                id: "",
+                selector: "test.selector",
+                storeType: "",
+                instanceId: instanceId,
+                params: undefined,
+            },
+            listener: () => {},
+        };
+
+        beforeAll(() => {
+            store.startListen(listener);
+
+            const listeners = (store as any).instanceListener.get(instanceId.entity);
+            expect((listeners as any)?.[instanceId.toString()]).toBeDefined();
+            expect((listeners as any)?.[instanceId.toString()].length).toEqual(1);
+        });
+
+        afterAll(() => {
+            store.stopListen(listener);
+
+            const listeners = (store as any).instanceListener.get(instanceId.entity);
+            expect((listeners as any)?.[instanceId.toString()]).toBeDefined();
+            expect((listeners as any)?.[instanceId.toString()].length).toEqual(0);
+        });
+
+        beforeEach(() => {
+            jest.spyOn(TransactionManager, "error");
+
+            jest.spyOn(listener, "listener");
+        });
+
+        it("entity is not valid, not to fire", (done) => {
+            const newInstanceId = generateNewStoreInstance();
+            const firePromise = (store as any).__proto__.fireListeners.call(store, newInstanceId.entity, {}, store);
+            firePromise.then(() => {
+                expect(selectingSpyOn).not.toHaveBeenCalled();
+                done();
+            }, done.fail);
+        });
+
+        it("has change", (done) => {
+            const change: IDifferences = {
+                test: {
+                    [instanceId.toString()]: {
+                        old: {
+                            test: "1",
+                        },
+                        new: {
+                            test: "2",
+                        },
+                        type: DifferenceChangeType.Change,
+                    },
+                },
+            };
+
+            selectingSpyOn.mockImplementation((state: any) => {
+                return state.test;
+            });
+            const firePromise = (store as any).__proto__.fireListeners.call(store, instanceId.entity, change, store);
+            firePromise.then(() => {
+                expect(listener.listener).toHaveBeenCalled();
+                done();
+            }, done.fail);
+        });
+
+        it("missing", (done) => {
+            const change: IDifferences = {
+                test: {
+                    [instanceId.toString()]: {
+                        old: {
+                            test: "1",
+                        },
+                        new: {
+                            test: "2",
+                        },
+                        type: DifferenceChangeType.Change,
+                    },
+                },
+            };
+
+            selectingSpyOn.mockImplementation((state: any) => {
+                return new Missing();
+            });
+            const firePromise = (store as any).__proto__.fireListeners.call(store, instanceId.entity, change, store);
+            firePromise.then(() => {
+                expect(listener.listener).not.toHaveBeenCalled();
+                done();
+            }, done.fail);
+        });
+
+        it("not have change", (done) => {
+            const change: IDifferences = {
+                test: {
+                    [instanceId.toString()]: {
+                        old: {
+                            test: "1",
+                        },
+                        new: {
+                            test: "1",
+                        },
+                        type: DifferenceChangeType.Change,
+                    },
+                },
+            };
+
+            selectingSpyOn.mockImplementation((state: any) => {
+                return state.test;
+            });
+            const firePromise = (store as any).__proto__.fireListeners.call(store, instanceId.entity, change, store);
+            firePromise.then(() => {
+                expect(listener.listener).not.toHaveBeenCalled();
+                done();
+            }, done.fail);
+        });
+
+        describe("throw error", () => {
+            const change: IDifferences = {
+                test: {
+                    [instanceId.toString()]: {
+                        old: {},
+                        new: {},
+                        type: DifferenceChangeType.Change,
+                    },
+                },
+            };
+
+            it("throw string", (done) => {
+                selectingSpyOn.mockImplementation(() => {
+                    throw "error";
+                });
+
+                const firePromise = (store as any).__proto__.fireListeners.call(
+                    store,
+                    instanceId.entity,
+                    change,
+                    store,
+                );
+                firePromise.then(() => {
+                    expect(listener.listener).not.toHaveBeenCalled();
+                    expect(TransactionManager.error).toHaveBeenCalledWith(
+                        MessageBundle.getText(
+                            "STORE_EVENT_LISTENER_TRIGGER_FAILED",
+                            "error",
+                            listener.id,
+                            listener.selector.selector,
+                        ),
+                        TransactionType.Listener,
+                    );
+                    done();
+                }, done.fail);
+            });
+
+            it("throw error", (done) => {
+                selectingSpyOn.mockImplementation(() => {
+                    throw new Error("error obj");
+                });
+
+                const firePromise = (store as any).__proto__.fireListeners.call(
+                    store,
+                    instanceId.entity,
+                    change,
+                    store,
+                );
+                firePromise.then(() => {
+                    expect(listener.listener).not.toHaveBeenCalled();
+                    expect(TransactionManager.error).toHaveBeenCalledWith(
+                        MessageBundle.getText(
+                            "STORE_EVENT_LISTENER_TRIGGER_FAILED",
+                            "error obj",
+                            listener.id,
+                            listener.selector.selector,
+                        ),
+                        TransactionType.Listener,
+                    );
+                    done();
+                }, done.fail);
+            });
+
+            it("throw other", (done) => {
+                selectingSpyOn.mockImplementation(() => {
+                    throw 123;
+                });
+
+                const firePromise = (store as any).__proto__.fireListeners.call(
+                    store,
+                    instanceId.entity,
+                    change,
+                    store,
+                );
+                firePromise.then(() => {
+                    expect(listener.listener).not.toHaveBeenCalled();
+                    expect(TransactionManager.error).toHaveBeenCalledWith(
+                        MessageBundle.getText(
+                            "STORE_EVENT_LISTENER_TRIGGER_FAILED",
+                            MessageBundle.getText(
+                                "TRANSACTION_ERROR_RECORDING_UNKNOWN_ERROR",
+                                formatTransactionType(TransactionType.Listener),
+                            ),
+                            listener.id,
+                            listener.selector.selector,
+                        ),
+                        TransactionType.Listener,
+                    );
+                    done();
+                }, done.fail);
+            });
+        });
+    });
+
+    describe("fireSubscribes", () => {
+        const Processsing = require("beta/store/processing/Selecting");
+        const selectingSpyOn = jest.spyOn(Processsing, "doSelectingWithState");
+
+        const instanceId = generateInstanceId(baseInstanceId, "test", "instance");
+        const selectorProvider = SelectorFactor.makeSelector<any, any>(function (state) {
+            return null;
+        });
+
+        let unsubscribe: null | Function = null;
+        let isCalled: boolean = false;
+        const event = {
+            trigger: () => {
+                isCalled = true;
+            },
+        };
+
+        beforeAll(() => {
+            unsubscribe = store.subscribe(instanceId, selectorProvider, event.trigger);
+
+            const subscribes = (store as any).instanceSubscribe.get(instanceId.entity);
+            expect((subscribes as any)?.[instanceId.toString()]).toBeDefined();
+            expect((subscribes as any)?.[instanceId.toString()].length).toEqual(1);
+        });
+
+        afterAll(() => {
+            unsubscribe?.();
+
+            const subscribes = (store as any).instanceSubscribe.get(instanceId.entity);
+            expect((subscribes as any)?.[instanceId.toString()]).toBeDefined();
+            expect((subscribes as any)?.[instanceId.toString()].length).toEqual(0);
+        });
+
+        beforeEach(() => {
+            jest.spyOn(TransactionManager, "error");
+            isCalled = false;
+        });
+
+        it("entity is not valid, not to fire", (done) => {
+            const newInstanceId = generateNewStoreInstance();
+            const firePromise = (store as any).__proto__.fireSubscribes.call(store, newInstanceId.entity, {}, store);
+            firePromise.then(() => {
+                expect(selectingSpyOn).not.toHaveBeenCalled();
+                done();
+            }, done.fail);
+        });
+
+        it("has change", (done) => {
+            const change: IDifferences = {
+                test: {
+                    [instanceId.toString()]: {
+                        old: {
+                            test: "1",
+                        },
+                        new: {
+                            test: "2",
+                        },
+                        type: DifferenceChangeType.Change,
+                    },
+                },
+            };
+
+            selectingSpyOn.mockImplementation((state: any) => {
+                return state.test;
+            });
+            const firePromise = (store as any).__proto__.fireSubscribes.call(store, instanceId.entity, change, store);
+            firePromise.then(() => {
+                expect(isCalled).toBeTruthy();
+                done();
+            }, done.fail);
+        });
+
+        it("missing", (done) => {
+            const change: IDifferences = {
+                test: {
+                    [instanceId.toString()]: {
+                        old: {
+                            test: "1",
+                        },
+                        new: {
+                            test: "2",
+                        },
+                        type: DifferenceChangeType.Change,
+                    },
+                },
+            };
+
+            selectingSpyOn.mockImplementation((state: any) => {
+                return new Missing();
+            });
+            const firePromise = (store as any).__proto__.fireSubscribes.call(store, instanceId.entity, change, store);
+            firePromise.then(() => {
+                expect(isCalled).toBeFalsy();
+                done();
+            }, done.fail);
+        });
+
+        it("not have change", (done) => {
+            const change: IDifferences = {
+                test: {
+                    [instanceId.toString()]: {
+                        old: {
+                            test: "1",
+                        },
+                        new: {
+                            test: "1",
+                        },
+                        type: DifferenceChangeType.Change,
+                    },
+                },
+            };
+
+            selectingSpyOn.mockImplementation((state: any) => {
+                return state.test;
+            });
+            const firePromise = (store as any).__proto__.fireSubscribes.call(store, instanceId.entity, change, store);
+            firePromise.then(() => {
+                expect(isCalled).toBeFalsy();
+                done();
+            }, done.fail);
+        });
+
+        describe("throw error", () => {
+            const change: IDifferences = {
+                test: {
+                    [instanceId.toString()]: {
+                        old: {},
+                        new: {},
+                        type: DifferenceChangeType.Change,
+                    },
+                },
+            };
+
+            it("throw string", (done) => {
+                selectingSpyOn.mockImplementation(() => {
+                    throw "error";
+                });
+
+                const firePromise = (store as any).__proto__.fireSubscribes.call(
+                    store,
+                    instanceId.entity,
+                    change,
+                    store,
+                );
+                firePromise.then(() => {
+                    expect(isCalled).toBeFalsy();
+                    expect(TransactionManager.error).toHaveBeenCalled();
+                    done();
+                }, done.fail);
+            });
+
+            it("throw error", (done) => {
+                selectingSpyOn.mockImplementation(() => {
+                    throw new Error("error obj");
+                });
+
+                const firePromise = (store as any).__proto__.fireSubscribes.call(
+                    store,
+                    instanceId.entity,
+                    change,
+                    store,
+                );
+                firePromise.then(() => {
+                    expect(isCalled).toBeFalsy();
+                    expect(TransactionManager.error).toHaveBeenCalled();
+                    done();
+                }, done.fail);
+            });
+
+            it("throw other", (done) => {
+                selectingSpyOn.mockImplementation(() => {
+                    throw 123;
+                });
+
+                const firePromise = (store as any).__proto__.fireSubscribes.call(
+                    store,
+                    instanceId.entity,
+                    change,
+                    store,
+                );
+                firePromise.then(() => {
+                    expect(isCalled).toBeFalsy();
+                    expect(TransactionManager.error).toHaveBeenCalled();
+                    done();
+                }, done.fail);
+            });
         });
     });
 });

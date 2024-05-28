@@ -81,14 +81,14 @@ function verifyInstanceSameAncestor(...s: InstanceId[]): string {
 function verifyActionInstances(s: IInstanceAction[]): string {
     const actionCount = s.length;
     const instanceIds = s.map((value) => {
-        if (actionCount > 1 && value.actionType in [ActionType.REDO, ActionType.UNDO]) {
+        if (actionCount > 1 && (value.actionType === ActionType.REDO || value.actionType === ActionType.UNDO)) {
             // throw an error when redo undo operation is not atom
             throw new Error(MessageBundle.getText("DISPATCHING_REDO_UNDO_NOT_ATOM", value.action));
         }
         if (
             actionCount > 1 &&
             InstanceIdImpl.isAncestor(value.instanceId) &&
-            value.actionType in [ActionType.CREATE, ActionType.DESTROY]
+            (value.actionType === ActionType.CREATE || value.actionType === ActionType.DESTROY)
         ) {
             // throw an error when create or destroy an entity is not atom
             throw new Error(MessageBundle.getText("DISPATCHING_SYSTEM_LIFECYCLE_NOT_ATOM", value.action));
@@ -123,7 +123,9 @@ export async function dispatching(
     for (const action of actions) {
         ranActions.push(action);
         const actionImpl = manager.getAction(action.action);
-        await actionImpl.external(executor.getExternalRegister(action.instanceId));
+        await actionImpl.external(
+            executor.getExternalRegister(action.instanceId, action.actionType === ActionType.CREATE),
+        );
         const iterator = actionImpl.handler(action);
 
         const fnGetNextValue = async (handleResult: AnyStoreHandle) => {
@@ -155,7 +157,10 @@ export async function dispatching(
             const result = await iterator.next(value);
             if (result.done) {
                 // this is for action done
-                const newState = actionImpl.reducer(executor.getState(action.instanceId), result.value);
+                const newState = actionImpl.reducer(
+                    executor.getState(action.instanceId, action.actionType === ActionType.CREATE),
+                    result.value,
+                );
                 await doneAction(executor, manager, action, newState, notRedoUndo);
             } else {
                 const handleResult = result.value;

@@ -19,6 +19,7 @@ import {
     createDefaultReducer,
     createNonHandler,
     createUndefinedHandler,
+    createVoidHandler,
 } from "beta/common/ActionHelper";
 import { ExternalOperatorFunction } from "beta/types/ExternalObject";
 import { defaultInfoGenerator } from "beta/common/OperatorHelper";
@@ -97,7 +98,7 @@ export function viewActionImpl<
 
 export function createStoreActionCreatorImpl<
     STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
+    PARAMETER_TYPE extends IterableType | undefined | void = void,
 >(): CreateStoreActionCreator<STATE, PARAMETER_TYPE> {
     const actionInstanceCaller = <CreateStoreActionCreator<STATE, PARAMETER_TYPE>>(
         actionBaseImpl<STATE, PARAMETER_TYPE, PARAMETER_TYPE>(
@@ -125,18 +126,16 @@ export function createStoreActionCreatorImpl<
 
 export function destroyStoreActionCreatorImpl(): DestroyStoreActionCreator {
     const actionInstanceCaller = <DestroyStoreActionCreator>(
-        actionBaseImpl<any, any, undefined>(
+        actionBaseImpl<any, void, void>(
             guid(),
-            createUndefinedHandler<any>(),
-            createDefaultReducer<any, undefined>(),
+            createVoidHandler(),
+            createDefaultReducer<any, void>(),
             createDefaultExternalOperator(),
             ActionType.DESTROY,
         )
     );
-    actionInstanceCaller.withReducer = function (
-        reducer: ReducerFunction<any, undefined>,
-    ): ActionProvider<any, undefined, undefined> {
-        return actionImpl<any, undefined, undefined>(
+    actionInstanceCaller.withReducer = function (reducer: ReducerFunction<any, void>): ActionProvider<any, void, void> {
+        return actionImpl<any, void, void>(
             actionInstanceCaller.id,
             actionInstanceCaller.handler,
             reducer,
