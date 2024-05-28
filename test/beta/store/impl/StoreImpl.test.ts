@@ -90,7 +90,13 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
                     actionType: ActionType.ACTION,
                 };
                 expect(() => {
-                    storeInternal.pushStateChange(action, {}, false);
+                    storeInternal.pushStateChange(
+                        action.storeType,
+                        action.instanceId.toString(),
+                        action.actionType,
+                        {},
+                        false,
+                    );
                 }).not.toThrow();
             });
 
@@ -402,20 +408,20 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
         });
 
         it("action instance", async () => {
-            const action = TestUserStateInterface.action.userLifecycleAction(baseInstanceId);
+            const action = TestUserStateInterface.action.userLifecycleCreateAction(baseInstanceId);
             await store.dispatch(action);
             expect((store as any).dispatchInternal).toHaveBeenCalledWith([action], false);
         });
 
         it("action batch", async () => {
-            const action = TestUserStateInterface.action.userLifecycleAction(baseInstanceId);
+            const action = TestUserStateInterface.action.userLifecycleCreateAction(baseInstanceId);
             await store.dispatch(createBatchAction([action]));
             expect((store as any).dispatchInternal).toHaveBeenCalledWith([action], false);
         });
 
         it("view action instance", () => {
             const action = {
-                ...TestUserStateInterface.action.userLifecycleAction(baseInstanceId),
+                ...TestUserStateInterface.action.userLifecycleCreateAction(baseInstanceId),
                 transaction: false,
             } as IInstanceViewAction;
             store.dispatchForView(action);
@@ -423,7 +429,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
         });
 
         it("view action batch", () => {
-            const action = TestUserStateInterface.action.userLifecycleAction(baseInstanceId);
+            const action = TestUserStateInterface.action.userLifecycleCreateAction(baseInstanceId);
             store.dispatchForView(createBatchAction([action]));
             expect((store as any).dispatchInternal).toHaveBeenCalledWith([action], true);
         });
@@ -449,8 +455,18 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
             (TransactionManager as unknown as ITransaction).cleanSelector();
         });
 
+        it("no action dispatched", (done) => {
+            const dispatchPromise = (store as any).__proto__.dispatchInternal.call(store, [], false);
+            dispatchPromise.then(() => {
+                expect(dispatchingSpyOn).not.toHaveBeenCalled();
+                expect(storeInternal.applyChanges).not.toHaveBeenCalled();
+                expect(storeInternal.discardChanges).not.toHaveBeenCalled();
+                done();
+            }, done.fail);
+        });
+
         it("dispatch success", (done) => {
-            const action = TestUserStateInterface.action.userLifecycleAction(generateNewStoreInstance());
+            const action = TestUserStateInterface.action.userLifecycleCreateAction(generateNewStoreInstance());
 
             dispatchingSpyOn.mockImplementation(async () => {
                 return Promise.resolve();
@@ -465,7 +481,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
         });
 
         it("dispatch failed", (done) => {
-            const action = TestUserStateInterface.action.userLifecycleAction(generateNewStoreInstance());
+            const action = TestUserStateInterface.action.userLifecycleCreateAction(generateNewStoreInstance());
 
             dispatchingSpyOn.mockImplementation(async () => {
                 return Promise.reject();
@@ -480,7 +496,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreImpl", () =>
         });
 
         it("dispatch with not wait all", (done) => {
-            const action = TestUserStateInterface.action.userLifecycleAction(generateNewStoreInstance());
+            const action = TestUserStateInterface.action.userLifecycleCreateAction(generateNewStoreInstance());
 
             (store as any).config.waitForAll = false;
 

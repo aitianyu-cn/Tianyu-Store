@@ -1,7 +1,7 @@
 /**@format */
 
 import { IDifferences } from "beta/store/storage/interface/RedoUndoStack";
-import { IActionProvider, IBatchAction, IInstanceAction, IInstanceViewAction } from "./Action";
+import { ActionType, IActionProvider, IBatchAction, IInstanceAction, IInstanceViewAction } from "./Action";
 import { IExternalObjectRegister } from "./ExternalObject";
 import { IStoreHierarchyChecklist } from "./Hierarchy";
 import { InstanceId } from "./InstanceId";
@@ -21,7 +21,13 @@ export interface IStoreExecution {
 
     applyChanges(): void;
     discardChanges(): void;
-    pushStateChange(action: IInstanceAction, newState: any, notRedoUndo: boolean): void;
+    pushStateChange(
+        storeType: string,
+        instanceId: string,
+        actionType: ActionType,
+        newState: any,
+        notRedoUndo: boolean,
+    ): void;
 
     validateActionInstance(action: IInstanceAction): void;
 }

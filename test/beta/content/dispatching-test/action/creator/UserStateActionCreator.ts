@@ -7,10 +7,14 @@ export const CreateUserStateActioCreator = ActionFactor.makeCreateStoreAction<IT
 
 export const DestroyUserStateActionCreator = ActionFactor.makeDestroyStoreAction();
 
-export const UserLifecycleActionCreator = ActionFactor.makeActionCreator<ITestUserState>();
+export const UserLifecycleCreateActionCreator = ActionFactor.makeActionCreator<ITestUserState>();
+export const UserLifecycleDestroyActionCreator = ActionFactor.makeActionCreator<ITestUserState>();
 
 export const CreateUserExternalConnectionActionCreator = ActionFactor.makeActionCreator();
 export const CreateUserExternalOperationActionCreator = ActionFactor.makeActionCreator();
+
+export const RemoveUserExternalConnectionActionCreator = ActionFactor.makeActionCreator();
+export const RemoveUserExternalOperationActionCreator = ActionFactor.makeActionCreator();
 
 export const UserLogonActionCreator = ActionFactor.makeActionCreator<
     ITestUserState,

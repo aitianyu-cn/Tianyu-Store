@@ -17,7 +17,7 @@ export function getNewState(rawState: any, path: string[], changes: any, forceOb
     if (targetName) {
         let operator: any = rawCopy;
         for (const item of path) {
-            if (!operator[item]) {
+            if (!(item in operator)) {
                 if (forceObj) {
                     break;
                 } else {
@@ -27,7 +27,7 @@ export function getNewState(rawState: any, path: string[], changes: any, forceOb
             operator = operator[item];
         }
 
-        if (!forceObj || operator[targetName]) {
+        if (!forceObj || targetName in operator) {
             operator[targetName] = ObjectHelper.clone(changes);
         }
     }

@@ -34,7 +34,7 @@ export class StoreInstanceImpl implements IStoreExecution {
     // external object will not be redo/undo
     // even it is created, only when the whole store instance is destroied or delete it manually,
     // the external objects are always kept
-    private externalObjectMap: Map<InstanceId, IExternalObjectRegister>;
+    private externalObjectMap: Map<string, IExternalObjectRegister>;
     private storeState: IStoreState;
     private instanceId: InstanceId;
 
@@ -45,20 +45,20 @@ export class StoreInstanceImpl implements IStoreExecution {
         this.changeCache = {};
         this.instanceId = instanceId;
 
-        this.externalObjectMap = new Map<InstanceId, IExternalObjectRegister>();
+        this.externalObjectMap = new Map<string, IExternalObjectRegister>();
 
         // to init the root external register
         const externalRegister = new ExternalRegister();
         if (this.storeState[STORE_STATE_SYSTEM].redoUndo) {
             externalRegister.add(STORE_STATE_EXTERNAL_REDOUNDO_STACK, new RedoUndoStackImpl());
         }
-        this.externalObjectMap.set(instanceId, externalRegister);
+        this.externalObjectMap.set(instanceId.toString(), externalRegister);
     }
 
     public getRecentChanges(): IDifferences {
-        const redoUndoStack = this.externalObjectMap.get(this.instanceId)?.get(STORE_STATE_EXTERNAL_REDOUNDO_STACK) as
-            | IRedoUndoStack
-            | undefined;
+        const redoUndoStack = this.externalObjectMap
+            .get(this.instanceId.toString())
+            ?.get(STORE_STATE_EXTERNAL_REDOUNDO_STACK) as IRedoUndoStack | undefined;
         return redoUndoStack?.getCurrent() || {};
     }
 
@@ -69,7 +69,7 @@ export class StoreInstanceImpl implements IStoreExecution {
     }
 
     getExternalRegister(instanceId: InstanceId, creating?: boolean): IExternalObjectRegister {
-        const externalObject = this.externalObjectMap.get(instanceId);
+        const externalObject = this.externalObjectMap.get(instanceId.toString());
         if (!externalObject) {
             if (creating) {
                 return InvalidExternalRegister;
@@ -170,9 +170,9 @@ export class StoreInstanceImpl implements IStoreExecution {
 
         this.storeState = mergeDiff(this.storeState, diff);
 
-        const redoUndoStack = this.externalObjectMap.get(this.instanceId)?.get(STORE_STATE_EXTERNAL_REDOUNDO_STACK) as
-            | IRedoUndoStack
-            | undefined;
+        const redoUndoStack = this.externalObjectMap
+            .get(this.instanceId.toString())
+            ?.get(STORE_STATE_EXTERNAL_REDOUNDO_STACK) as IRedoUndoStack | undefined;
         if (redoUndoSupport) {
             recordRedoUndo && redoUndoStack?.record(diff);
         } else {
@@ -182,9 +182,13 @@ export class StoreInstanceImpl implements IStoreExecution {
     discardChanges(): void {
         this.changeCache = {};
     }
-    pushStateChange(action: IInstanceAction, newState: any, notRedoUndo: boolean): void {
-        const storeType = action.storeType;
-        const instanceId = action.instanceId.toString();
+    pushStateChange(
+        storeType: string,
+        instanceId: string,
+        actionType: ActionType,
+        newState: any,
+        notRedoUndo: boolean,
+    ): void {
         if (!this.changeCache[storeType]) {
             this.changeCache[storeType] = {};
         }
@@ -192,18 +196,18 @@ export class StoreInstanceImpl implements IStoreExecution {
         this.changeCache[storeType][instanceId] = {
             state: newState,
             type:
-                action.actionType === ActionType.CREATE
+                actionType === ActionType.CREATE
                     ? DifferenceChangeType.Create
-                    : action.actionType === ActionType.DESTROY
+                    : actionType === ActionType.DESTROY
                     ? DifferenceChangeType.Delete
                     : DifferenceChangeType.Change,
-            redoUndo: !notRedoUndo && action.actionType !== ActionType.VIEW_ACTION,
-            record: action.actionType !== ActionType.REDO && action.actionType !== ActionType.UNDO,
+            redoUndo: !notRedoUndo && actionType !== ActionType.VIEW_ACTION,
+            record: actionType !== ActionType.REDO && actionType !== ActionType.UNDO,
         };
 
-        if (action.actionType === ActionType.CREATE) {
+        if (actionType === ActionType.CREATE) {
             // for create new instance, to create a new external object manager
-            this.externalObjectMap.set(action.instanceId, new ExternalRegister());
+            this.externalObjectMap.set(instanceId, new ExternalRegister());
         }
     }
 

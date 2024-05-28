@@ -28,7 +28,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl
     const freezState = Object.freeze(ObjectHelper.clone(storeState));
     const storeInstance = new StoreInstanceImpl(storeState, basicInstanceId);
 
-    ((storeInstance as any).externalObjectMap as Map<InstanceId, IExternalObjectRegister>).set(defaultInstance, {
+    ((storeInstance as any).externalObjectMap as Map<string, IExternalObjectRegister>).set(defaultInstance.toString(), {
         get: function <T = any>(key: string): T | undefined {
             throw new Error("Function not implemented.");
         },
@@ -179,7 +179,13 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl
                 actionType: ActionType.ACTION,
             };
 
-            storeInstance.pushStateChange(action, { change: true }, false);
+            storeInstance.pushStateChange(
+                action.storeType,
+                action.instanceId.toString(),
+                action.actionType,
+                { change: true },
+                false,
+            );
             const changeState = (storeInstance as any).changeCache["test"][instanceId.toString()];
 
             expect(changeState).toBeDefined();
@@ -202,7 +208,13 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl
                 actionType: ActionType.DESTROY,
             };
 
-            storeInstance.pushStateChange(action, undefined, false);
+            storeInstance.pushStateChange(
+                action.storeType,
+                action.instanceId.toString(),
+                action.actionType,
+                undefined,
+                false,
+            );
             const changeState = (storeInstance as any).changeCache["test"][instanceId.toString()];
 
             expect(changeState).toBeDefined();
@@ -224,7 +236,13 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl
                 actionType: ActionType.CREATE,
             };
 
-            storeInstance.pushStateChange(action, undefined, false);
+            storeInstance.pushStateChange(
+                action.storeType,
+                action.instanceId.toString(),
+                action.actionType,
+                undefined,
+                false,
+            );
             const changeState = (storeInstance as any).changeCache["test"][instanceId.toString()];
 
             expect(changeState).toBeDefined();
@@ -233,7 +251,9 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl
             expect(changeState.record).toBeTruthy();
 
             expect(((storeInstance as any).externalObjectMap as Map<any, any>).size).toBe(3);
-            expect(((storeInstance as any).externalObjectMap as Map<any, any>).get(instanceId)).toBeDefined();
+            expect(
+                ((storeInstance as any).externalObjectMap as Map<any, any>).get(instanceId.toString()),
+            ).toBeDefined();
         });
 
         it("push change with not redo undo", () => {
@@ -247,7 +267,13 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl
                 actionType: ActionType.ACTION,
             };
 
-            storeInstance.pushStateChange(action, { change: true }, true);
+            storeInstance.pushStateChange(
+                action.storeType,
+                action.instanceId.toString(),
+                action.actionType,
+                { change: true },
+                true,
+            );
             const changeState = (storeInstance as any).changeCache["test"][instanceId.toString()];
 
             expect(changeState).toBeDefined();
@@ -266,7 +292,13 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl
                 actionType: ActionType.VIEW_ACTION,
             };
 
-            storeInstance.pushStateChange(action, { change: true }, false);
+            storeInstance.pushStateChange(
+                action.storeType,
+                action.instanceId.toString(),
+                action.actionType,
+                { change: true },
+                false,
+            );
             const changeState = (storeInstance as any).changeCache["test"][instanceId.toString()];
 
             expect(changeState).toBeDefined();
@@ -285,7 +317,13 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl
                 actionType: ActionType.REDO,
             };
 
-            storeInstance.pushStateChange(action, { change: true }, false);
+            storeInstance.pushStateChange(
+                action.storeType,
+                action.instanceId.toString(),
+                action.actionType,
+                { change: true },
+                false,
+            );
             const changeState = (storeInstance as any).changeCache["test"][instanceId.toString()];
 
             expect(changeState).toBeDefined();
@@ -303,7 +341,13 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl
                 actionType: ActionType.UNDO,
             };
 
-            storeInstance.pushStateChange(action, { change: true }, false);
+            storeInstance.pushStateChange(
+                action.storeType,
+                action.instanceId.toString(),
+                action.actionType,
+                { change: true },
+                false,
+            );
             const changeState = (storeInstance as any).changeCache["test"][instanceId.toString()];
 
             expect(changeState).toBeDefined();
@@ -339,7 +383,13 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl
                 actionType: ActionType.ACTION,
             };
 
-            storeInstance.pushStateChange(action, { change: true }, false);
+            storeInstance.pushStateChange(
+                action.storeType,
+                action.instanceId.toString(),
+                action.actionType,
+                { change: true },
+                false,
+            );
 
             storeInstance.applyChanges();
             expect(storeInstance.getState(defaultInstance).change).toBeTruthy();
@@ -356,7 +406,13 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.impl.StoreInstanceImpl
                 actionType: ActionType.VIEW_ACTION,
             };
 
-            storeInstance.pushStateChange(action, { change: true }, false);
+            storeInstance.pushStateChange(
+                action.storeType,
+                action.instanceId.toString(),
+                action.actionType,
+                { change: true },
+                false,
+            );
 
             storeInstance.applyChanges();
             expect(storeInstance.getState(defaultInstance).change).toBeTruthy();

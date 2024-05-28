@@ -6,8 +6,11 @@ import {
     CreateAction,
     CreateUserExternalConnectionAction,
     CreateUserExternalOperationAction,
+    RemoveUserExternalConnectionAction,
+    RemoveUserExternalOperationAction,
     UserGetOptionAction,
-    UserLifecycleAction,
+    UserLifecycleCreateAction,
+    UserLifecycleDestroyAction,
     UserLogonAction,
 } from "./dispatching-test/action/UserStateActions";
 import { DestroyPageStateActionCreator } from "./dispatching-test/action/creator/PageStateActionCreator";
@@ -35,11 +38,14 @@ export const TestUserStateInterface = {
         destroy: DestroyUserStateActionCreator,
     },
     action: {
-        userLifecycleAction: UserLifecycleAction,
+        userLifecycleCreateAction: UserLifecycleCreateAction,
+        userLifecycleDestroyAction: UserLifecycleDestroyAction,
         userLogonAction: UserLogonAction,
         userGetOptionAction: UserGetOptionAction,
-        CreateUserExternalConnectionAction: CreateUserExternalConnectionAction,
-        CreateUserExternalOperationAction: CreateUserExternalOperationAction,
+        createUserExternalConnectionAction: CreateUserExternalConnectionAction,
+        createUserExternalOperationAction: CreateUserExternalOperationAction,
+        removeUserExternalConnectionAction: RemoveUserExternalConnectionAction,
+        removeUserExternalOperationAction: RemoveUserExternalOperationAction,
     },
     selector: {
         isUserLogon,

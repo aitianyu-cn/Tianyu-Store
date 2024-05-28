@@ -30,7 +30,7 @@ function processChangeTrie(changes: StateChangePair<any>[]): StateChangesTrie {
 function setState(operator: any, nodes: Record<string, StateChangesTrie>, forceObj?: boolean): void {
     for (const key of Object.keys(nodes)) {
         const value = nodes[key];
-        if (!operator[key]) {
+        if (key in operator) {
             if (forceObj) {
                 throw new Error(MessageBundle.getText("GET_NEW_STATE_LOST_OBJECT", key));
             } else {
@@ -38,7 +38,7 @@ function setState(operator: any, nodes: Record<string, StateChangesTrie>, forceO
             }
         }
 
-        if (value.value) {
+        if ("value" in value) {
             operator[key] = value.value;
         }
 

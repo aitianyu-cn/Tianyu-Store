@@ -21,8 +21,8 @@ export class ActionFactor {
 
     public static makeVirtualAction<
         STATE extends IterableType,
-        PARAMETER_TYPE extends IterableType,
-        RETURN_TYPE extends ReturnableType,
+        PARAMETER_TYPE extends IterableType | undefined | void = void,
+        RETURN_TYPE extends ReturnableType | undefined | void = void,
     >(): IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
         return virtualActionImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>();
     }

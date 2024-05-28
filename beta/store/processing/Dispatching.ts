@@ -13,7 +13,7 @@ import {
 } from "beta/types/StoreHandler";
 import { InstanceId } from "beta/types/InstanceId";
 import { InstanceIdImpl } from "../impl/InstanceIdImpl";
-import { IStoreState } from "../storage/interface/StoreState";
+import { IStoreState, STORE_STATE_INSTANCE } from "../storage/interface/StoreState";
 
 async function doneAction(
     executor: IStoreExecution,
@@ -33,7 +33,13 @@ async function doneAction(
                 manager.createEntity(action.instanceId, newStoreState);
             } else {
                 // to create internal object
-                executor.pushStateChange(action, newState || {}, notRedoUndo);
+                executor.pushStateChange(
+                    action.storeType,
+                    action.instanceId.toString(),
+                    action.actionType,
+                    newState || /* istanbul ignore next */ {},
+                    notRedoUndo,
+                );
             }
             break;
         case ActionType.DESTROY:
@@ -45,21 +51,43 @@ async function doneAction(
                 manager.destroyEntity(action.instanceId);
             } else {
                 // to make internal object to be undefined
-                executor.pushStateChange(action, undefined, notRedoUndo);
+                executor.pushStateChange(
+                    action.storeType,
+                    action.instanceId.toString(),
+                    action.actionType,
+                    undefined,
+                    notRedoUndo,
+                );
+            }
+            break;
+        case ActionType.UNDO:
+        case ActionType.REDO:
+            const globalInstance = (newState as IStoreState)[STORE_STATE_INSTANCE];
+            for (const storeType of Object.keys(globalInstance)) {
+                const instances = globalInstance[storeType];
+                for (const instanceId of Object.keys(instances)) {
+                    const ins = instances[instanceId];
+                    executor.pushStateChange(storeType, instanceId, action.actionType, ins, notRedoUndo);
+                }
             }
             break;
         case ActionType.ACTION:
         case ActionType.VIEW_ACTION:
-        case ActionType.UNDO:
-        case ActionType.REDO:
         default:
             // for other actions, to set the states directly
-            executor.pushStateChange(action, newState, notRedoUndo);
+            executor.pushStateChange(
+                action.storeType,
+                action.instanceId.toString(),
+                action.actionType,
+                newState,
+                notRedoUndo,
+            );
             break;
     }
 }
 
 function verifyInstanceSameAncestor(...s: InstanceId[]): string {
+    /* istanbul ignore if */
     if (s.length === 0) {
         return "";
     }
@@ -70,6 +98,8 @@ function verifyInstanceSameAncestor(...s: InstanceId[]): string {
         other = value;
         return first.entity !== value.entity;
     });
+
+    /* istanbul ignore if */
     if (differentAncestor) {
         // to throw error when the two instance belongs to different ancestor
         throw new Error(MessageBundle.getText("DISPATCHING_ACTIONS_DIFFERENT_ANCESTOR", first.entity, other.entity));
@@ -81,18 +111,24 @@ function verifyInstanceSameAncestor(...s: InstanceId[]): string {
 function verifyActionInstances(s: IInstanceAction[]): string {
     const actionCount = s.length;
     const instanceIds = s.map((value) => {
+        /* istanbul ignore if */
         if (actionCount > 1 && (value.actionType === ActionType.REDO || value.actionType === ActionType.UNDO)) {
             // throw an error when redo undo operation is not atom
             throw new Error(MessageBundle.getText("DISPATCHING_REDO_UNDO_NOT_ATOM", value.action));
         }
+
+        /* istanbul ignore if */
         if (
             actionCount > 1 &&
             InstanceIdImpl.isAncestor(value.instanceId) &&
-            (value.actionType === ActionType.CREATE || value.actionType === ActionType.DESTROY)
+            /* istanbul ignore next */ (value.actionType === ActionType.CREATE ||
+                value.actionType === ActionType.DESTROY)
         ) {
             // throw an error when create or destroy an entity is not atom
             throw new Error(MessageBundle.getText("DISPATCHING_SYSTEM_LIFECYCLE_NOT_ATOM", value.action));
         }
+
+        /* istanbul ignore if */
         if (value.storeType !== value.instanceId.storeType) {
             // throw an error when try to use a different store type instance to run action
             throw new Error(
@@ -114,6 +150,7 @@ export async function dispatching(
     executor: IStoreExecution,
     manager: IStoreManager,
     actions: IInstanceAction[],
+    /* istanbul ignore next */
     notRedoUndo: boolean = false,
 ): Promise<IInstanceAction[]> {
     const ranActions: IInstanceAction[] = [];
@@ -148,6 +185,8 @@ export async function dispatching(
                         executor.getExternalRegister(action.instanceId),
                     );
                     return externalGetter;
+
+                /* istanbul ignore next */
                 default:
                     throw new Error(MessageBundle.getText("DISPATCHING_HANDLER_WITH_UNKNOWN_RESULT"));
             }

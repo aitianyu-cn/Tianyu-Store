@@ -6,8 +6,11 @@ import {
     CreateUserExternalConnectionActionCreator,
     CreateUserExternalOperationActionCreator,
     CreateUserStateActioCreator,
+    RemoveUserExternalConnectionActionCreator,
+    RemoveUserExternalOperationActionCreator,
     UserGetOptionActionCreator,
-    UserLifecycleActionCreator,
+    UserLifecycleCreateActionCreator,
+    UserLifecycleDestroyActionCreator,
     UserLogonActionCreator,
 } from "./creator/UserStateActionCreator";
 import { guid } from "@aitianyu.cn/types";
@@ -49,9 +52,25 @@ export const CreateUserExternalOperationAction = CreateUserExternalOperationActi
     });
 });
 
-export const UserLifecycleAction = UserLifecycleActionCreator.withHandler(function* (action) {
+export const RemoveUserExternalConnectionAction = RemoveUserExternalConnectionActionCreator.withExternal(function (
+    register,
+) {
+    register.remove(USER_CONNECTION_EXTERNAL_OBJ);
+});
+export const RemoveUserExternalOperationAction = RemoveUserExternalOperationActionCreator.withExternal(function (
+    register,
+) {
+    register.remove(USER_OPTIONS_EXTERNAL_OBJ);
+});
+
+export const UserLifecycleCreateAction = UserLifecycleCreateActionCreator.withHandler(function* (action) {
     yield* doAction(CreateUserExternalConnectionAction(action.instanceId));
     yield* doAction(CreateUserExternalOperationAction(action.instanceId));
+});
+
+export const UserLifecycleDestroyAction = UserLifecycleDestroyActionCreator.withHandler(function* (action) {
+    yield* doAction(RemoveUserExternalConnectionAction(action.instanceId));
+    yield* doAction(RemoveUserExternalOperationAction(action.instanceId));
 });
 
 export const UserLogonAction = UserLogonActionCreator.withHandler(function* (action) {
@@ -60,15 +79,17 @@ export const UserLogonAction = UserLogonActionCreator.withHandler(function* (act
         return register.get(USER_CONNECTION_EXTERNAL_OBJ);
     });
 
-    const isLogon = connection?.verify(user);
+    const isLogon = !!connection?.verify(user);
     const token = (isLogon && connection?.getToken(user)) || undefined;
 
     return {
         isLogon,
         token,
+        user,
     };
 }).withReducer(function (state: ITestUserState, data) {
     return getNewStateBatch(state, [
+        { path: ["user"], value: data.user },
         { path: ["logon"], value: data.isLogon },
         {
             path: ["token"],

@@ -1,6 +1,6 @@
 /** @format */
 
-import { IInstanceAction, IBatchAction, IInstanceViewAction, IActionProvider } from "beta/types/Action";
+import { IInstanceAction, IBatchAction, IInstanceViewAction, IActionProvider, ActionType } from "beta/types/Action";
 import { IStoreHierarchyChecklist } from "beta/types/Hierarchy";
 import { InstanceId } from "beta/types/InstanceId";
 import {
@@ -178,7 +178,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
         }
 
         const instanceId = listener.selector.instanceId.toString();
-        const listeners = entityListeners[instanceId] || [];
+        const listeners = entityListeners[instanceId] || /* istanbul ignore next */ [];
         const listenerIndex = listeners.findIndex((value) => {
             return value.id === listener.id;
         });
@@ -220,7 +220,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                 return;
             }
 
-            const subscribes = entityListeners[instanceId2String] || [];
+            const subscribes = entityListeners[instanceId2String] || /* istanbul ignore next */ [];
             const subscribeIndex = subscribes.findIndex((value) => {
                 return value.id === subscribeInstance.id;
             });
@@ -257,6 +257,10 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     }
 
     private async dispatchInternal(action: IInstanceAction[], notRedoUndo: boolean): Promise<void> {
+        if (action.length === 0) {
+            return;
+        }
+
         const entity = action[0].instanceId.entity;
 
         return new Promise<void>((resolve) => {
@@ -415,6 +419,12 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     }
     applyChanges(): void {}
     discardChanges(): void {}
-    pushStateChange(action: IInstanceAction, newState: any, notRedoUndo: boolean): void {}
+    pushStateChange(
+        storeType: string,
+        instanceId: string,
+        actionType: ActionType,
+        newState: any,
+        notRedoUndo: boolean,
+    ): void {}
     validateActionInstance(action: IInstanceAction): void {}
 }

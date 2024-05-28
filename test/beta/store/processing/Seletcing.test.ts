@@ -46,7 +46,7 @@ describe("aitianyu-cn.node-module.tianyu-store.beta.store.processing.Selecting",
         discardChanges: function (): void {
             throw new Error("Function not implemented.");
         },
-        pushStateChange: function (action: IInstanceAction, newState: any, notRedoUndo: boolean): void {
+        pushStateChange: function (): void {
             throw new Error("Function not implemented.");
         },
         validateActionInstance: function (action: IInstanceAction): void {

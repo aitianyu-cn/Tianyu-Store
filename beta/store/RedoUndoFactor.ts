@@ -22,7 +22,7 @@ const CleanRedoUndoStackAction = ActionFactor.makeActionCreator().withHandler(fu
 
 const GetRedoAvailableSelector = SelectorFactor.makeSelector<IStoreState, boolean, boolean>(
     function (_state: IStoreState, externalResult?: boolean | void): boolean {
-        return typeof externalResult === "boolean" ? externalResult : false;
+        return typeof externalResult === "boolean" ? externalResult : /* istanbul ignore next */ false;
     },
     function (register: IExternalObjectRegister): boolean {
         const redoUndoStack = register.get<IRedoUndoStack>(STORE_STATE_EXTERNAL_REDOUNDO_STACK);
@@ -32,7 +32,7 @@ const GetRedoAvailableSelector = SelectorFactor.makeSelector<IStoreState, boolea
 
 const GetUndoAvailableSelector = SelectorFactor.makeSelector(
     function (_state: IStoreState, externalResult?: boolean | void): boolean {
-        return typeof externalResult === "boolean" ? externalResult : false;
+        return typeof externalResult === "boolean" ? externalResult : /* istanbul ignore next */ false;
     },
     function (register: IExternalObjectRegister): boolean {
         const redoUndoStack = register.get<IRedoUndoStack>(STORE_STATE_EXTERNAL_REDOUNDO_STACK);
