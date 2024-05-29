@@ -3,31 +3,49 @@
 /** Types Part */
 export * from "./types/Action";
 export * from "./types/ActionHandler";
-export * from "./types/Defs";
 export * from "./types/ExternalObject";
-export * from "./types/Hierarchy";
 export * from "./types/InstanceId";
 export * from "./types/Interface";
 export * from "./types/Listener";
 export * from "./types/Model";
 export * from "./types/Reducer";
 export * from "./types/Selector";
-export { type StoreConfiguration, type IStore } from "./types/Store";
+export { type StoreConfiguration, type IStoreInstanceCreateConfig, type IStore } from "./types/Store";
 export * from "./types/StoreHandler";
 export * from "./types/Subscribe";
+export {
+    TransactionType,
+    type TransactionErrorRecord,
+    type TransactionOperationRecord,
+    type ITransaction,
+} from "./types/Transaction";
 export * from "./types/Utils";
 
 /** Public Part */
-export * from "./store/ActionFactor";
-export * from "./store/ListenerFactor";
-export * from "./store/SelectorFactor";
+export { ActionFactor } from "./store/ActionFactor";
+export { ListenerFactor } from "./store/ListenerFactor";
+export { SelectorFactor } from "./store/SelectorFactor";
+
+/** Store Part */
+import { TianyuStoreEntityExpose, TianyuStoreRedoUndoExpose } from "./Interfaces";
+
+export const TIANYU_STORE_ENTITY_CORE = "tianyu-store-entity-core";
+export const TIANYU_STORE_ENTITY_REDOUNDO = "tianyu-store-entity-redoundo";
+export const TianyuStoreEntityInterfaceExpose = {
+    [TIANYU_STORE_ENTITY_CORE]: TianyuStoreEntityExpose,
+    [TIANYU_STORE_ENTITY_REDOUNDO]: TianyuStoreRedoUndoExpose,
+};
+
+export { createStore } from "./Store";
 
 /** Helper Part */
 
 import * as InstanceIdImport from "./InstanceId";
+import * as StoreImport from "./Store";
 
 export namespace StoreHelper {
     export import generateInstanceId = InstanceIdImport.generateInstanceId;
+    export import generateStoreInstanceId = StoreImport.generateNewStoreInstance;
 }
 
 /** Utils Part */

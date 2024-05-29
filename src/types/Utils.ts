@@ -2,12 +2,6 @@
 
 import { IterableType } from "./Model";
 
-export enum ChangedType {
-    CHANGE,
-    CREATE,
-    DELETE,
-}
-
 /**
  * Store State change item
  *

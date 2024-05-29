@@ -11,7 +11,16 @@ import {
 } from "src/types/Action";
 import { IterableType, ReturnableType } from "src/types/Model";
 
+/** Tianyu Store Action Create Factor */
 export class ActionFactor {
+    /**
+     * To create a new action creator
+     *
+     * @template STATE type of state
+     * @template PARAMETER_TYPE type of action parameter
+     *
+     * @returns return new action creator provider
+     */
     public static makeActionCreator<
         STATE extends IterableType,
         PARAMETER_TYPE extends IterableType | undefined | void = void,
@@ -19,6 +28,15 @@ export class ActionFactor {
         return actionCreatorImpl<STATE, PARAMETER_TYPE>();
     }
 
+    /**
+     * To create a new virtual action creator
+     *
+     * @template STATE type of state
+     * @template PARAMETER_TYPE type of action parameter
+     * @template RETURN_TYPE type of action handler return value
+     *
+     * @returns return new action provider
+     */
     public static makeVirtualAction<
         STATE extends IterableType,
         PARAMETER_TYPE extends IterableType | undefined | void = void,
@@ -27,6 +45,14 @@ export class ActionFactor {
         return virtualActionImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>();
     }
 
+    /**
+     * To create an instance creation action creator
+     *
+     * @template STATE type of state
+     * @template PARAMETER_TYPE type of action parameter
+     *
+     * @returns return new store instance creation action creator
+     */
     public static makeCreateStoreAction<
         STATE extends IterableType,
         PARAMETER_TYPE extends IterableType | undefined | void = void,
@@ -34,6 +60,11 @@ export class ActionFactor {
         return createStoreActionCreatorImpl();
     }
 
+    /**
+     * To create an instance destroy action creator
+     *
+     * @returns return new store instance destroy action creator
+     */
     public static makeDestroyStoreAction(): DestroyStoreActionCreator {
         return destroyStoreActionCreatorImpl();
     }

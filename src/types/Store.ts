@@ -32,6 +32,7 @@ export interface IStoreExecution {
     validateActionInstance(action: IInstanceAction): void;
 }
 
+/** this is for internal using */
 export interface IStoreManager {
     getAction(id: string): IActionProvider<any, any, any>;
     getSelector(id: string): ISelectorProviderBase<any>;
@@ -58,7 +59,13 @@ export type StoreConfiguration = {
     waitForAll?: boolean;
 };
 
+/** Tianyu Store Instance Entity creation configuration */
 export interface IStoreInstanceCreateConfig extends IterableType {
+    /**
+     * Indicates the instance can do redo or undo operation
+     *
+     * If this is false, redo undo stack will not be generated
+     */
     redoUndo?: boolean;
 }
 
@@ -75,6 +82,8 @@ export interface IStore {
      * To apply an instance hierarchy check list to ensure the intances are controllabl.
      *
      * @param checklist the store entity type parent & child relationship list.
+     *
+     * @deprecated
      */
     applyHierarchyChecklist(checklist?: IStoreHierarchyChecklist): void;
 

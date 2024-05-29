@@ -20,6 +20,11 @@ export function createStore(config?: StoreConfiguration): IStore {
     return new StoreImpl(config || DefaultConfig);
 }
 
+/**
+ * To generate a new Tianyu Store Instanace Id
+ *
+ * @returns return a new instance id of tianyu store instance entity
+ */
 export function generateNewStoreInstance(): InstanceId {
     return generateInstanceId(TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, guid());
 }

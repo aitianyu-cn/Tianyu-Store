@@ -14,7 +14,7 @@ export function storeUndoActionCreatorImpl(): StoreUndoActionCreator {
     const actionInstanceCaller = <StoreUndoActionCreator>actionBaseImpl<IStoreState, void, IDifferences | undefined>(
         guid(),
         function* (_action: any) {
-            const redoUndoStack = yield* doReadExternal(function (register) {
+            const redoUndoStack: IRedoUndoStack | undefined = yield* doReadExternal(function (register) {
                 return register.get<IRedoUndoStack>(STORE_STATE_EXTERNAL_REDOUNDO_STACK);
             });
 
@@ -34,7 +34,7 @@ export function storeRedoActionCreatorImpl(): StoreRedoActionCreator {
     const actionInstanceCaller = <StoreRedoActionCreator>actionBaseImpl<IStoreState, void, IDifferences | undefined>(
         guid(),
         function* (_action: any) {
-            const redoUndoStack = yield* doReadExternal(function (register) {
+            const redoUndoStack: IRedoUndoStack | undefined = yield* doReadExternal(function (register) {
                 return register.get<IRedoUndoStack>(STORE_STATE_EXTERNAL_REDOUNDO_STACK);
             });
 
