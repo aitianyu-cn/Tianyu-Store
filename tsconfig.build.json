@@ -1,5 +1,5 @@
 {
-    "include": ["src", "test", "demo/website"],
+    "include": ["src"],
     "exclude": [],
     "compilerOptions": {
         "sourceMap": true,
@@ -22,10 +22,7 @@
         "baseUrl": ".",
         "outDir": "./build",
         "paths": {
-            "src/*": ["src/*"],
-            "tianyu-store": ["src/index.ts"],
-            "tianyu-store/*": ["src/*"],
-            "web/*": ["demo/website/*"]
+            "src/*": ["src/*"]
         }
     }
 }

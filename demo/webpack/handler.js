@@ -11,7 +11,7 @@ module.exports.handleResolve = function (baseDir) {
         const formattedAlias = pathAlias.substring(0, pathAlias.length - 2);
         const targetPath = tsPaths[pathAlias][0];
         const formattedTargetPath = targetPath.substring(0, targetPath.length - 2);
-        alias[formattedAlias] = path.resolve(baseDir, formattedTargetPath);
+        alias[formattedAlias] = path.resolve(baseDir, "..", formattedTargetPath);
     }
 
     const resolve = {

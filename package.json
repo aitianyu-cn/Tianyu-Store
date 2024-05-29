@@ -14,7 +14,7 @@
     "scripts": {
         "build": "npm run build-all && npm run remove-beta",
         "build-all": "npm run before-build && npm run compiler && npm run copy-lib && npm run copy-types && npm run copy-res && npm run after-build",
-        "compiler": "tsc && tsc-alias",
+        "compiler": "tsc -p \"./tsconfig.build.json\" && tsc-alias -p \"./tsconfig.build.json\"",
         "copy-lib": "copyfiles -u 1 \"build/src/**/*.js\" dist/lib",
         "copy-res": "copyfiles \"src/**/*.json\" dist/lib",
         "remove-beta": "rimraf ./dist/lib/beta",

@@ -19,8 +19,8 @@ module.exports = {
     },
     output: {
         path: path.join(baseDir, "/build"),
-        filename: "package/[name].[contenthash:8].js",
-        chunkFilename: "package/[name].chunks.[contenthash:6].js",
+        filename: "tianyu-store/demo/[name].[contenthash:8].js",
+        chunkFilename: "tianyu-store/demo/[name].chunks.[contenthash:6].js",
         environment: {
             arrowFunction: false,
         },
@@ -58,7 +58,13 @@ module.exports = {
         host: "0.0.0.0",
         allowedHosts: "all",
         static: static,
-        proxy: [],
+        proxy: [
+            {
+                context: ["/remote-resources"],
+                target: "http://resource.aitianyu.cn",
+                pathRewrite: { "^/remote-resources": "/resources" },
+            },
+        ],
     },
     performance: {
         hints: "warning",

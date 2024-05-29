@@ -8,8 +8,10 @@ export async function loading(configure: ITianyuShellInitial = TianyuShellConfig
     await loadI18n();
     await initialTianyuShellAsync(configure);
 
-    const core = await import("@aitianyu.cn/tianyu-shell/core");
-    await core.waitLoading();
+    const Core = await import(/*webpackChunkName: "tianyu-store/shell" */ "@aitianyu.cn/tianyu-shell/core");
+    await Core.waitLoading();
 
-    return core;
+    const TianyuStore = await import(/*webpackChunkName: "tianyu-store/store" */ "tianyu-store");
+
+    return { Core, TianyuStore };
 }
