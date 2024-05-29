@@ -25,9 +25,9 @@ module.exports = {
     clearMocks: true,
     resetMocks: true,
     coverageDirectory: "test/__report__/coverage",
-    coveragePathIgnorePatterns: ["<rootDir>/test/beta/content"],
+    coveragePathIgnorePatterns: ["<rootDir>/test/unit/content"],
     moduleNameMapper: {
-        "^beta/(.*)$": "<rootDir>/beta/$1",
+        "^src/(.*)$": "<rootDir>/src/$1",
         "^test/(.*)$": "<rootDir>/test/$1",
     },
     // modulePathIgnorePatterns: ["<rootDir>/src/index.ts"],

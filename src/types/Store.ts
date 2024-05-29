@@ -1,0 +1,155 @@
+/**@format */
+
+import { IDifferences } from "src/store/storage/interface/RedoUndoStack";
+import { IStoreState } from "src/store/storage/interface/StoreState";
+import { ActionType, IActionProvider, IBatchAction, IInstanceAction, IInstanceViewAction } from "./Action";
+import { IExternalObjectRegister } from "./ExternalObject";
+import { IStoreHierarchyChecklist } from "./Hierarchy";
+import { InstanceId } from "./InstanceId";
+import { ITianyuStoreInterface, ITianyuStoreInterfaceMap } from "./Interface";
+import { IInstanceListener, StoreEventTriggerCallback } from "./Listener";
+import { IterableType } from "./Model";
+import { IInstanceSelector, ISelectorProviderBase, SelectorProvider, SelectorResult } from "./Selector";
+import { Unsubscribe } from "./Subscribe";
+
+/** this is for internal using */
+export interface IStoreExecution {
+    getExternalRegister(instanceId: InstanceId, creating?: boolean): IExternalObjectRegister;
+    getState(instanceId: InstanceId, creating?: boolean): any;
+    getOriginState(instanceId: InstanceId): any;
+    getRecentChanges(): IDifferences;
+
+    applyChanges(): void;
+    discardChanges(): void;
+    pushStateChange(
+        storeType: string,
+        instanceId: string,
+        actionType: ActionType,
+        newState: any,
+        notRedoUndo: boolean,
+    ): void;
+
+    validateActionInstance(action: IInstanceAction): void;
+}
+
+export interface IStoreManager {
+    getAction(id: string): IActionProvider<any, any, any>;
+    getSelector(id: string): ISelectorProviderBase<any>;
+
+    createEntity(instanceId: InstanceId, state: IStoreState): void;
+    destroyEntity(instanceId: InstanceId): void;
+
+    getEntity(entity: string): IStoreExecution;
+}
+
+/**
+ * Tianyu Store Configuration
+ *
+ * This is used to configure tianyu store when creating
+ */
+export type StoreConfiguration = {
+    /**
+     * Indicates the dispatch action should wait for all operation done (listener and subscribe trigger)
+     * or only wait for action exectution done
+     *
+     * TRUE: await store.dispatch should wait for listener and subscribe trigger done
+     * FLASE: await store.dispatch only wait for action execution done
+     */
+    waitForAll?: boolean;
+};
+
+export interface IStoreInstanceCreateConfig extends IterableType {
+    redoUndo?: boolean;
+}
+
+/**
+ * Tianyu Store Interface
+ *
+ * Tianyu Store is not a template interface due to the inner instances can
+ * have different data structure. "any" type is used only in Tianyu Store.
+ *
+ * Tianyu Store is a manager to provide global operators for store instance.
+ */
+export interface IStore {
+    /**
+     * To apply an instance hierarchy check list to ensure the intances are controllabl.
+     *
+     * @param checklist the store entity type parent & child relationship list.
+     */
+    applyHierarchyChecklist(checklist?: IStoreHierarchyChecklist): void;
+
+    /**
+     * To register an interface or a map of multi-interfaces into store.
+     * Store Only responses a registered operator when selecting and action dispatching.
+     * An error will be thrown if used action or selector is not registered.
+     *
+     * @param interfaceMapOrStoreType to be registered interface map or the store type for interface define.
+     * @param interfaceDefine the interface define if the first parameter provides a store type
+     */
+    registerInterface<STATE extends IterableType>(
+        interfaceMapOrStoreType: ITianyuStoreInterfaceMap | string,
+        interfaceDefine?: ITianyuStoreInterface<STATE>,
+    ): void;
+
+    /**
+     * To start an event listen.
+     * The event listener will be triggered when the store state is changed
+     *
+     * @param listener to be registered listener instance
+     */
+    startListen(listener: IInstanceListener<any>): void;
+    /**
+     * To stop an event listen.
+     * The event listener will be removed from store instance
+     *
+     * @param listener to be removed listener instance
+     */
+    stopListen(listener: IInstanceListener<any>): void;
+
+    /**
+     * To subscribe a selector.
+     * The event trigger will be called when the selector state is changed.
+     *
+     * @param instanceId instance id of selector bind instance
+     * @param selectorProvider the selector provider
+     * @param eventTrigger the event callback when selector state is changed
+     *
+     * @returns return an unsubscribe function
+     */
+    subscribe<STATE extends IterableType, RESULT>(
+        instanceId: InstanceId,
+        selectorProvider: SelectorProvider<STATE, RESULT>,
+        eventTrigger: StoreEventTriggerCallback<RESULT>,
+    ): Unsubscribe;
+
+    /**
+     * To select a state value
+     *
+     * @param selector the selector instance
+     *
+     * @returns return selected value
+     */
+    selecte<RESULT>(selector: IInstanceSelector<RESULT>): SelectorResult<RESULT>;
+
+    /**
+     * To dispatch an action or actions.
+     * This dispatch is a transaction executor.
+     *
+     * @param action to be dispatched action or action batch
+     *
+     * @returns return a promise to wait actions done
+     *
+     * WARNING: PLEASE DO NOT EXECUTE A VIEW ACTION DURING THIS DISPATCH EXECUTION,
+     * BECAUSE IF THE UNDO, REDO IS APPLIED, STORE STATE MIGHT NOT CHANGED CORRECTLY.
+     */
+    dispatch(action: IInstanceAction | IBatchAction): Promise<void>;
+    /**
+     * To dispatch a ui action or actions.
+     * This dispatch is not a transaction executor.
+     *
+     * @param action to be dispatched action or action batch
+     *
+     * @returns return a promise to wait actions done
+     */
+    dispatchForView(action: IInstanceViewAction | IBatchAction): void;
+}
