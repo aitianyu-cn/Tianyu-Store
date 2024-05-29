@@ -22,10 +22,13 @@ module.exports = {
             },
         ],
     ],
+    clearMocks: true,
+    resetMocks: true,
     coverageDirectory: "test/__report__/coverage",
+    coveragePathIgnorePatterns: ["<rootDir>/test/beta/content"],
     moduleNameMapper: {
-        // "src/*": "<rootDir>/src/*",
-        // "src/store": "<rootDir>/src/store",
+        "^beta/(.*)$": "<rootDir>/beta/$1",
+        "^test/(.*)$": "<rootDir>/test/$1",
     },
     // modulePathIgnorePatterns: ["<rootDir>/src/index.ts"],
 };

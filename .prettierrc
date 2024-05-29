@@ -14,7 +14,7 @@
         "endOfLine": "lf",
         "proseWrap": "preserve",
         "trailingComma": "all",
-        "requirePragma": true
+        "requirePragma": false
       }
     },
     {
