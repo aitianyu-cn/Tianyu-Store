@@ -30,17 +30,17 @@ export function actionImpl<
 >(
     id: string,
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
-    reducer: ReducerFunction<STATE, RETURN_TYPE>,
-    external: ExternalOperatorFunction,
+    reducer?: ReducerFunction<STATE, RETURN_TYPE>,
+    external?: ExternalOperatorFunction,
     actionType?: ActionType,
 ): ActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     const actionInstanceCaller = <ActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
         actionBaseImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(
             id,
             handler,
+            actionType || ActionType.ACTION,
             reducer,
             external,
-            actionType || ActionType.ACTION,
         )
     );
 
@@ -64,8 +64,8 @@ export function viewActionImpl<
 >(
     id: string,
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
-    reducer: ReducerFunction<STATE, RETURN_TYPE>,
-    external: ExternalOperatorFunction,
+    reducer?: ReducerFunction<STATE, RETURN_TYPE>,
+    external?: ExternalOperatorFunction,
     actionType?: ActionType,
 ): ViewActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     const actionInstanceCaller = <ViewActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
@@ -103,9 +103,8 @@ export function createStoreActionCreatorImpl<
         actionBaseImpl<STATE, PARAMETER_TYPE, PARAMETER_TYPE>(
             guid(),
             createNonHandler<PARAMETER_TYPE>(),
-            createDefaultReducer<STATE, PARAMETER_TYPE>(),
-            createDefaultExternalOperator(),
             ActionType.CREATE,
+            createDefaultReducer(),
         )
     );
     actionInstanceCaller.withReducer = function (
@@ -125,13 +124,9 @@ export function createStoreActionCreatorImpl<
 
 export function destroyStoreActionCreatorImpl(): DestroyStoreActionCreator {
     const actionInstanceCaller = <DestroyStoreActionCreator>(
-        actionBaseImpl<any, void, void>(
-            guid(),
-            createVoidHandler(),
-            createDefaultReducer<any, void>(),
-            createDefaultExternalOperator(),
-            ActionType.DESTROY,
-        )
+        actionBaseImpl<any, void, void>(guid(), createVoidHandler(), ActionType.DESTROY, function () {
+            return undefined;
+        })
     );
     actionInstanceCaller.withReducer = function (reducer: ReducerFunction<any, void>): ActionProvider<any, void, void> {
         return actionImpl<any, void, void>(

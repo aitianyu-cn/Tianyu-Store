@@ -1,6 +1,6 @@
 /** @format */
 
-import { generateInstanceId } from "src/InstanceId";
+import { generateInstanceId, newInstanceId } from "src/InstanceId";
 
 describe("aitianyu-cn.node-module.tianyu-store.InstanceId", () => {
     it("provides an string in the first parameter", () => {
@@ -32,6 +32,15 @@ describe("aitianyu-cn.node-module.tianyu-store.InstanceId", () => {
             expect(structure[0].entityId).toEqual("instance");
             expect(structure[1].storeType).toEqual("child");
             expect(structure[1].entityId).not.toEqual("");
+        });
+    });
+
+    describe("newInstanceId", () => {
+        it("-", () => {
+            const rawInstanceId = generateInstanceId("testStoreType", "instanceId");
+            const instanceId = newInstanceId(rawInstanceId.toString());
+
+            expect(instanceId.toString()).toEqual(rawInstanceId.toString());
         });
     });
 });

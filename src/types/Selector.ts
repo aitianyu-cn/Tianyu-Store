@@ -76,7 +76,7 @@ export interface ISelectorProviderBase<_STATE extends IterableType> extends IOpe
     selector: string;
     type: SelectorType;
     /** Store Seletor External Object Operator */
-    external: ExternalObjectHandleFunction<any>;
+    external?: ExternalObjectHandleFunction<any>;
 }
 
 /**

@@ -15,9 +15,9 @@ export function actionBaseImpl<
 >(
     id: string,
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
-    reducer: ReducerFunction<STATE, RETURN_TYPE>,
-    external: ExternalOperatorFunction,
     type: ActionType,
+    reducer?: ReducerFunction<STATE, RETURN_TYPE>,
+    external?: ExternalOperatorFunction,
 ): IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     const actionInstanceCaller = <IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
         function (instanceId: InstanceId, params: PARAMETER_TYPE): IInstanceAction {

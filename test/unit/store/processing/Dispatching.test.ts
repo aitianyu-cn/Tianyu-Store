@@ -1,7 +1,7 @@
 /** @format */
 
 import { generateInstanceId } from "src/InstanceId";
-import { TianyuStoreEntityExpose, TianyuStoreRedoUndoExpose } from "src/Interfaces";
+import { TianyuStoreEntityExpose, TianyuStoreRedoUndoExpose } from "src/InterfacesExpose";
 import { generateNewStoreInstance } from "src/Store";
 import { STORE_STATE_INSTANCE } from "src/store/storage/interface/StoreState";
 import { Missing } from "src/types/Model";
@@ -182,6 +182,231 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Dispatching", ()
                 expect(
                     TianyuStore.selecte(TianyuStoreRedoUndoExpose.stack.getUndoAvailable(ancestorInstanceId)),
                 ).toBeFalsy();
+            });
+        });
+    });
+
+    describe("entity exist api test", () => {
+        const firstUserEntityInstanceId = generateInstanceId(ancestorInstanceId, TestUserStateStoreType);
+        const secondUserEntityInstanceId = generateInstanceId(ancestorInstanceId, TestUserStateStoreType);
+
+        beforeAll(async () => {
+            await TianyuStore.dispatch(TestUserStateInterface.core.creator(firstUserEntityInstanceId));
+
+            const entity = (TianyuStore as any).entityMap.get(ancestorInstanceId.entity);
+            expect(entity).toBeDefined();
+            expect(
+                entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][firstUserEntityInstanceId.toString()],
+            ).toBeDefined();
+        });
+
+        afterAll(async () => {
+            await TianyuStore.dispatch(TestUserStateInterface.core.destroy(firstUserEntityInstanceId));
+
+            const entity = (TianyuStore as any).entityMap.get(ancestorInstanceId.entity);
+            expect(entity).toBeDefined();
+            expect(
+                entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][firstUserEntityInstanceId.toString()],
+            ).toBeUndefined();
+        });
+
+        describe("getInstanceExist", () => {
+            it("ancestor", () => {
+                const ancestorExist = TianyuStore.selecte(
+                    TianyuStoreEntityExpose.selector.getInstanceExist(
+                        secondUserEntityInstanceId.ancestor,
+                        secondUserEntityInstanceId.ancestor,
+                    ),
+                );
+                expect(ancestorExist).toBeTruthy();
+            });
+
+            it("exist", () => {
+                const ancestorExist = TianyuStore.selecte(
+                    TianyuStoreEntityExpose.selector.getInstanceExist(
+                        firstUserEntityInstanceId.ancestor,
+                        firstUserEntityInstanceId,
+                    ),
+                );
+                expect(ancestorExist).toBeTruthy();
+            });
+
+            it("not exist", () => {
+                const ancestorExist = TianyuStore.selecte(
+                    TianyuStoreEntityExpose.selector.getInstanceExist(
+                        secondUserEntityInstanceId.ancestor,
+                        secondUserEntityInstanceId,
+                    ),
+                );
+                expect(ancestorExist).toBeFalsy();
+            });
+        });
+
+        describe("create test", () => {
+            it("test ancestor", async () => {
+                await TianyuStore.dispatch(
+                    TianyuStoreEntityExpose.action.createInstanceIfNotExist(secondUserEntityInstanceId.ancestor, {}),
+                );
+
+                const entity = (TianyuStore as any).entityMap.get(ancestorInstanceId.entity);
+                expect(entity).toBeDefined();
+                expect(
+                    entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                        secondUserEntityInstanceId.toString()
+                    ],
+                ).toBeUndefined();
+            });
+
+            it("test exist", async () => {
+                await TianyuStore.dispatch(
+                    TianyuStoreEntityExpose.action.createInstanceIfNotExist(firstUserEntityInstanceId, {}),
+                );
+
+                const entity = (TianyuStore as any).entityMap.get(ancestorInstanceId.entity);
+                expect(entity).toBeDefined();
+                expect(Object.keys(entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType]).length).toEqual(1);
+                expect(
+                    entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                        firstUserEntityInstanceId.toString()
+                    ],
+                ).toBeDefined();
+                expect(
+                    entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                        secondUserEntityInstanceId.toString()
+                    ],
+                ).toBeUndefined();
+            });
+
+            it("test not exist", async () => {
+                {
+                    await TianyuStore.dispatch(
+                        TianyuStoreEntityExpose.action.createInstanceIfNotExist(secondUserEntityInstanceId, {}),
+                    );
+
+                    const entity = (TianyuStore as any).entityMap.get(ancestorInstanceId.entity);
+                    expect(entity).toBeDefined();
+                    expect(Object.keys(entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType]).length).toEqual(
+                        2,
+                    );
+                    expect(
+                        entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                            firstUserEntityInstanceId.toString()
+                        ],
+                    ).toBeDefined();
+                    expect(
+                        entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                            secondUserEntityInstanceId.toString()
+                        ],
+                    ).toBeDefined();
+                }
+
+                {
+                    await TianyuStore.dispatch(TestUserStateInterface.core.destroy(secondUserEntityInstanceId));
+
+                    const entity = (TianyuStore as any).entityMap.get(ancestorInstanceId.entity);
+                    expect(entity).toBeDefined();
+                    expect(
+                        entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                            secondUserEntityInstanceId.toString()
+                        ],
+                    ).toBeUndefined();
+                }
+            });
+        });
+
+        describe("destroy test", () => {
+            it("test ancestor", async () => {
+                await TianyuStore.dispatch(
+                    TianyuStoreEntityExpose.action.destroyInstanceIfExist(secondUserEntityInstanceId.ancestor),
+                );
+
+                const entity = (TianyuStore as any).entityMap.get(ancestorInstanceId.entity);
+                expect(entity).toBeDefined();
+                expect(
+                    entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                        secondUserEntityInstanceId.toString()
+                    ],
+                ).toBeUndefined();
+            });
+
+            it("test exist", async () => {
+                {
+                    await TianyuStore.dispatch(
+                        TianyuStoreEntityExpose.action.createInstanceIfNotExist(secondUserEntityInstanceId, {}),
+                    );
+
+                    const entity = (TianyuStore as any).entityMap.get(ancestorInstanceId.entity);
+                    expect(entity).toBeDefined();
+                    expect(Object.keys(entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType]).length).toEqual(
+                        2,
+                    );
+                    expect(
+                        entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                            firstUserEntityInstanceId.toString()
+                        ],
+                    ).toBeDefined();
+                    expect(
+                        entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                            secondUserEntityInstanceId.toString()
+                        ],
+                    ).toBeDefined();
+                }
+
+                {
+                    await TianyuStore.dispatch(
+                        TianyuStoreEntityExpose.action.destroyInstanceIfExist(secondUserEntityInstanceId),
+                    );
+
+                    const entity = (TianyuStore as any).entityMap.get(ancestorInstanceId.entity);
+                    expect(entity).toBeDefined();
+                    expect(Object.keys(entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType]).length).toEqual(
+                        1,
+                    );
+                    expect(
+                        entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                            firstUserEntityInstanceId.toString()
+                        ],
+                    ).toBeDefined();
+                    expect(
+                        entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                            secondUserEntityInstanceId.toString()
+                        ],
+                    ).toBeUndefined();
+                }
+            });
+
+            it("test not exist", async () => {
+                {
+                    const entity = (TianyuStore as any).entityMap.get(ancestorInstanceId.entity);
+                    expect(entity).toBeDefined();
+                    expect(Object.keys(entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType]).length).toEqual(
+                        1,
+                    );
+                    expect(
+                        entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                            firstUserEntityInstanceId.toString()
+                        ],
+                    ).toBeDefined();
+                    expect(
+                        entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                            secondUserEntityInstanceId.toString()
+                        ],
+                    ).toBeUndefined();
+                }
+
+                {
+                    await TianyuStore.dispatch(
+                        TianyuStoreEntityExpose.action.destroyInstanceIfExist(secondUserEntityInstanceId),
+                    );
+
+                    const entity = (TianyuStore as any).entityMap.get(ancestorInstanceId.entity);
+                    expect(entity).toBeDefined();
+                    expect(
+                        entity.storeState[STORE_STATE_INSTANCE][TestUserStateStoreType][
+                            secondUserEntityInstanceId.toString()
+                        ],
+                    ).toBeUndefined();
+                }
             });
         });
     });

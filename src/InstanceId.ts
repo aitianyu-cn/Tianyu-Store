@@ -32,3 +32,13 @@ export function generateInstanceId(
     instanceStructure.push({ storeType: storeTypeOrEntityId, entityId });
     return new InstanceIdImpl(instanceStructure);
 }
+
+/**
+ * Function to craete a instance id from provided string
+ *
+ * @param instanceId instance id string
+ * @returns return a new instance id which equals to given string
+ */
+export function newInstanceId(instanceId: string): InstanceId {
+    return new InstanceIdImpl(instanceId);
+}

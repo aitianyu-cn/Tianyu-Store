@@ -4,6 +4,8 @@ import { ITianyuStoreInterface } from "src/types/Interface";
 import { IStoreInstanceCreateConfig } from "src/types/Store";
 import { ActionFactor } from "./ActionFactor";
 import { IStoreState, STORE_STATE_INSTANCE, STORE_STATE_SYSTEM } from "./storage/interface/StoreState";
+import { GetInstanceExist } from "./storage/StoreEntitySelector";
+import { CreateInstanceIfNotExist, DestroyInstanceIfExist } from "./storage/StoreEntityAction";
 
 const DefaultInstanceCreationConfig: IStoreInstanceCreateConfig = {
     redoUndo: true,
@@ -30,6 +32,13 @@ export const TianyuStoreEntityInterface = {
     core: {
         creator: CreateAction,
         destroy: DestroyAction,
+    },
+    action: {
+        createInstanceIfNotExist: CreateInstanceIfNotExist,
+        destroyInstanceIfExist: DestroyInstanceIfExist,
+    },
+    selector: {
+        getInstanceExist: GetInstanceExist,
     },
 };
 

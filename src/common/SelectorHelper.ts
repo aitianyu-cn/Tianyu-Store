@@ -12,7 +12,6 @@ import {
     SelectorType,
     IInstanceSelector,
 } from "src/types/Selector";
-import { createDefaultExternalOperator } from "./ActionHelper";
 import { defaultInfoGenerator } from "./OperatorHelper";
 
 function fillSelectorInstanceCaller<
@@ -43,7 +42,7 @@ function fillSelectorInstanceCaller<
     selectorInstanceCaller.type = type;
     selectorInstanceCaller.getter = rawSelector;
     selectorInstanceCaller.info = defaultInfoGenerator(OperatorInfoType.SELECTOR);
-    selectorInstanceCaller.external = enternal || createDefaultExternalOperator();
+    selectorInstanceCaller.external = enternal;
 
     return selectorInstanceCaller;
 }

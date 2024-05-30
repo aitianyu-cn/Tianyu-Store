@@ -15,17 +15,11 @@ export function actionHandlerImpl<
     RETURN_TYPE extends ReturnableType,
 >(
     id: string,
-    external: ExternalOperatorFunction,
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
+    external?: ExternalOperatorFunction,
 ): ActionHandlerProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     const actionInstanceCaller = <ActionHandlerProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
-        actionBaseImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(
-            id,
-            handler,
-            createDefaultReducer<STATE, RETURN_TYPE>(),
-            external,
-            ActionType.ACTION,
-        )
+        actionBaseImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(id, handler, ActionType.ACTION, undefined, external)
     );
     actionInstanceCaller.withReducer = function (
         reducer: ReducerFunction<STATE, RETURN_TYPE>,

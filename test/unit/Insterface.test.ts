@@ -1,7 +1,7 @@
 /** @format */
 
 import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "src/types/Defs";
-import { TianyuStoreEntityExpose, TianyuStoreRedoUndoExpose } from "src/Interfaces";
+import { TianyuStoreEntityExpose, TianyuStoreRedoUndoExpose } from "src/InterfacesExpose";
 
 describe("aitianyu-cn.node-module.tianyu-store.Interface", () => {
     it("TianyuStoreEntityExpose", () => {

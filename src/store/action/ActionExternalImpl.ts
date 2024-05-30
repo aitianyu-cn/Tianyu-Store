@@ -24,9 +24,9 @@ export function actionExternalImpl<STATE extends IterableType, PARAMETER_TYPE ex
         actionBaseImpl<STATE, PARAMETER_TYPE, PARAMETER_TYPE>(
             id,
             createNonHandler<PARAMETER_TYPE>(),
-            createDefaultReducer<STATE, PARAMETER_TYPE>(),
-            external,
             ActionType.ACTION,
+            undefined,
+            external,
         )
     );
 
@@ -35,8 +35,8 @@ export function actionExternalImpl<STATE extends IterableType, PARAMETER_TYPE ex
     ): ActionHandlerProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
         return actionHandlerImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(
             actionInstanceCaller.id,
-            actionInstanceCaller.external,
             handler,
+            actionInstanceCaller.external,
         );
     };
 

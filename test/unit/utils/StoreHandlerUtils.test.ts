@@ -4,9 +4,23 @@ import { generateInstanceId } from "src/InstanceId";
 import { ActionType, IInstanceAction } from "src/types/Action";
 import { IInstanceSelector } from "src/types/Selector";
 import { StoreHandleType } from "src/types/StoreHandler";
-import { doAction, doSelector, doReadExternal } from "src/utils/StoreHandlerUtils";
+import { doAction, doSelector, doReadExternal, doActionWithActioName } from "src/utils/StoreHandlerUtils";
 
 describe("aitianyu-cn.node-module.tianyu-store.utils.StoreHandlerUtils", () => {
+    describe("doActionWithActioName", () => {
+        it("-", () => {
+            const iterator = doActionWithActioName("test", "add", generateInstanceId("", ""));
+            let result = iterator.next();
+            if (!result.done) {
+                result = iterator.next(result.value);
+            }
+
+            const finalValue = result.value;
+            expect(finalValue.type).toBe(StoreHandleType.ACTION);
+            expect(finalValue.action.action).toEqual("test.add");
+        });
+    });
+
     describe("doAction", () => {
         it("-", () => {
             const action: IInstanceAction = {

@@ -27,8 +27,6 @@ export function actionCreatorImpl<
         actionBaseImpl<STATE, PARAMETER_TYPE, PARAMETER_TYPE>(
             guid(),
             createNonHandler<PARAMETER_TYPE>(),
-            createDefaultReducer<STATE, PARAMETER_TYPE>(),
-            createDefaultExternalOperator(),
             ActionType.ACTION,
         )
     );
@@ -36,11 +34,7 @@ export function actionCreatorImpl<
     actionInstanceCaller.withHandler = function <RETURN_TYPE extends ReturnableType>(
         handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
     ): ActionHandlerProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
-        return actionHandlerImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(
-            actionInstanceCaller.id,
-            actionInstanceCaller.external,
-            handler,
-        );
+        return actionHandlerImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(actionInstanceCaller.id, handler);
     };
 
     actionInstanceCaller.withReducer = function (
@@ -50,7 +44,6 @@ export function actionCreatorImpl<
             actionInstanceCaller.id,
             actionInstanceCaller.handler,
             reducer,
-            actionInstanceCaller.external,
         );
     };
 
@@ -65,7 +58,6 @@ export function actionCreatorImpl<
             actionInstanceCaller.id,
             actionInstanceCaller.handler,
             actionInstanceCaller.reducer,
-            actionInstanceCaller.external,
         );
     };
 

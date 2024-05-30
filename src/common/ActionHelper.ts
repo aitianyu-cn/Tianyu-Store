@@ -11,7 +11,7 @@ export function createDefaultReducer<
     PARAMETER_TYPE extends ReturnableType,
 >(): ReducerFunction<STATE, PARAMETER_TYPE> {
     return function (state: STATE, _data: PARAMETER_TYPE): STATE {
-        return state;
+        return state || /* istanbul ignore next */ {};
     };
 }
 

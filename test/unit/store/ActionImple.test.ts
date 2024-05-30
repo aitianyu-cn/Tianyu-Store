@@ -25,7 +25,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.ActionImpl", () => {
             };
             const external = function () {};
 
-            const action = actionBaseImpl("actionId", handler, reducer, external, ActionType.ACTION);
+            const action = actionBaseImpl("actionId", handler, ActionType.ACTION, reducer, external);
             expect(action.id).toEqual("actionId");
 
             const actionInstance = action(generateInstanceId("", ""), {});
@@ -53,13 +53,8 @@ describe("aitianyu-cn.node-module.tianyu-store.store.ActionImpl", () => {
                 expect(true).toBeTruthy();
             }
 
-            expect(() => {
-                virtualAction.reducer({}, {});
-            }).toThrow();
-
-            expect(() => {
-                virtualAction.external({} as any);
-            }).toThrow();
+            expect(virtualAction.reducer).toBeUndefined();
+            expect(virtualAction.external).toBeUndefined();
         });
     });
 
@@ -130,7 +125,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.ActionImpl", () => {
             };
             const external = function () {};
 
-            const actionHandler = actionHandlerImpl("actionId", external, handler);
+            const actionHandler = actionHandlerImpl("actionId", handler, external);
             expect(actionHandler.getType()).toEqual(ActionType.ACTION);
 
             const action = actionHandler.withReducer(function (state) {

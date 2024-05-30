@@ -14,6 +14,7 @@ import {
 import { InstanceIdImpl } from "../impl/InstanceIdImpl";
 import { IStoreState, STORE_STATE_INSTANCE } from "../storage/interface/StoreState";
 import { doSelecting } from "./Selecting";
+import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "src/types/Defs";
 
 async function doneAction(
     executor: IStoreExecution,
@@ -108,9 +109,28 @@ function verifyInstanceSameAncestor(...s: InstanceId[]): string {
     return first.entity;
 }
 
+function verifyInstanceIdMatchStoreTypeOrParentStoreType(storeType: string, instanceId: InstanceId): boolean {
+    let instance = instanceId;
+    while (!InstanceIdImpl.isAncestor(instance)) {
+        if (instance.storeType === storeType) {
+            return true;
+        }
+
+        instance = instance.parent;
+    }
+
+    return instance.storeType === TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE;
+}
+
 function verifyActionInstances(s: IInstanceAction[]): string {
     const actionCount = s.length;
     const instanceIds = s.map((value) => {
+        /* istanbul ignore if */
+        if (!value.instanceId.isValid()) {
+            // throw an error when redo undo operation is not atom
+            throw new Error(MessageBundle.getText("DISPATCHING_INSTANCE_ID_NOT_VALID", value.action));
+        }
+
         /* istanbul ignore if */
         if (actionCount > 1 && (value.actionType === ActionType.REDO || value.actionType === ActionType.UNDO)) {
             // throw an error when redo undo operation is not atom
@@ -129,7 +149,7 @@ function verifyActionInstances(s: IInstanceAction[]): string {
         }
 
         /* istanbul ignore if */
-        if (value.storeType !== value.instanceId.storeType) {
+        if (!verifyInstanceIdMatchStoreTypeOrParentStoreType(value.storeType, value.instanceId)) {
             // throw an error when try to use a different store type instance to run action
             throw new Error(
                 MessageBundle.getText(
@@ -146,6 +166,26 @@ function verifyActionInstances(s: IInstanceAction[]): string {
     return verifyInstanceSameAncestor(...instanceIds);
 }
 
+function getStoreTypeMatchedInstanceId(storeType: string, instanceId: InstanceId): InstanceId {
+    // if (instanceId.storeType === storeType) {
+    //     return instanceId;
+    // }
+    // const instancePair = instanceId.structure();
+    // let index = instancePair.length - 1;
+    // for (; index >= 0; --index) {
+    //     if (instancePair[index].storeType === storeType) {
+    //         break;
+    //     }
+    // }
+
+    // if (index < 0) {
+    //     return instanceId;
+    // }
+
+    // return new InstanceIdImpl(instancePair.slice(0, index + 1));
+    return instanceId;
+}
+
 export async function dispatching(
     executor: IStoreExecution,
     manager: IStoreManager,
@@ -157,12 +197,20 @@ export async function dispatching(
 
     const _entity = verifyActionInstances(actions);
 
-    for (const action of actions) {
+    for (const rawAction of actions) {
+        const actionImpl = manager.getAction(rawAction.action);
+
+        // due to in the internal case, there will execute action by action name only
+        // reget the action instance to ensure the action valid
+        const action = actionImpl(rawAction.instanceId, rawAction.params);
         ranActions.push(action);
-        const actionImpl = manager.getAction(action.action);
-        await actionImpl.external(
-            executor.getExternalRegister(action.instanceId, action.actionType === ActionType.CREATE),
-        );
+
+        // execute external processing
+        if (actionImpl.external) {
+            await actionImpl.external(
+                executor.getExternalRegister(action.instanceId, action.actionType === ActionType.CREATE),
+            );
+        }
         const iterator = actionImpl.handler(action);
 
         const fnGetNextValue = async (handleResult: AnyStoreHandle) => {
@@ -196,11 +244,16 @@ export async function dispatching(
             const result = await iterator.next(value);
             if (result.done) {
                 // this is for action done
-                const newState = actionImpl.reducer(
-                    executor.getState(action.instanceId, action.actionType === ActionType.CREATE),
-                    result.value,
-                );
-                await doneAction(executor, manager, action, newState, notRedoUndo);
+                if (actionImpl.reducer) {
+                    const newState = actionImpl.reducer(
+                        executor.getState(
+                            getStoreTypeMatchedInstanceId(rawAction.storeType, rawAction.instanceId),
+                            action.actionType === ActionType.CREATE,
+                        ),
+                        result.value,
+                    );
+                    await doneAction(executor, manager, action, newState, notRedoUndo);
+                }
             } else {
                 const handleResult = result.value;
                 const nextValue = await fnGetNextValue(handleResult);

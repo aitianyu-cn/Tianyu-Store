@@ -39,7 +39,7 @@ export function doSelectingWithState<RESULT>(
     const getter = (selectorImpl as SelectorProvider<any, RESULT> | ParameterSelectorProvider<any, any, RESULT>).getter;
 
     try {
-        const externalResult = selectorImpl.external(executor.getExternalRegister(selector.instanceId));
+        const externalResult = selectorImpl.external?.(executor.getExternalRegister(selector.instanceId));
         return type === SelectorType.NORMAL
             ? (getter as RawSelector<any, RESULT, any>)(state, externalResult)
             : (getter as RawParameterSelector<any, any, RESULT, any>)(state, selector.params, externalResult);

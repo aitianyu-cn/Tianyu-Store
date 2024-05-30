@@ -20,11 +20,10 @@ export function storeUndoActionCreatorImpl(): StoreUndoActionCreator {
 
             return redoUndoStack?.doUndo();
         },
+        ActionType.UNDO,
         function (state: IStoreState, data: IDifferences | undefined): IStoreState {
             return data ? mergeDiff(state, data, true) : /* istanbul ignore next */ state;
         },
-        createDefaultExternalOperator(),
-        ActionType.UNDO,
     );
 
     return actionInstanceCaller;
@@ -40,11 +39,10 @@ export function storeRedoActionCreatorImpl(): StoreRedoActionCreator {
 
             return redoUndoStack?.doRedo();
         },
+        ActionType.REDO,
         function (state: IStoreState, data: IDifferences | undefined): IStoreState {
             return data ? mergeDiff(state, data) : /* istanbul ignore next */ state;
         },
-        createDefaultExternalOperator(),
-        ActionType.REDO,
     );
 
     return actionInstanceCaller;

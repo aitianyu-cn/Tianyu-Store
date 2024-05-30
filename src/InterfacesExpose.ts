@@ -8,15 +8,20 @@ import { SelectorFactor } from "./store/SelectorFactor";
 import { IStoreInstanceCreateConfig } from "./types/Store";
 import { ActionFactor } from "./store/ActionFactor";
 import { ITianyuStoreInterface } from "./types/Interface";
+import { InstanceId } from "./types/InstanceId";
 
 const CreateAction = ActionFactor.makeCreateStoreAction<IStoreState, IStoreInstanceCreateConfig | void>();
 const DestroyAction = ActionFactor.makeDestroyStoreAction();
 
 const CleanStackAction = ActionFactor.makeVirtualAction();
+const CreateInstanceIfNotExist = ActionFactor.makeVirtualAction<IStoreState, any>();
+const DestroyInstanceIfExist = ActionFactor.makeVirtualAction<IStoreState, void>();
 
 const GetRedoAvailable = SelectorFactor.makeVirtualSelector<IStoreState, boolean>();
 const GetUndoAvailable = SelectorFactor.makeVirtualSelector<IStoreState, boolean>();
 const GetRedoUndoEnabledSelector = SelectorFactor.makeVirtualSelector<IStoreState, boolean>();
+
+const GetInstanceExist = SelectorFactor.makeVirtualParameterSelector<IStoreState, InstanceId, boolean>();
 
 /**
  * Tianyu Store default operator
@@ -25,6 +30,13 @@ export const TianyuStoreEntityExpose = {
     core: {
         creator: CreateAction,
         destroy: DestroyAction,
+    },
+    action: {
+        createInstanceIfNotExist: CreateInstanceIfNotExist,
+        destroyInstanceIfExist: DestroyInstanceIfExist,
+    },
+    selector: {
+        getInstanceExist: GetInstanceExist,
     },
 };
 

@@ -18,6 +18,7 @@ import {
 import { IStoreState, STORE_STATE_SYSTEM, STORE_STATE_INSTANCE } from "../storage/interface/StoreState";
 import { InstanceIdImpl } from "./InstanceIdImpl";
 import { InvalidExternalRegister } from "./InvalidExternalRegisterImpl";
+import { InstanceParentHolder } from "../modules/InstanceParentHolder";
 
 interface IStoreChangeInstance {
     [storeType: string]: {
@@ -35,6 +36,7 @@ export class StoreInstanceImpl implements IStoreExecution {
     // even it is created, only when the whole store instance is destroied or delete it manually,
     // the external objects are always kept
     private externalObjectMap: Map<string, IExternalObjectRegister>;
+    private parentChildHolder: InstanceParentHolder;
     private storeState: IStoreState;
     private instanceId: InstanceId;
 
@@ -46,6 +48,7 @@ export class StoreInstanceImpl implements IStoreExecution {
         this.instanceId = instanceId;
 
         this.externalObjectMap = new Map<string, IExternalObjectRegister>();
+        this.parentChildHolder = new InstanceParentHolder();
 
         // to init the root external register
         const externalRegister = new ExternalRegister();
@@ -71,10 +74,6 @@ export class StoreInstanceImpl implements IStoreExecution {
     getExternalRegister(instanceId: InstanceId, creating?: boolean): IExternalObjectRegister {
         const externalObject = this.externalObjectMap.get(instanceId.toString());
         if (!externalObject) {
-            if (creating) {
-                return InvalidExternalRegister;
-            }
-
             throw new Error(MessageBundle.getText("STORE_INSTANCE_EXTRERNAL_MANAGER_NOT_FOUND", instanceId.toString()));
         }
 
@@ -156,6 +155,10 @@ export class StoreInstanceImpl implements IStoreExecution {
                     };
                 }
 
+                if (changeItem.type === DifferenceChangeType.Create) {
+                    this.parentChildHolder.createInstance(new InstanceIdImpl(insId));
+                }
+
                 // this is for state redo/undo checking
                 // when there is a view action
                 // should clean all redo/undo stack due to the state is could not be navigated
@@ -169,6 +172,7 @@ export class StoreInstanceImpl implements IStoreExecution {
         }
 
         this.storeState = mergeDiff(this.storeState, diff);
+        this.parentChildHolder.applyChanges();
 
         const redoUndoStack = this.externalObjectMap
             .get(this.instanceId.toString())
@@ -181,6 +185,7 @@ export class StoreInstanceImpl implements IStoreExecution {
     }
     discardChanges(): void {
         this.changeCache = {};
+        this.parentChildHolder.discardChanges();
     }
     pushStateChange(
         storeType: string,
@@ -193,6 +198,9 @@ export class StoreInstanceImpl implements IStoreExecution {
             this.changeCache[storeType] = {};
         }
 
+        const redoUndo = !notRedoUndo && actionType !== ActionType.VIEW_ACTION;
+        const record = actionType !== ActionType.REDO && actionType !== ActionType.UNDO;
+
         this.changeCache[storeType][instanceId] = {
             state: newState,
             type:
@@ -201,13 +209,28 @@ export class StoreInstanceImpl implements IStoreExecution {
                     : actionType === ActionType.DESTROY
                     ? DifferenceChangeType.Delete
                     : DifferenceChangeType.Change,
-            redoUndo: !notRedoUndo && actionType !== ActionType.VIEW_ACTION,
-            record: actionType !== ActionType.REDO && actionType !== ActionType.UNDO,
+            redoUndo,
+            record,
         };
 
         if (actionType === ActionType.CREATE) {
             // for create new instance, to create a new external object manager
             this.externalObjectMap.set(instanceId, new ExternalRegister());
+        }
+
+        if (actionType === ActionType.DESTROY) {
+            // for destroy instance, to destroy its children
+            const instances = this.parentChildHolder.removeInstance(instanceId);
+            for (const insId of instances) {
+                const ins = new InstanceIdImpl(insId);
+                const storeType = ins.storeType;
+                this.changeCache[storeType][insId] = {
+                    state: undefined,
+                    type: DifferenceChangeType.Delete,
+                    redoUndo,
+                    record,
+                };
+            }
         }
     }
 

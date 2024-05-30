@@ -9,6 +9,7 @@
     "DO_SELECTING_FAILED": "",
 
     "INSTANCE_ID_NOT_VALID": "{0}",
+    "CREATE_INSTANCE_PARENT_NOT_INIT": "{0} instance id",
 
     "STORE_ACTION_NOT_FOUND": "{0}",
     "STORE_SELECTOR_NOT_FOUND": "{0}",
@@ -26,6 +27,7 @@
     "DISPATCHING_REDO_UNDO_NOT_ATOM": "{0}",
     "DISPATCHING_SYSTEM_LIFECYCLE_NOT_ATOM": "{0}",
     "DISPATCHING_ACTION_INSTANCE_NOT_MATCH": "{0} action store type {1} instance store type {2} action name",
+    "DISPATCHING_INSTANCE_ID_NOT_VALID": "{0} action",
 
     "TRANSACTION_ERROR_RECORDING_UNKNOWN_ERROR": "{0}"
 }

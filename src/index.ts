@@ -27,7 +27,7 @@ export { ListenerFactor } from "./store/ListenerFactor";
 export { SelectorFactor } from "./store/SelectorFactor";
 
 /** Store Part */
-import { TianyuStoreEntityExpose, TianyuStoreRedoUndoExpose } from "./Interfaces";
+import { TianyuStoreEntityExpose, TianyuStoreRedoUndoExpose } from "./InterfacesExpose";
 
 export const TIANYU_STORE_ENTITY_CORE = "tianyu-store-entity-core";
 export const TIANYU_STORE_ENTITY_REDOUNDO = "tianyu-store-entity-redoundo";
@@ -46,6 +46,7 @@ import * as StoreImport from "./Store";
 export namespace StoreHelper {
     export import generateInstanceId = InstanceIdImport.generateInstanceId;
     export import generateStoreInstanceId = StoreImport.generateNewStoreInstance;
+    export import newInstanceId = InstanceIdImport.newInstanceId;
 }
 
 /** Utils Part */

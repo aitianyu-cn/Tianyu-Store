@@ -111,9 +111,9 @@ export interface IActionProvider<
     /** Action Handler Executor */
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>;
     /** Action Reducer Executor */
-    reducer: ReducerFunction<STATE, RETURN_TYPE>;
+    reducer?: ReducerFunction<STATE, RETURN_TYPE>;
     /** Action External Operator Executor */
-    external: ExternalOperatorFunction;
+    external?: ExternalOperatorFunction;
 }
 
 /**
