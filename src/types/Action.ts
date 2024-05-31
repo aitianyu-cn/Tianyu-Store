@@ -93,11 +93,8 @@ export interface IActionProviderBase<_STATE extends IterableType> extends IOpera
  * @template PARAMETER_TYPE the type of action input parameter
  * @template RETURN_TYPE the type of action handler returns
  */
-export interface IActionProvider<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
-    RETURN_TYPE extends ReturnableType,
-> extends IActionProviderBase<STATE> {
+export interface IActionProvider<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE>
+    extends IActionProviderBase<STATE> {
     /**
      * To create an action instance
      *
@@ -121,10 +118,8 @@ export interface IActionProvider<
  *
  * @template STATE the store state type of this action
  */
-export interface CreateStoreActionCreator<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void = void,
-> extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
+export interface CreateStoreActionCreator<STATE extends IterableType, PARAMETER_TYPE>
+    extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
     /**
      * Function to add a custom reducer and get a new Action Provider
      *
@@ -153,10 +148,8 @@ export interface DestroyStoreActionCreator extends IActionProvider<any, void, vo
  * @template STATE the type of store state
  * @template PARAMETER_TYPE the type of store reduer parameter
  */
-export interface ActionCreatorProvider<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
-> extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
+export interface ActionCreatorProvider<STATE extends IterableType, PARAMETER_TYPE>
+    extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
     /**
      * Function to add a custom action handler and get a new action provider
      *
@@ -194,10 +187,8 @@ export interface ActionCreatorProvider<
     asViewAction(): ViewActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE>;
 }
 
-export interface ActionExternalProvider<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
-> extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
+export interface ActionExternalProvider<STATE extends IterableType, PARAMETER_TYPE>
+    extends IActionProvider<STATE, PARAMETER_TYPE, PARAMETER_TYPE> {
     /**
      * Function to add a custom action handler and get a new action provider
      *
@@ -237,11 +228,8 @@ export interface ActionExternalProvider<
  * @template PARAMETER_TYPE the type of store handler parameter
  * @template RETURN_TYPE the type of store handler return and reducer input
  */
-export interface ActionHandlerProvider<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
-    RETURN_TYPE extends ReturnableType,
-> extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
+export interface ActionHandlerProvider<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE>
+    extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     /**
      * Function to add a custom state reducer and get a new Action Provider
      *
@@ -260,11 +248,8 @@ export interface ActionHandlerProvider<
  * @template PARAMETER_TYPE the type of store handler parameter
  * @template RETURN_TYPE the type of store handler return and reducer input
  */
-export interface ActionProvider<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
-    RETURN_TYPE extends ReturnableType,
-> extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
+export interface ActionProvider<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE>
+    extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     /**
      * Function to create a view action provider
      *
@@ -284,11 +269,8 @@ export interface ActionProvider<
  * @template PARAMETER_TYPE the type of store handler parameter
  * @template RETURN_TYPE the type of store handler return and reducer input
  */
-export interface ViewActionProvider<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
-    RETURN_TYPE extends ReturnableType,
-> extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
+export interface ViewActionProvider<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE>
+    extends IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     /**
      * To create a view action instance
      *

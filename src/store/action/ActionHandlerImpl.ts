@@ -1,19 +1,14 @@
 /**@format */
 
-import { createDefaultReducer } from "src/common/ActionHelper";
 import { ActionHandlerProvider, ActionType, ActionProvider } from "src/types/Action";
 import { ActionHandlerFunction } from "src/types/ActionHandler";
 import { ExternalOperatorFunction } from "src/types/ExternalObject";
-import { IterableType, ReturnableType } from "src/types/Model";
+import { IterableType } from "src/types/Model";
 import { ReducerFunction } from "src/types/Reducer";
 import { actionBaseImpl } from "./ActionBaseImpl";
 import { actionImpl } from "./ActionImpl";
 
-export function actionHandlerImpl<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
-    RETURN_TYPE extends ReturnableType,
->(
+export function actionHandlerImpl<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE>(
     id: string,
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
     external?: ExternalOperatorFunction,

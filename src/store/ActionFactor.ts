@@ -9,7 +9,7 @@ import {
     CreateStoreActionCreator,
     DestroyStoreActionCreator,
 } from "src/types/Action";
-import { IterableType, ReturnableType } from "src/types/Model";
+import { IterableType } from "src/types/Model";
 
 /** Tianyu Store Action Create Factor */
 export class ActionFactor {
@@ -21,10 +21,10 @@ export class ActionFactor {
      *
      * @returns return new action creator provider
      */
-    public static makeActionCreator<
-        STATE extends IterableType,
-        PARAMETER_TYPE extends IterableType | undefined | void = void,
-    >(): ActionCreatorProvider<STATE, PARAMETER_TYPE> {
+    public static makeActionCreator<STATE extends IterableType, PARAMETER_TYPE = void>(): ActionCreatorProvider<
+        STATE,
+        PARAMETER_TYPE
+    > {
         return actionCreatorImpl<STATE, PARAMETER_TYPE>();
     }
 
@@ -39,8 +39,8 @@ export class ActionFactor {
      */
     public static makeVirtualAction<
         STATE extends IterableType,
-        PARAMETER_TYPE extends IterableType | undefined | void = void,
-        RETURN_TYPE extends ReturnableType | undefined | void = void,
+        PARAMETER_TYPE = void,
+        RETURN_TYPE = void,
     >(): IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
         return virtualActionImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>();
     }
@@ -53,10 +53,10 @@ export class ActionFactor {
      *
      * @returns return new store instance creation action creator
      */
-    public static makeCreateStoreAction<
-        STATE extends IterableType,
-        PARAMETER_TYPE extends IterableType | undefined | void = void,
-    >(): CreateStoreActionCreator<STATE, PARAMETER_TYPE> {
+    public static makeCreateStoreAction<STATE extends IterableType, PARAMETER_TYPE = void>(): CreateStoreActionCreator<
+        STATE,
+        PARAMETER_TYPE
+    > {
         return createStoreActionCreatorImpl();
     }
 

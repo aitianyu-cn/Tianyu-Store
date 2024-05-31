@@ -8,11 +8,7 @@ import { InstanceId } from "src/types/InstanceId";
 import { IterableType, ReturnableType, OperatorInfoType } from "src/types/Model";
 import { ReducerFunction } from "src/types/Reducer";
 
-export function actionBaseImpl<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
-    RETURN_TYPE extends ReturnableType,
->(
+export function actionBaseImpl<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE>(
     id: string,
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
     type: ActionType,

@@ -1,7 +1,7 @@
 /**@format */
 
 import { guid } from "@aitianyu.cn/types";
-import { createNonHandler, createDefaultReducer, createDefaultExternalOperator } from "src/common/ActionHelper";
+import { createNonHandler } from "src/common/ActionHelper";
 import {
     ActionCreatorProvider,
     ActionType,
@@ -19,10 +19,10 @@ import { actionExternalImpl } from "./ActionExternalImpl";
 import { actionHandlerImpl } from "./ActionHandlerImpl";
 import { actionImpl, viewActionImpl } from "./ActionImpl";
 
-export function actionCreatorImpl<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
->(): ActionCreatorProvider<STATE, PARAMETER_TYPE> {
+export function actionCreatorImpl<STATE extends IterableType, PARAMETER_TYPE>(): ActionCreatorProvider<
+    STATE,
+    PARAMETER_TYPE
+> {
     const actionInstanceCaller = <ActionCreatorProvider<STATE, PARAMETER_TYPE>>(
         actionBaseImpl<STATE, PARAMETER_TYPE, PARAMETER_TYPE>(
             guid(),
@@ -31,7 +31,7 @@ export function actionCreatorImpl<
         )
     );
 
-    actionInstanceCaller.withHandler = function <RETURN_TYPE extends ReturnableType>(
+    actionInstanceCaller.withHandler = function <RETURN_TYPE>(
         handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
     ): ActionHandlerProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
         return actionHandlerImpl<STATE, PARAMETER_TYPE, RETURN_TYPE>(actionInstanceCaller.id, handler);

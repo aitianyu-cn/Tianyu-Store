@@ -6,10 +6,10 @@ import { IterableType, ReturnableType } from "src/types/Model";
 import { ReducerFunction } from "src/types/Reducer";
 import { AnyStoreHandle } from "src/types/StoreHandler";
 
-export function createDefaultReducer<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends ReturnableType,
->(): ReducerFunction<STATE, PARAMETER_TYPE> {
+export function createDefaultReducer<STATE extends IterableType, PARAMETER_TYPE>(): ReducerFunction<
+    STATE,
+    PARAMETER_TYPE
+> {
     return function (state: STATE, _data: PARAMETER_TYPE): STATE {
         return state || /* istanbul ignore next */ {};
     };
@@ -23,10 +23,7 @@ export function createVoidHandler(): ActionHandlerFunction<void, void> {
     };
 }
 
-export function createUndefinedHandler<PARAMETER_TYPE extends IterableType | undefined>(): ActionHandlerFunction<
-    PARAMETER_TYPE,
-    undefined
-> {
+export function createUndefinedHandler<PARAMETER_TYPE>(): ActionHandlerFunction<PARAMETER_TYPE, undefined> {
     return function* (
         _action: IActionHandlerParameter<PARAMETER_TYPE>,
     ): Generator<AnyStoreHandle, undefined, IActionHandlerParameter<PARAMETER_TYPE>> {
@@ -34,10 +31,7 @@ export function createUndefinedHandler<PARAMETER_TYPE extends IterableType | und
     };
 }
 
-export function createNonHandler<PARAMETER_TYPE extends IterableType | undefined | void>(): ActionHandlerFunction<
-    PARAMETER_TYPE,
-    PARAMETER_TYPE
-> {
+export function createNonHandler<PARAMETER_TYPE>(): ActionHandlerFunction<PARAMETER_TYPE, PARAMETER_TYPE> {
     return function* (
         action: IActionHandlerParameter<PARAMETER_TYPE>,
     ): Generator<AnyStoreHandle, PARAMETER_TYPE, IActionHandlerParameter<PARAMETER_TYPE>> {

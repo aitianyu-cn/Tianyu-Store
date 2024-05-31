@@ -23,11 +23,7 @@ import { IterableType, ReturnableType, OperatorInfoType } from "src/types/Model"
 import { ReducerFunction } from "src/types/Reducer";
 import { actionBaseImpl } from "./ActionBaseImpl";
 
-export function actionImpl<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
-    RETURN_TYPE extends ReturnableType,
->(
+export function actionImpl<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE>(
     id: string,
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
     reducer?: ReducerFunction<STATE, RETURN_TYPE>,
@@ -57,11 +53,7 @@ export function actionImpl<
     return actionInstanceCaller;
 }
 
-export function viewActionImpl<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
-    RETURN_TYPE extends ReturnableType,
->(
+export function viewActionImpl<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE>(
     id: string,
     handler: ActionHandlerFunction<PARAMETER_TYPE, RETURN_TYPE>,
     reducer?: ReducerFunction<STATE, RETURN_TYPE>,
@@ -95,10 +87,10 @@ export function viewActionImpl<
     return actionInstanceCaller;
 }
 
-export function createStoreActionCreatorImpl<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void = void,
->(): CreateStoreActionCreator<STATE, PARAMETER_TYPE> {
+export function createStoreActionCreatorImpl<STATE extends IterableType, PARAMETER_TYPE>(): CreateStoreActionCreator<
+    STATE,
+    PARAMETER_TYPE
+> {
     const actionInstanceCaller = <CreateStoreActionCreator<STATE, PARAMETER_TYPE>>(
         actionBaseImpl<STATE, PARAMETER_TYPE, PARAMETER_TYPE>(
             guid(),

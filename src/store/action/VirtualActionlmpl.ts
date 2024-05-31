@@ -8,11 +8,11 @@ import { IterableType, ReturnableType } from "src/types/Model";
 import { AnyStoreHandle } from "src/types/StoreHandler";
 import { actionBaseImpl } from "./ActionBaseImpl";
 
-export function virtualActionImpl<
-    STATE extends IterableType,
-    PARAMETER_TYPE extends IterableType | undefined | void,
-    RETURN_TYPE extends ReturnableType,
->(): IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
+export function virtualActionImpl<STATE extends IterableType, PARAMETER_TYPE, RETURN_TYPE>(): IActionProvider<
+    STATE,
+    PARAMETER_TYPE,
+    RETURN_TYPE
+> {
     const handler = function* (
         _action: IActionHandlerParameter<PARAMETER_TYPE>,
     ): Generator<AnyStoreHandle, RETURN_TYPE, IActionHandlerParameter<PARAMETER_TYPE>> {

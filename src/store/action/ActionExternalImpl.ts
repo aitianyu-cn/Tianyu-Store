@@ -1,6 +1,6 @@
 /**@format */
 
-import { createNonHandler, createDefaultReducer } from "src/common/ActionHelper";
+import { createNonHandler } from "src/common/ActionHelper";
 import {
     ActionExternalProvider,
     ActionType,
@@ -16,7 +16,7 @@ import { actionBaseImpl } from "./ActionBaseImpl";
 import { actionHandlerImpl } from "./ActionHandlerImpl";
 import { actionImpl, viewActionImpl } from "./ActionImpl";
 
-export function actionExternalImpl<STATE extends IterableType, PARAMETER_TYPE extends IterableType | undefined | void>(
+export function actionExternalImpl<STATE extends IterableType, PARAMETER_TYPE>(
     id: string,
     external: ExternalOperatorFunction,
 ): ActionExternalProvider<STATE, PARAMETER_TYPE> {
