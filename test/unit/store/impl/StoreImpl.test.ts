@@ -349,7 +349,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
             const newInstanceId = generateNewStoreInstance();
 
             expect(() => {
-                store.subscribe(newInstanceId, TestUserStateInterface.selector.getUser, () => {});
+                store.subscribe(TestUserStateInterface.selector.getUser(newInstanceId), () => {});
             }).toThrow(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", newInstanceId.entity));
         });
 
@@ -366,7 +366,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
                 listener: () => {},
             };
 
-            const unsub = store.subscribe(baseInstanceId, TestUserStateInterface.selector.getUser, () => {});
+            const unsub = store.subscribe(TestUserStateInterface.selector.getUser(baseInstanceId), () => {});
 
             {
                 const subscribes = (store as any).instanceSubscribe.get(baseInstanceId.entity);
@@ -753,7 +753,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
         };
 
         beforeAll(() => {
-            unsubscribe = store.subscribe(instanceId, selectorProvider, event.trigger);
+            unsubscribe = store.subscribe(selectorProvider(instanceId), event.trigger);
 
             const subscribes = (store as any).instanceSubscribe.get(instanceId.entity);
             expect((subscribes as any)?.[instanceId.toString()]).toBeDefined();

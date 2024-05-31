@@ -119,15 +119,13 @@ export interface IStore {
      * To subscribe a selector.
      * The event trigger will be called when the selector state is changed.
      *
-     * @param instanceId instance id of selector bind instance
-     * @param selectorProvider the selector provider
+     * @param selector the selector instance
      * @param eventTrigger the event callback when selector state is changed
      *
      * @returns return an unsubscribe function
      */
-    subscribe<STATE extends IterableType, RESULT>(
-        instanceId: InstanceId,
-        selectorProvider: SelectorProvider<STATE, RESULT>,
+    subscribe<RESULT>(
+        selector: IInstanceSelector<RESULT>,
         eventTrigger: StoreEventTriggerCallback<RESULT>,
     ): Unsubscribe;
 

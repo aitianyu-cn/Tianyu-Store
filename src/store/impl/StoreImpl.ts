@@ -185,12 +185,11 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
             entityListeners[instanceId] = listeners;
         }
     }
-    subscribe<STATE extends IterableType, RESULT>(
-        instanceId: InstanceId,
-        selectorProvider: SelectorProvider<STATE, RESULT>,
+    subscribe<RESULT>(
+        selector: IInstanceSelector<RESULT>,
         eventTrigger: StoreEventTriggerCallback<RESULT>,
     ): Unsubscribe {
-        const entityId = instanceId.entity;
+        const entityId = selector.instanceId.entity;
         const entityListeners = this.instanceSubscribe.get(entityId);
         if (!entityListeners) {
             throw new Error(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", entityId));
@@ -198,11 +197,11 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
 
         const subscribeInstance: IInstanceSubscribe = {
             id: guid(),
-            selector: selectorProvider(instanceId),
+            selector: selector,
             trigger: eventTrigger,
         };
 
-        const instanceId2String = instanceId.toString();
+        const instanceId2String = selector.instanceId.toString();
         const subscribes = entityListeners[instanceId2String] || [];
         if (!entityListeners[instanceId2String]) {
             entityListeners[instanceId2String] = subscribes;
@@ -324,8 +323,10 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                 const listeners = entityListeners[instanceId] || [];
                 listeners.forEach((listener) => {
                     try {
-                        const oldState = doSelectingWithState(changeItem.old, executor, this, listener.selector);
-                        const newState = doSelectingWithState(changeItem.new, executor, this, listener.selector);
+                        const oldState =
+                            changeItem.old && doSelectingWithState(changeItem.old, executor, this, listener.selector);
+                        const newState =
+                            changeItem.new && doSelectingWithState(changeItem.new, executor, this, listener.selector);
 
                         const oldNoMissing = oldState instanceof Missing ? undefined : oldState;
                         const newNoMissing = newState instanceof Missing ? undefined : newState;
