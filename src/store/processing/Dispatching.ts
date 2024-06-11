@@ -128,7 +128,9 @@ function verifyActionInstances(s: IInstanceAction[]): string {
         /* istanbul ignore if */
         if (!value.instanceId.isValid()) {
             // throw an error when redo undo operation is not atom
-            throw new Error(MessageBundle.getText("DISPATCHING_INSTANCE_ID_NOT_VALID", value.action));
+            throw new Error(
+                MessageBundle.getText("DISPATCHING_INSTANCE_ID_NOT_VALID", value.action, value.instanceId.toString()),
+            );
         }
 
         /* istanbul ignore if */
