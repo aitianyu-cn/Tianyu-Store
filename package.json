@@ -24,7 +24,10 @@
         "test": "jest --no-cache --verbose",
         "test-all": "jest --no-cache --verbose --coverage",
         "test-coverage": "jest --no-cache --coverage",
-        "start-web": "webpack server --config \"./demo/webpack/webpack.config.js\""
+        "start-web": "webpack server --config \"./demo/webpack/webpack.config.js\"",
+        "start-devtools": "webpack server --config \"./tools/tianyu-store-devtools extension\"/webpack.config.js\"",
+        "build-devtools": "webpack --config \"./tools/tianyu-store-devtools extension/webpack.build.config.js\"",
+        "copy-devtools": "copyfiles -u 2 \"./tools/tianyu-store-devtools extension/static/**/*\" \"./tools/tianyu-store-devtools extension/manifest.json\" \"tools/tianyu-store-devtools extension/build\""
     },
     "repository": {
         "type": "git",

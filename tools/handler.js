@@ -3,7 +3,7 @@
 const path = require("path");
 
 module.exports.handleResolve = function (baseDir) {
-    const tsConfig = require("../../tsconfig.json");
+    const tsConfig = require(`${baseDir}/tsconfig.json`);
     const tsPaths = tsConfig.compilerOptions.paths;
 
     const alias = {};

@@ -1,26 +1,26 @@
-/**@format */
+/** @format */
 
 const path = require("path");
 
-const { handleResolve } = require("../../tools/handler");
-
-const { static } = require("./config");
-const { rules } = require("../../tools/modules");
+const { handleResolve } = require("../handler");
+const { rules } = require("../modules");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const baseDir = path.resolve(__dirname, "..");
+const baseDir = __dirname;
 
 module.exports = {
     entry: {
-        index: path.resolve(baseDir, "website/index.tsx"),
+        index: path.resolve(baseDir, "scripts/index.ts"),
+        dev: path.resolve(baseDir, "scripts/Devtools.ts"),
+        Background: path.resolve(baseDir, "scripts/Background.ts"),
     },
     output: {
         path: path.join(baseDir, "/build"),
-        filename: "tianyu-store/demo/[name].[contenthash:8].js",
-        chunkFilename: "tianyu-store/demo/[name].chunks.[contenthash:6].js",
+        filename: "scripts/[name].js",
+        chunkFilename: "scripts/[name].chunks.[contenthash:6].js",
         environment: {
             arrowFunction: false,
         },
@@ -31,33 +31,30 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            title: "tianyu-store-demo",
-            template: path.resolve(baseDir, "website/index.html"),
+            title: "tianyu-store devtools",
+            template: path.resolve(baseDir, "./index.html"),
             filename: "index.html",
             chunks: ["index"],
-            favicon: path.resolve(baseDir, "website/index_favicon.ico"),
         }),
-        new CopyWebpackPlugin({
-            patterns: [
-                {
-                    from: path.resolve(baseDir, "./website/static"),
-                    to: path.resolve(baseDir, "./build/static"),
-                },
-                {
-                    from: path.resolve(baseDir, "./website/public"),
-                    to: path.resolve(baseDir, "./build/public"),
-                },
-            ],
+        new HtmlWebpackPlugin({
+            title: "tianyu-store devtools",
+            template: path.resolve(baseDir, "./devtools.html"),
+            filename: "devtools.html",
+            chunks: ["dev"],
+        }),
+        new MiniCssExtractPlugin({
+            filename: "css/[name].css",
+            chunkFilename: "css/[name].chunks.css",
         }),
     ],
-    resolve: handleResolve(path.resolve(baseDir, "..")),
+    resolve: handleResolve(baseDir),
     mode: "development",
     devtool: "source-map",
     devServer: {
         port: 3000,
         host: "0.0.0.0",
         allowedHosts: "all",
-        static: static,
+        static: [],
         proxy: [
             {
                 context: ["/remote-resources"],
