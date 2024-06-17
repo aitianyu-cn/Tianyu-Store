@@ -18,6 +18,7 @@ export interface IStoreExecution {
     getState(instanceId: InstanceId, creating?: boolean): any;
     getOriginState(instanceId: InstanceId): any;
     getRecentChanges(): IDifferences;
+    getHistories(): { histroy: IDifferences[]; index: number };
 
     applyChanges(): void;
     discardChanges(): void;
@@ -86,6 +87,8 @@ export interface IStoreInstanceCreateConfig extends IterableType {
 export interface IStore {
     /** The store object id */
     id: string;
+    /** The store friendly name */
+    name: string;
     /**
      * To apply an instance hierarchy check list to ensure the intances are controllabl.
      *

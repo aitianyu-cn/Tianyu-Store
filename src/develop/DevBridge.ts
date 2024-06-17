@@ -3,12 +3,12 @@
 import { MapOfType, CallbackActionT } from "@aitianyu.cn/types";
 import { TIANYU_STORE_NAME, STORE_TRANSACTION, STORE_DEV_HOOKS } from "src/types/Defs";
 import { ITransactionHooks, TransactionHooksType } from "src/types/DevBridge";
-import { IStore } from "src/types/Store";
+import { IStore, IStoreExecution } from "src/types/Store";
 import { ITransactionInternal } from "src/types/Transaction";
 
 const hooksData: {
     listeners: MapOfType<CallbackActionT<ITransactionHooks>>;
-    stores: MapOfType<IStore>;
+    stores: MapOfType<IStore & IStoreExecution>;
 } = {
     listeners: {},
     stores: {},
@@ -19,7 +19,7 @@ const devDatas: {
         listen: (id: string, listener: CallbackActionT<ITransactionHooks>) => void;
         unlisten: (id: string) => void;
 
-        getStore: () => MapOfType<IStore>;
+        getStore: () => MapOfType<IStore & IStoreExecution>;
     };
     [STORE_TRANSACTION]: MapOfType<ITransactionInternal>;
 } = {
@@ -32,7 +32,7 @@ const devDatas: {
                 delete hooksData.listeners[id];
             }
         },
-        getStore: function (): MapOfType<IStore> {
+        getStore: function (): MapOfType<IStore & IStoreExecution> {
             return Object.assign({}, hooksData.stores);
         },
     },
@@ -53,7 +53,7 @@ export function getTransactionAPI(storeId: string): ITransactionInternal | undef
     return devDatas[STORE_TRANSACTION][storeId];
 }
 
-export function registerStoreAPI(storeId: string, store: IStore): void {
+export function registerStoreAPI<T extends IStore & IStoreExecution>(storeId: string, store: T): void {
     hooksData.stores[storeId] = store;
 }
 

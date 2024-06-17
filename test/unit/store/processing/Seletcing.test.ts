@@ -52,6 +52,9 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Selecting", () =
         validateActionInstance: function (action: IInstanceAction): void {
             throw new Error("Function not implemented.");
         },
+        getHistories: function (): { histroy: IDifferences[]; index: number } {
+            throw new Error("Function not implemented.");
+        },
     };
 
     const storeManager: IStoreManager = {

@@ -3,11 +3,14 @@
 import { IDifferences, IRedoUndoStack } from "./interface/RedoUndoStack";
 
 export class RedoUndoStackImpl implements IRedoUndoStack {
+    private readonly history: IDifferences[];
+
     private previous: IDifferences[];
     private current: IDifferences | undefined;
     private future: IDifferences[];
 
     public constructor() {
+        this.history = [];
         this.previous = [];
         this.current = undefined;
         this.future = [];
@@ -57,5 +60,22 @@ export class RedoUndoStackImpl implements IRedoUndoStack {
         this.previous = [];
         this.current = undefined;
         this.future = [];
+    }
+    public resetRedoUndo(): void {
+        this.history.push(...this.previous);
+        this.current && this.history.push(this.current);
+
+        this.cleanHistory();
+    }
+    public getHistroies(): { histroy: IDifferences[]; index: number } {
+        const histroy: IDifferences[] = this.history.concat();
+        histroy.push(...this.previous);
+        const index = this.current ? histroy.length : histroy.length - 1;
+        if (this.current) {
+            histroy.push(this.current);
+            histroy.push(...this.future);
+        }
+
+        return { histroy, index };
     }
 }

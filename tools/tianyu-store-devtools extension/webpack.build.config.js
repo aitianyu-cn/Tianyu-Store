@@ -7,6 +7,7 @@ const { rules } = require("../modules");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const baseDir = __dirname;
 
@@ -40,6 +41,10 @@ module.exports = {
             template: path.resolve(baseDir, "./devtools.html"),
             filename: "devtools.html",
             chunks: ["dev"],
+        }),
+        new MiniCssExtractPlugin({
+            filename: "css/[name].css",
+            chunkFilename: "css/[name].chunks.css",
         }),
     ],
     resolve: handleResolve(baseDir),

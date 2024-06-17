@@ -17,7 +17,6 @@ import {
 } from "../storage/interface/RedoUndoStack";
 import { IStoreState, STORE_STATE_SYSTEM, STORE_STATE_INSTANCE } from "../storage/interface/StoreState";
 import { InstanceIdImpl } from "./InstanceIdImpl";
-import { InvalidExternalRegister } from "./InvalidExternalRegisterImpl";
 import { InstanceParentHolder } from "../modules/InstanceParentHolder";
 
 interface IStoreChangeInstance {
@@ -63,6 +62,13 @@ export class StoreInstanceImpl implements IStoreExecution {
             .get(this.instanceId.toString())
             ?.get(STORE_STATE_EXTERNAL_REDOUNDO_STACK) as IRedoUndoStack | undefined;
         return redoUndoStack?.getCurrent() || {};
+    }
+
+    public getHistories(): { histroy: IDifferences[]; index: number } {
+        const redoUndoStack = this.externalObjectMap
+            .get(this.instanceId.toString())
+            ?.get(STORE_STATE_EXTERNAL_REDOUNDO_STACK) as IRedoUndoStack | undefined;
+        return redoUndoStack?.getHistroies() || { histroy: [], index: -1 };
     }
 
     public addStoreType(storeType: string): void {
@@ -180,7 +186,7 @@ export class StoreInstanceImpl implements IStoreExecution {
         if (redoUndoSupport) {
             recordRedoUndo && redoUndoStack?.record(diff);
         } else {
-            redoUndoStack?.cleanHistory();
+            redoUndoStack?.resetRedoUndo();
         }
     }
     discardChanges(): void {

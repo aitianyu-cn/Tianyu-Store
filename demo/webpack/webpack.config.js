@@ -50,7 +50,7 @@ module.exports = {
             ],
         }),
     ],
-    resolve: handleResolve(path.resolve(baseDir, "..")),
+    resolve: handleResolve(path.resolve(baseDir, ".."), path.resolve(baseDir, "..")),
     mode: "development",
     devtool: "source-map",
     devServer: {

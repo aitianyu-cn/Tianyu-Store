@@ -68,7 +68,7 @@ module.exports.rules = [
                     ],
                 },
             },
-            path.resolve(__dirname, "..", "loader/internationalLoader.js"),
+            path.resolve(__dirname, "loader/internationalLoader.js"),
         ],
         // exclude: /node_modules/,
     },

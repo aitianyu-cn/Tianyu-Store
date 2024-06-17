@@ -89,6 +89,10 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
         return this.storeId;
     }
 
+    get name(): string {
+        return this.config.friendlyName || this.storeId;
+    }
+
     getAction(id: string): IActionProvider<any, any, any> {
         const action = this.operationList[id] as IActionProvider<any, any, any>;
         if (!action?.actionId) {
@@ -434,6 +438,9 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     }
     getRecentChanges(): IDifferences {
         return {};
+    }
+    getHistories(): { histroy: IDifferences[]; index: number } {
+        return { histroy: [], index: -1 };
     }
     applyChanges(): void {}
     discardChanges(): void {}

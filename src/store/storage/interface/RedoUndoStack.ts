@@ -43,5 +43,7 @@ export interface IRedoUndoStack {
     doUndo(): IDifferences | undefined;
 
     cleanHistory(): void;
+    resetRedoUndo(): void;
     getCurrent(): IDifferences | undefined;
+    getHistroies(): { histroy: IDifferences[]; index: number };
 }
