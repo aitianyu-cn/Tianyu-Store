@@ -4,23 +4,23 @@ import { guid } from "@aitianyu.cn/types";
 import { generateInstanceId } from "src/InstanceId";
 import { MessageBundle } from "src/infra/Message";
 import { ActionType, IInstanceAction } from "src/types/Action";
-import { STORE_TRANSACTION, TIANYU_STORE_NAME } from "src/types/Defs";
 import { IInstanceSelector } from "src/types/Selector";
-import { ITransactionInternal, TransactionType } from "src/types/Transaction";
+import { TransactionType } from "src/types/Transaction";
 
 describe("aitianyu-cn.node-module.tianyu-store.store.modules.Transaction", () => {
     const oldWindow = global.window;
     global.window = {} as any;
 
-    const { formatTransactionType, TransactionManager } = require("src/store/modules/Transaction");
+    const { formatTransactionType, TransactionImpl } = require("src/store/modules/Transaction");
+
+    const storeId = guid();
+    const storeName = guid();
+    const transaction = new TransactionImpl(storeId, storeName);
 
     afterAll(() => {
-        global.window = oldWindow;
-    });
+        transaction.destroy();
 
-    it("global setting", () => {
-        expect((global.window as any)[TIANYU_STORE_NAME]).toBeDefined();
-        expect((global.window as any)[TIANYU_STORE_NAME]?.[STORE_TRANSACTION]).toBeDefined();
+        global.window = oldWindow;
     });
 
     describe("formatTransactionType", () => {
@@ -34,9 +34,9 @@ describe("aitianyu-cn.node-module.tianyu-store.store.modules.Transaction", () =>
 
     describe("Transaction", () => {
         beforeEach(() => {
-            (global.window as any)[TIANYU_STORE_NAME]?.[STORE_TRANSACTION]?.cleanDispatch();
-            (global.window as any)[TIANYU_STORE_NAME]?.[STORE_TRANSACTION]?.cleanSelector();
-            (global.window as any)[TIANYU_STORE_NAME]?.[STORE_TRANSACTION]?.cleanError();
+            transaction.cleanDispatch();
+            transaction.cleanSelector();
+            transaction.cleanError();
         });
 
         describe("TransactionManager", () => {
@@ -49,10 +49,9 @@ describe("aitianyu-cn.node-module.tianyu-store.store.modules.Transaction", () =>
                     params: undefined,
                     actionType: ActionType.ACTION,
                 };
-                (TransactionManager as ITransactionInternal).dispatched([actionInstance]);
+                transaction.dispatched([actionInstance]);
 
-                const dispatches =
-                    (global.window as any)[TIANYU_STORE_NAME]?.[STORE_TRANSACTION]?.getDispatched() || [];
+                const dispatches = transaction.getDispatched() || [];
                 expect(dispatches.length).toEqual(1);
                 expect(dispatches[dispatches.length - 1].operations[0]).toBe(actionInstance);
             });
@@ -65,39 +64,36 @@ describe("aitianyu-cn.node-module.tianyu-store.store.modules.Transaction", () =>
                     instanceId: generateInstanceId("", ""),
                     params: undefined,
                 };
-                (TransactionManager as ITransactionInternal).selected(selectorInstance);
+                transaction.selected(selectorInstance);
 
-                const selectors = (global.window as any)[TIANYU_STORE_NAME]?.[STORE_TRANSACTION]?.getSelections() || [];
+                const selectors = transaction.getSelections() || [];
                 expect(selectors.length).toEqual(1);
                 expect(selectors[selectors.length - 1].operations[0]).toBe(selectorInstance);
             });
 
             describe("error", () => {
                 it("add as string error", () => {
-                    (TransactionManager as ITransactionInternal).error("error message", TransactionType.Action);
+                    transaction.error("error message", TransactionType.Action);
 
-                    const errors = (global.window as any)[TIANYU_STORE_NAME]?.[STORE_TRANSACTION]?.getErrors() || [];
+                    const errors = transaction.getErrors() || [];
                     expect(errors.length).toEqual(1);
                     expect(errors[errors.length - 1].message).toEqual("error message");
                     expect(errors[errors.length - 1].type).toEqual(TransactionType.Action);
                 });
 
                 it("add as error instance", () => {
-                    (TransactionManager as ITransactionInternal).error(
-                        new Error("error message"),
-                        TransactionType.Action,
-                    );
+                    transaction.error(new Error("error message"), TransactionType.Action);
 
-                    const errors = (global.window as any)[TIANYU_STORE_NAME]?.[STORE_TRANSACTION]?.getErrors() || [];
+                    const errors = transaction.getErrors() || [];
                     expect(errors.length).toEqual(1);
                     expect(errors[errors.length - 1].message).toEqual("error message");
                     expect(errors[errors.length - 1].type).toEqual(TransactionType.Action);
                 });
 
                 it("add as other type", () => {
-                    (TransactionManager as ITransactionInternal).error({} as any, TransactionType.Action);
+                    transaction.error({} as any, TransactionType.Action);
 
-                    const errors = (global.window as any)[TIANYU_STORE_NAME]?.[STORE_TRANSACTION]?.getErrors() || [];
+                    const errors = transaction.getErrors() || [];
                     expect(errors.length).toEqual(1);
                     expect(errors[errors.length - 1].message).toEqual(
                         MessageBundle.getText(

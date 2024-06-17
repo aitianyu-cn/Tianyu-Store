@@ -55,6 +55,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Selecting", () =
     };
 
     const storeManager: IStoreManager = {
+        id: "test_store",
         getAction: function (id: string): IActionProvider<any, any, any> {
             throw new Error("Function not implemented.");
         },

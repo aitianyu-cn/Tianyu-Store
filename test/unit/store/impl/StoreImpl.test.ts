@@ -6,7 +6,7 @@ import { generateInstanceId } from "src/InstanceId";
 import { createStore, generateNewStoreInstance } from "src/Store";
 import { StoreImpl } from "src/store/impl/StoreImpl";
 import { StoreInstanceImpl } from "src/store/impl/StoreInstanceImpl";
-import { formatTransactionType, TransactionManager } from "src/store/modules/Transaction";
+import { formatTransactionType } from "src/store/modules/Transaction";
 import { SelectorFactor } from "src/store/SelectorFactor";
 import { DifferenceChangeType, IDifferences } from "src/store/storage/interface/RedoUndoStack";
 import { STORE_STATE_SYSTEM, STORE_STATE_INSTANCE } from "src/store/storage/interface/StoreState";
@@ -44,6 +44,12 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
 
         store.registerInterface("test", TestUserStateInterface);
         expect((store as any).storyTypes.includes("test")).toBeTruthy();
+    });
+
+    afterAll(() => {
+        store.destroy();
+
+        expect((store as any)["entityMap"].size).toEqual(0);
     });
 
     describe("store internal functions", () => {
@@ -242,6 +248,12 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
                 }).not.toThrow();
 
                 expect((store as any).storyTypes.includes("undefined")).toBeFalsy();
+            });
+        });
+
+        describe("id", () => {
+            it("-", () => {
+                expect(store.id).not.toEqual("");
             });
         });
     });
@@ -450,9 +462,9 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
             jest.spyOn(storeInternal, "applyChanges");
             jest.spyOn(storeInternal, "discardChanges");
 
-            (TransactionManager as unknown as ITransaction).cleanDispatch();
-            (TransactionManager as unknown as ITransaction).cleanError();
-            (TransactionManager as unknown as ITransaction).cleanSelector();
+            ((store as any)["transaction"] as unknown as ITransaction).cleanDispatch();
+            ((store as any)["transaction"] as unknown as ITransaction).cleanError();
+            ((store as any)["transaction"] as unknown as ITransaction).cleanSelector();
         });
 
         it("no action dispatched", (done) => {
@@ -552,7 +564,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
         });
 
         beforeEach(() => {
-            jest.spyOn(TransactionManager, "error");
+            jest.spyOn((store as any)["transaction"], "error");
 
             jest.spyOn(listener, "listener");
         });
@@ -665,7 +677,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
                 );
                 firePromise.then(() => {
                     expect(listener.listener).not.toHaveBeenCalled();
-                    expect(TransactionManager.error).toHaveBeenCalledWith(
+                    expect((store as any)["transaction"].error).toHaveBeenCalledWith(
                         MessageBundle.getText(
                             "STORE_EVENT_LISTENER_TRIGGER_FAILED",
                             "error",
@@ -691,7 +703,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
                 );
                 firePromise.then(() => {
                     expect(listener.listener).not.toHaveBeenCalled();
-                    expect(TransactionManager.error).toHaveBeenCalledWith(
+                    expect((store as any)["transaction"].error).toHaveBeenCalledWith(
                         MessageBundle.getText(
                             "STORE_EVENT_LISTENER_TRIGGER_FAILED",
                             "error obj",
@@ -717,7 +729,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
                 );
                 firePromise.then(() => {
                     expect(listener.listener).not.toHaveBeenCalled();
-                    expect(TransactionManager.error).toHaveBeenCalledWith(
+                    expect((store as any)["transaction"].error).toHaveBeenCalledWith(
                         MessageBundle.getText(
                             "STORE_EVENT_LISTENER_TRIGGER_FAILED",
                             MessageBundle.getText(
@@ -769,7 +781,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
         });
 
         beforeEach(() => {
-            jest.spyOn(TransactionManager, "error");
+            jest.spyOn((store as any)["transaction"], "error");
             isCalled = false;
         });
 
@@ -881,7 +893,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
                 );
                 firePromise.then(() => {
                     expect(isCalled).toBeFalsy();
-                    expect(TransactionManager.error).toHaveBeenCalled();
+                    expect((store as any)["transaction"].error).toHaveBeenCalled();
                     done();
                 }, done.fail);
             });
@@ -899,7 +911,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
                 );
                 firePromise.then(() => {
                     expect(isCalled).toBeFalsy();
-                    expect(TransactionManager.error).toHaveBeenCalled();
+                    expect((store as any)["transaction"].error).toHaveBeenCalled();
                     done();
                 }, done.fail);
             });
@@ -917,7 +929,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
                 );
                 firePromise.then(() => {
                     expect(isCalled).toBeFalsy();
-                    expect(TransactionManager.error).toHaveBeenCalled();
+                    expect((store as any)["transaction"].error).toHaveBeenCalled();
                     done();
                 }, done.fail);
             });

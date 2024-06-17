@@ -5,6 +5,8 @@ export const TIANYU_STORE_NAME = "tianyu-store";
 
 export const STORE_TRANSACTION = "transaction";
 
+export const STORE_DEV_HOOKS = "dev-hooks";
+
 /**
  * Tianyu Store Instance Id basic name
  * Used in Instance Id which is the basic id from store created automatically

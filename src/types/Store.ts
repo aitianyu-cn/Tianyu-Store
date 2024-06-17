@@ -34,6 +34,7 @@ export interface IStoreExecution {
 
 /** this is for internal using */
 export interface IStoreManager {
+    id: string;
     getAction(id: string): IActionProvider<any, any, any>;
     getSelector(id: string): ISelectorProviderBase<any>;
 
@@ -57,6 +58,11 @@ export type StoreConfiguration = {
      * FLASE: await store.dispatch only wait for action execution done
      */
     waitForAll?: boolean;
+    /**
+     * Indicates the user friendly name of current tianyu store.
+     * This name will be shown in tianyu-store devtools for the debugging.
+     */
+    friendlyName?: string;
 };
 
 /** Tianyu Store Instance Entity creation configuration */
@@ -78,6 +84,8 @@ export interface IStoreInstanceCreateConfig extends IterableType {
  * Tianyu Store is a manager to provide global operators for store instance.
  */
 export interface IStore {
+    /** The store object id */
+    id: string;
     /**
      * To apply an instance hierarchy check list to ensure the intances are controllabl.
      *
@@ -159,4 +167,6 @@ export interface IStore {
      * @returns return a promise to wait actions done
      */
     dispatchForView(action: IInstanceViewAction | IBatchAction): void;
+    /** Destroy store */
+    destroy(): void;
 }

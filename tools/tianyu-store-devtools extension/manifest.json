@@ -1,0 +1,23 @@
+{
+    "name": "tianyu-store devtools",
+    "description": "Dev tools extension for debugging state for Tianyu Store",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "permissions": ["activeTab", "tabs"],
+    "devtools_page": "devtools.html",
+    "action": {
+        "default_title": "Tianyu Store Devtools",
+        "default_popup": "index.html"
+    },
+    "background": {
+        "service_worker": "scripts/Background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["./scripts/index.js"],
+            "run_at": "document_start",
+            "all_frames": true
+        }
+    ]
+}
