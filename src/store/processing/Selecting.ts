@@ -1,6 +1,5 @@
 /** @format */
 
-import { getTransactionAPI } from "src/develop/DevBridge";
 import { Missing } from "src/types/Model";
 import {
     IInstanceSelector,
@@ -23,7 +22,7 @@ export function doSelecting<RESULT>(
         const state = executor.getState(selector.instanceId);
         return doSelectingWithState(state, executor, manager, selector);
     } catch (e) {
-        getTransactionAPI(manager.id)?.error(e as any, TransactionType.Selector);
+        manager.error(e as any, TransactionType.Selector);
         return new Missing();
     }
 }
@@ -35,6 +34,7 @@ export function doSelectingWithState<RESULT>(
     selector: IInstanceSelector<RESULT>,
 ): SelectorResult<RESULT> {
     const selectorImpl = manager.getSelector(selector.selector);
+    manager.select(selector);
     const type = selectorImpl.type;
     const getter = (selectorImpl as SelectorProvider<any, RESULT> | ParameterSelectorProvider<any, any, RESULT>).getter;
 
@@ -44,7 +44,7 @@ export function doSelectingWithState<RESULT>(
             ? (getter as RawSelector<any, RESULT, any>)(state, externalResult)
             : (getter as RawParameterSelector<any, any, RESULT, any>)(state, selector.params, externalResult);
     } catch (e) {
-        getTransactionAPI(manager.id)?.error(e as any, TransactionType.Selector);
+        manager.error(e as any, TransactionType.Selector);
         return new Missing();
     }
 }

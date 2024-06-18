@@ -77,6 +77,10 @@ export class StoreInstanceImpl implements IStoreExecution {
         }
     }
 
+    public getRawState(): IStoreState {
+        return ObjectHelper.clone(this.storeState);
+    }
+
     getExternalRegister(instanceId: InstanceId, creating?: boolean): IExternalObjectRegister {
         const externalObject = this.externalObjectMap.get(instanceId.toString());
         if (!externalObject) {

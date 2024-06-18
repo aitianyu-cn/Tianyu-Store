@@ -1,6 +1,7 @@
 /** @format */
 
 import { generateInstanceId } from "src/InstanceId";
+import { TransactionType } from "src/index";
 import { SelectorFactor } from "src/store/SelectorFactor";
 import { doSelecting } from "src/store/processing/Selecting";
 import { IDifferences } from "src/store/storage/interface/RedoUndoStack";
@@ -75,6 +76,12 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Selecting", () =
         },
         getEntity: function (entity: string): IStoreExecution {
             throw new Error("Function not implemented.");
+        },
+        error: function (msg: string, type: TransactionType): void {
+            //
+        },
+        select: function (selector: IInstanceSelector<any>): void {
+            //
         },
     };
 

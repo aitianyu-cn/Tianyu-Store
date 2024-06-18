@@ -67,11 +67,7 @@ export interface ITransaction {
 
 /** this is for internal using */
 export interface ITransactionInternal extends ITransaction {
-    dispatched(actions: IInstanceAction[]): void;
-    selected(selector: IInstanceSelector<any>): void;
-    error(message: string | Error, type: TransactionType): void;
-
-    destroy(): void;
-    id: string;
-    name: string;
+    dispatched(actions: IInstanceAction[]): TransactionOperationRecord<IInstanceAction>;
+    selected(selector: IInstanceSelector<any>): TransactionOperationRecord<IInstanceSelector<any>>;
+    error(message: string | Error, type: TransactionType): TransactionErrorRecord;
 }

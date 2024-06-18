@@ -1,10 +1,8 @@
 /** @format */
 
 import { guid, Log } from "@aitianyu.cn/types";
-import { registerTransactionAPI, fireHooks, unregisterTransactionAPI } from "src/develop/DevBridge";
 import { MessageBundle } from "src/infra/Message";
 import { IInstanceAction } from "src/types/Action";
-import { TransactionHooksType } from "src/types/DevBridge";
 import { IInstanceSelector } from "src/types/Selector";
 import {
     TransactionType,
@@ -29,30 +27,17 @@ export function formatTransactionType(type: TransactionType): string {
 
 export class TransactionImpl implements ITransaction, ITransactionInternal {
     private readonly storeId: string;
-    private readonly storeName?: string;
 
     private dispatchedActions: TransactionOperationRecord<IInstanceAction>[];
     private selections: TransactionOperationRecord<IInstanceSelector<any>>[];
     private errors: TransactionErrorRecord[];
 
-    public constructor(storeId: string, friendlyName?: string) {
+    public constructor(storeId: string) {
         this.storeId = storeId;
-        this.storeName = friendlyName;
 
         this.dispatchedActions = [];
         this.selections = [];
         this.errors = [];
-
-        registerTransactionAPI(this.storeId, this);
-        fireHooks(this.id, this.name, TransactionHooksType.ADD);
-    }
-
-    get id(): string {
-        return this.storeId;
-    }
-
-    get name(): string {
-        return this.storeName || this.storeId;
     }
 
     getDispatched(): TransactionOperationRecord<IInstanceAction>[] {
@@ -74,23 +59,25 @@ export class TransactionImpl implements ITransaction, ITransactionInternal {
         this.errors = [];
     }
 
-    dispatched(actions: IInstanceAction[]): void {
-        this.dispatchedActions.push({
+    dispatched(actions: IInstanceAction[]): TransactionOperationRecord<IInstanceAction> {
+        const actionRec: TransactionOperationRecord<IInstanceAction> = {
             id: guid(),
             time: new Date(Date.now()),
             operations: actions,
-        });
-        fireHooks(this.id, this.name, TransactionHooksType.ACTION);
+        };
+        this.dispatchedActions.push(actionRec);
+        return actionRec;
     }
-    selected(selector: IInstanceSelector<any>): void {
-        this.selections.push({
+    selected(selector: IInstanceSelector<any>): TransactionOperationRecord<IInstanceSelector<any>> {
+        const selectorRec: TransactionOperationRecord<IInstanceSelector<any>> = {
             id: guid(),
             time: new Date(Date.now()),
             operations: [selector],
-        });
-        fireHooks(this.id, this.name, TransactionHooksType.SELECTOR);
+        };
+        this.selections.push(selectorRec);
+        return selectorRec;
     }
-    error(message: string | Error, type: TransactionType): void {
+    error(message: string | Error, type: TransactionType): TransactionErrorRecord {
         const errorRecord = {
             message:
                 typeof message === "string"
@@ -103,14 +90,7 @@ export class TransactionImpl implements ITransaction, ITransactionInternal {
         };
 
         Log.error(errorRecord.message, true);
-
         this.errors.push(errorRecord);
-
-        fireHooks(this.id, this.name, TransactionHooksType.ERROR);
-    }
-
-    destroy(): void {
-        unregisterTransactionAPI(this.storeId);
-        fireHooks(this.id, this.name, TransactionHooksType.REMOVE);
+        return errorRecord;
     }
 }

@@ -1,6 +1,6 @@
 /** @format */
 
-import { guid, ObjectHelper } from "@aitianyu.cn/types";
+import { CallbackActionT, guid, MapOfType, ObjectHelper } from "@aitianyu.cn/types";
 import { MessageBundle } from "src/infra/Message";
 import { IActionProvider, IInstanceAction, IBatchAction, IInstanceViewAction, ActionType } from "src/types/Action";
 import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "src/types/Defs";
@@ -15,10 +15,15 @@ import {
 } from "src/types/Interface";
 import { StoreEventTriggerCallback, IInstanceListener } from "src/types/Listener";
 import { IterableType, Missing } from "src/types/Model";
-import { IInstanceSelector, ISelectorProviderBase, SelectorProvider, SelectorResult } from "src/types/Selector";
-import { IStore, IStoreManager, IStoreExecution, StoreConfiguration } from "src/types/Store";
+import { IInstanceSelector, ISelectorProviderBase, SelectorResult } from "src/types/Selector";
+import { IStore, IStoreManager, IStoreExecution, StoreConfiguration, IStoreDevAPI } from "src/types/Store";
 import { Unsubscribe } from "src/types/Subscribe";
-import { ITransactionInternal, TransactionType } from "src/types/Transaction";
+import {
+    ITransactionInternal,
+    TransactionErrorRecord,
+    TransactionOperationRecord,
+    TransactionType,
+} from "src/types/Transaction";
 import { registerInterface } from "src/utils/InterfaceUtils";
 import { TianyuStoreRedoUndoInterface } from "../RedoUndoFactor";
 import { TianyuStoreEntityInterface } from "../SystemActionFactor";
@@ -29,7 +34,7 @@ import { IDifferences } from "../storage/interface/RedoUndoStack";
 import { IStoreState, STORE_STATE_INSTANCE } from "../storage/interface/StoreState";
 import { InvalidExternalRegister } from "./InvalidExternalRegisterImpl";
 import { StoreInstanceImpl } from "./StoreInstanceImpl";
-import { registerStoreAPI, unregisterStoreAPI } from "src/develop/DevBridge";
+import { registerStore, unregisterStore } from "src/develop/DevToolsHelper";
 
 interface IInstanceSubscribe {
     id: string;
@@ -49,10 +54,15 @@ function isChangesEmpty(changes: IDifferences): boolean {
     return Object.keys(changes).length === 0;
 }
 
-export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
+export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStoreDevAPI {
     private readonly storeId: string;
     private readonly config: StoreConfiguration;
     private readonly transaction: ITransactionInternal;
+
+    private onSelector?: CallbackActionT<TransactionOperationRecord<IInstanceSelector<any>>>;
+    private onDispatch?: CallbackActionT<TransactionOperationRecord<IInstanceAction>>;
+    private onError?: CallbackActionT<TransactionErrorRecord>;
+    private onChangeApplied?: CallbackActionT<IDifferences>;
 
     // private hierarchyChecker: StoreInstanceChecker;
     private operationList: ITianyuStoreInterfaceList;
@@ -67,7 +77,12 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     public constructor(config: StoreConfiguration) {
         this.storeId = guid();
         this.config = config;
-        this.transaction = new TransactionImpl(this.storeId, this.config.friendlyName);
+        this.transaction = new TransactionImpl(this.storeId);
+
+        this.onSelector = undefined;
+        this.onDispatch = undefined;
+        this.onError = undefined;
+        this.onChangeApplied = undefined;
 
         // this.hierarchyChecker = new StoreInstanceChecker();
         this.operationList = {};
@@ -82,7 +97,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
         this.registerInterfaceInternal(TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, TianyuStoreRedoUndoInterface);
         this.registerInterfaceInternal(TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE, TianyuStoreEntityInterface);
 
-        registerStoreAPI(this.storeId, this);
+        registerStore(this);
     }
 
     get id(): string {
@@ -92,6 +107,47 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     get name(): string {
         return this.config.friendlyName || this.storeId;
     }
+
+    // ==============================================================================
+    // IStore Develop Tools Impl
+    // ==============================================================================
+
+    setOnSelector(callback?: CallbackActionT<TransactionOperationRecord<IInstanceSelector<any>>>): void {
+        this.onSelector = callback;
+    }
+    setOnDispatch(callback?: CallbackActionT<TransactionOperationRecord<IInstanceAction>>): void {
+        this.onDispatch = callback;
+    }
+    setOnError(callback?: CallbackActionT<TransactionErrorRecord>): void {
+        this.onError = callback;
+    }
+    setOnChangeApplied(callback?: CallbackActionT<IDifferences>): void {
+        this.onChangeApplied = callback;
+    }
+
+    getState(instanceId: InstanceId | void) {
+        if (!instanceId) {
+            const states: MapOfType<IStoreState> = {};
+            for (const entity of this.entityMap) {
+                states[entity[0]] = entity[1].getRawState();
+            }
+            return states;
+        }
+        return {};
+    }
+    getAllDispatchs(): TransactionOperationRecord<IInstanceAction>[] {
+        return this.transaction.getDispatched();
+    }
+    getAllSelectors(): TransactionOperationRecord<IInstanceSelector<any>>[] {
+        return this.transaction.getSelections();
+    }
+    getAllErrors(): TransactionErrorRecord[] {
+        return this.transaction.getErrors();
+    }
+
+    // ==============================================================================
+    // IStore Manager Impl
+    // ==============================================================================
 
     getAction(id: string): IActionProvider<any, any, any> {
         const action = this.operationList[id] as IActionProvider<any, any, any>;
@@ -131,6 +187,18 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     getEntity(entity: string): IStoreExecution {
         return this.entityMap.get(entity) || this;
     }
+    error(msg: string, type: TransactionType): void {
+        const errorRec = this.transaction.error(msg, type);
+        this.onError?.(errorRec);
+    }
+    select(selector: IInstanceSelector<any>): void {
+        const selectorRec = this.transaction.selected(selector);
+        this.onSelector?.(selectorRec);
+    }
+
+    // ==============================================================================
+    // IStore Public Impl
+    // ==============================================================================
 
     applyHierarchyChecklist(checklist?: IStoreHierarchyChecklist | undefined): void {
         // this.hierarchyChecker.apply(checklist || {});
@@ -268,13 +336,16 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
         void this.dispatchInternal(actions, true);
     }
     destroy(): void {
-        unregisterStoreAPI(this.storeId);
-        this.transaction.destroy();
+        unregisterStore(this);
 
         this.instanceListener.clear();
         this.instanceSubscribe.clear();
         this.entityMap.clear();
     }
+
+    // ==============================================================================
+    // Store Internal Impl
+    // ==============================================================================
 
     private async dispatchInternal(action: IInstanceAction[], notRedoUndo: boolean): Promise<void> {
         if (action.length === 0) {
@@ -290,7 +361,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                 try {
                     const actions = await dispatching(executor, this, action, notRedoUndo);
                     // transaction
-                    this.transaction.dispatched(actions);
+                    this.doneDispatch(actions);
 
                     // apply changes
                     executor.applyChanges();
@@ -301,11 +372,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                     }
 
                     // fire events
-                    const changes = executor.getRecentChanges();
-                    if (!isChangesEmpty(changes)) {
-                        await this.fireListeners(entity, changes, executor);
-                        await this.fireSubscribes(entity, changes, executor);
-                    }
+                    await this.changeApply(entity, executor);
 
                     if (this.config.waitForAll && !resolved) {
                         resolved = true;
@@ -313,7 +380,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
                     }
                 } catch (e) {
                     // records error
-                    this.transaction.error(e as any, TransactionType.Action);
+                    this.error(e as any, TransactionType.Action);
 
                     // if action run failed, to discard all changes of current action batch
                     executor.discardChanges();
@@ -357,7 +424,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
 
                         isChanged && listener.listener(oldNoMissing, newNoMissing);
                     } catch (e) {
-                        this.transaction.error(
+                        this.error(
                             MessageBundle.getText(
                                 "STORE_EVENT_LISTENER_TRIGGER_FAILED",
                                 typeof e === "string"
@@ -401,7 +468,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
 
                         isChanged && listener.trigger(oldNoMissing, newNoMissing);
                     } catch (e) {
-                        this.transaction.error(
+                        this.error(
                             MessageBundle.getText(
                                 "STORE_EVENT_SUBSCRIBE_TRIGGER_FAILED",
                                 typeof e === "string"
@@ -423,17 +490,29 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
         }
     }
 
+    private async changeApply(entity: string, executor: IStoreExecution): Promise<void> {
+        const changes = executor.getRecentChanges();
+        this.onChangeApplied?.(changes);
+
+        if (!isChangesEmpty(changes)) {
+            await this.fireListeners(entity, changes, executor);
+            await this.fireSubscribes(entity, changes, executor);
+        }
+    }
+
+    private doneDispatch(actions: IInstanceAction[]): void {
+        const dispatchRec = this.transaction.dispatched(actions);
+        this.onDispatch?.(dispatchRec);
+    }
+
     // ================================================================================================================
-    // unused methods
+    // unused methods - IStore Exectuor Impl
     // ================================================================================================================
 
-    getExternalRegister(instanceId: InstanceId): IExternalObjectRegister {
+    getExternalRegister(_instanceId: InstanceId): IExternalObjectRegister {
         return InvalidExternalRegister;
     }
-    getState(instanceId: InstanceId) {
-        return {};
-    }
-    getOriginState(instanceId: InstanceId) {
+    getOriginState(_instanceId: InstanceId) {
         return {};
     }
     getRecentChanges(): IDifferences {
@@ -445,11 +524,11 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution {
     applyChanges(): void {}
     discardChanges(): void {}
     pushStateChange(
-        storeType: string,
-        instanceId: string,
-        actionType: ActionType,
-        newState: any,
-        notRedoUndo: boolean,
+        _storeType: string,
+        _instanceId: string,
+        _actionType: ActionType,
+        _newState: any,
+        _notRedoUndo: boolean,
     ): void {}
-    validateActionInstance(action: IInstanceAction): void {}
+    validateActionInstance(_action: IInstanceAction): void {}
 }

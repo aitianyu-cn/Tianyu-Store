@@ -11,6 +11,8 @@ import { IInstanceListener, StoreEventTriggerCallback } from "./Listener";
 import { IterableType } from "./Model";
 import { IInstanceSelector, ISelectorProviderBase, SelectorProvider, SelectorResult } from "./Selector";
 import { Unsubscribe } from "./Subscribe";
+import { CallbackActionT, MapOfType } from "@aitianyu.cn/types";
+import { TransactionErrorRecord, TransactionOperationRecord, TransactionType } from "./Transaction";
 
 /** this is for internal using */
 export interface IStoreExecution {
@@ -43,6 +45,8 @@ export interface IStoreManager {
     destroyEntity(instanceId: InstanceId): void;
 
     getEntity(entity: string): IStoreExecution;
+    error(msg: string, type: TransactionType): void;
+    select(selector: IInstanceSelector<any>): void;
 }
 
 /**
@@ -172,4 +176,22 @@ export interface IStore {
     dispatchForView(action: IInstanceViewAction | IBatchAction): void;
     /** Destroy store */
     destroy(): void;
+}
+
+export interface IStoreDevAPI {
+    /** The store object id */
+    id: string;
+    /** The store friendly name */
+    name: string;
+
+    getState(): MapOfType<IStoreState>;
+    getHistories(): { histroy: IDifferences[]; index: number };
+    getAllDispatchs(): TransactionOperationRecord<IInstanceAction>[];
+    getAllSelectors(): TransactionOperationRecord<IInstanceSelector<any>>[];
+    getAllErrors(): TransactionErrorRecord[];
+
+    setOnSelector(callback?: CallbackActionT<TransactionOperationRecord<IInstanceSelector<any>>>): void;
+    setOnDispatch(callback?: CallbackActionT<TransactionOperationRecord<IInstanceAction>>): void;
+    setOnError(callback?: CallbackActionT<TransactionErrorRecord>): void;
+    setOnChangeApplied(callback?: CallbackActionT<IDifferences>): void;
 }

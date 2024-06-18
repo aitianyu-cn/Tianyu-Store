@@ -8,20 +8,11 @@ import { IInstanceSelector } from "src/types/Selector";
 import { TransactionType } from "src/types/Transaction";
 
 describe("aitianyu-cn.node-module.tianyu-store.store.modules.Transaction", () => {
-    const oldWindow = global.window;
-    global.window = {} as any;
-
     const { formatTransactionType, TransactionImpl } = require("src/store/modules/Transaction");
 
     const storeId = guid();
     const storeName = guid();
     const transaction = new TransactionImpl(storeId, storeName);
-
-    afterAll(() => {
-        transaction.destroy();
-
-        global.window = oldWindow;
-    });
 
     describe("formatTransactionType", () => {
         it("-", () => {

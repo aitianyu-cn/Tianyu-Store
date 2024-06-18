@@ -30,5 +30,6 @@ module.exports = {
         "^src/(.*)$": "<rootDir>/src/$1",
         "^test/(.*)$": "<rootDir>/test/$1",
     },
+    setupFiles: ["./test/env/init-env.js"],
     // modulePathIgnorePatterns: ["<rootDir>/src/index.ts"],
 };
