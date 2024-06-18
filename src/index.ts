@@ -20,7 +20,7 @@ export {
     type ITransaction,
 } from "./types/Transaction";
 export * from "./types/Utils";
-export * as Devtools from "./types/DevBridge";
+export * as Devtools from "./develop/Interface";
 
 /** Public Part */
 export { ActionFactor } from "./store/ActionFactor";
