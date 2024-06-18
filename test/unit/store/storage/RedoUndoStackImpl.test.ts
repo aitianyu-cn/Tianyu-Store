@@ -136,4 +136,40 @@ describe("aitianyu-cn.node-module.tianyu-store.store.storage.RedoUndoStackImpl",
             expect((redoUndoStack as any).future.length).toEqual(1);
         });
     });
+
+    describe("resetRedoUndo", () => {
+        it("if no current", () => {
+            redoUndoStack["history"].push({}, {});
+            redoUndoStack["previous"] = [{}];
+            redoUndoStack.resetRedoUndo();
+            expect(redoUndoStack["history"].length).toEqual(3);
+        });
+
+        it("has current", () => {
+            redoUndoStack["history"].push({}, {});
+            redoUndoStack["previous"] = [{}];
+            redoUndoStack["current"] = {};
+            redoUndoStack.resetRedoUndo();
+            expect(redoUndoStack["history"].length).toEqual(4);
+        });
+    });
+
+    describe("getHistroies", () => {
+        it("if no current", () => {
+            redoUndoStack["history"].push({}, {});
+            const history = redoUndoStack.getHistroies();
+            expect(history.histroy.length).toEqual(2);
+            expect(history.index).toEqual(1);
+        });
+
+        it("current is valid", () => {
+            redoUndoStack["history"].push({}, {});
+            redoUndoStack["current"] = {};
+            redoUndoStack["previous"] = [{}];
+            redoUndoStack["future"] = [{}];
+            const history = redoUndoStack.getHistroies();
+            expect(history.histroy.length).toEqual(5);
+            expect(history.index).toEqual(3);
+        });
+    });
 });

@@ -16,6 +16,7 @@ import { InstanceId } from "src/types/InstanceId";
 import { ITianyuStoreInterfaceMap } from "src/types/Interface";
 import { IInstanceListener } from "src/types/Listener";
 import { Missing } from "src/types/Model";
+import { IStoreDevAPI, IStoreExecution } from "src/types/Store";
 import { ITransaction, TransactionType } from "src/types/Transaction";
 import { createBatchAction } from "src/utils/BatchActionUtils";
 import { TestUserStateInterface } from "test/unit/content/DispatchingTestContent";
@@ -118,6 +119,12 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
                 expect(() => {
                     storeInternal.validateActionInstance(action);
                 }).not.toThrow();
+            });
+
+            it("getHistories", () => {
+                const histroy = (store as unknown as StoreImpl).getHistories();
+                expect(histroy.histroy.length).toEqual(0);
+                expect(histroy.index).toEqual(-1);
             });
         });
 
@@ -254,6 +261,19 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
         describe("id", () => {
             it("-", () => {
                 expect(store.id).not.toEqual("");
+            });
+        });
+
+        describe("name", () => {
+            it("has friendly name", () => {
+                const testStore = createStore({
+                    friendlyName: "test-store-friendly-name",
+                });
+                expect(testStore.name).toEqual("test-store-friendly-name");
+            });
+            it("has friendly name", () => {
+                const testStore = createStore();
+                expect(testStore.name).toEqual(testStore.id);
             });
         });
     });
@@ -933,6 +953,60 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
                     done();
                 }, done.fail);
             });
+        });
+    });
+
+    describe("store devtools api", () => {
+        const storeDev = store as unknown as StoreImpl;
+        it("setOnSelector", () => {
+            storeDev.setOnSelector(() => {});
+            expect(storeDev["onSelector"]).toBeDefined();
+            storeDev.setOnSelector();
+            expect(storeDev["onSelector"]).toBeUndefined();
+        });
+
+        it("setOnDispatch", () => {
+            storeDev.setOnDispatch(() => {});
+            expect(storeDev["onDispatch"]).toBeDefined();
+            storeDev.setOnDispatch();
+            expect(storeDev["onDispatch"]).toBeUndefined();
+        });
+
+        it("setOnError", () => {
+            storeDev.setOnError(() => {});
+            expect(storeDev["onError"]).toBeDefined();
+            storeDev.setOnError();
+            expect(storeDev["onError"]).toBeUndefined();
+        });
+
+        it("setOnChangeApplied", () => {
+            storeDev.setOnChangeApplied(() => {});
+            expect(storeDev["onChangeApplied"]).toBeDefined();
+            storeDev.setOnChangeApplied();
+            expect(storeDev["onChangeApplied"]).toBeUndefined();
+        });
+
+        it("getState", () => {
+            const stateMap = storeDev.getState();
+            expect(Object.keys(stateMap).length).not.toEqual(0);
+        });
+
+        it("getAllDispatchs", () => {
+            jest.spyOn(storeDev["transaction"], "getDispatched").mockImplementation(() => []);
+            storeDev.getAllDispatchs();
+            expect(storeDev["transaction"].getDispatched).toHaveBeenCalled();
+        });
+
+        it("getAllSelectors", () => {
+            jest.spyOn(storeDev["transaction"], "getSelections").mockImplementation(() => []);
+            storeDev.getAllSelectors();
+            expect(storeDev["transaction"].getSelections).toHaveBeenCalled();
+        });
+
+        it("getAllErrors", () => {
+            jest.spyOn(storeDev["transaction"], "getErrors").mockImplementation(() => []);
+            storeDev.getAllErrors();
+            expect(storeDev["transaction"].getErrors).toHaveBeenCalled();
         });
     });
 });

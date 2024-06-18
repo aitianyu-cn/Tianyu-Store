@@ -57,15 +57,14 @@ export class RedoUndoStackImpl implements IRedoUndoStack {
         return currentDiff;
     }
     public cleanHistory(): void {
-        this.previous = [];
-        this.current = undefined;
-        this.future = [];
+        this.history.splice(0, this.history.length);
+        this.cleanStack();
     }
     public resetRedoUndo(): void {
         this.history.push(...this.previous);
         this.current && this.history.push(this.current);
 
-        this.cleanHistory();
+        this.cleanStack();
     }
     public getHistroies(): { histroy: IDifferences[]; index: number } {
         const histroy: IDifferences[] = this.history.concat();
@@ -77,5 +76,11 @@ export class RedoUndoStackImpl implements IRedoUndoStack {
         }
 
         return { histroy, index };
+    }
+
+    private cleanStack(): void {
+        this.previous = [];
+        this.current = undefined;
+        this.future = [];
     }
 }

@@ -366,7 +366,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreInstanceImpl", ()
 
             expect(redoUndoStack).toBeDefined();
             jest.spyOn(redoUndoStack, "record");
-            jest.spyOn(redoUndoStack, "cleanHistory");
+            jest.spyOn(redoUndoStack, "resetRedoUndo");
 
             redoUndoStack.previous = [];
             redoUndoStack.current = undefined;
@@ -416,7 +416,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreInstanceImpl", ()
 
             storeInstance.applyChanges();
             expect(storeInstance.getState(defaultInstance).change).toBeTruthy();
-            expect(redoUndoStack.cleanHistory).toHaveBeenCalled();
+            expect(redoUndoStack.resetRedoUndo).toHaveBeenCalled();
         });
     });
 
@@ -437,6 +437,26 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreInstanceImpl", ()
         it("not have recent changes", () => {
             jest.spyOn(redoUndoStack, "getCurrent").mockReturnValue(undefined);
             expect(storeInstance.getRecentChanges()).toEqual({});
+        });
+    });
+
+    describe("getHistories", () => {
+        it("-", () => {
+            const redoUndoStack = storeInstance
+                .getExternalRegister(basicInstanceId)
+                .get(STORE_STATE_EXTERNAL_REDOUNDO_STACK);
+            expect(redoUndoStack).toBeDefined();
+
+            jest.spyOn(redoUndoStack, "getHistroies").mockReturnValue({ history: [], index: -1 });
+            storeInstance.getHistories();
+            expect(redoUndoStack.getHistroies).toHaveBeenCalled();
+        });
+    });
+
+    describe("getRawState", () => {
+        it("-", () => {
+            const rawState = storeInstance.getRawState();
+            expect(rawState).toEqual(storeInstance["storeState"]);
         });
     });
 });

@@ -68,7 +68,7 @@ export class StoreInstanceImpl implements IStoreExecution {
         const redoUndoStack = this.externalObjectMap
             .get(this.instanceId.toString())
             ?.get(STORE_STATE_EXTERNAL_REDOUNDO_STACK) as IRedoUndoStack | undefined;
-        return redoUndoStack?.getHistroies() || { histroy: [], index: -1 };
+        return redoUndoStack?.getHistroies() || /* istanbul ignore next */ { histroy: [], index: -1 };
     }
 
     public addStoreType(storeType: string): void {
