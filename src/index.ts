@@ -10,7 +10,12 @@ export * from "./types/Listener";
 export * from "./types/Model";
 export * from "./types/Reducer";
 export * from "./types/Selector";
-export { type StoreConfiguration, type IStoreInstanceCreateConfig, type IStore } from "./types/Store";
+export {
+    type StoreConfiguration,
+    type IStoreInstanceCreateConfig,
+    type IStore,
+    type IStoreDevAPI,
+} from "./types/Store";
 export * from "./types/StoreHandler";
 export * from "./types/Subscribe";
 export {
