@@ -1,10 +1,8 @@
 /** @format */
 
 import { generateInstanceId } from "src/InstanceId";
-import { TransactionType } from "src/index";
 import { SelectorFactor } from "src/store/SelectorFactor";
 import { doSelecting } from "src/store/processing/Selecting";
-import { IDifferences } from "src/store/storage/interface/RedoUndoStack";
 import { IStoreState } from "src/store/storage/interface/StoreState";
 import { IActionProvider, IInstanceAction } from "src/types/Action";
 import { IExternalObjectRegister } from "src/types/ExternalObject";
@@ -12,6 +10,8 @@ import { InstanceId } from "src/types/InstanceId";
 import { Missing } from "src/types/Model";
 import { IInstanceSelector, ISelectorProviderBase } from "src/types/Selector";
 import { IStoreExecution, IStoreManager } from "src/types/Store";
+import { IDifferences } from "src/types/RedoUndoStack";
+import { TransactionType } from "src/types/Transaction";
 
 describe("aitianyu-cn.node-module.tianyu-store.store.processing.Selecting", () => {
     const externalManager: IExternalObjectRegister = {

@@ -8,6 +8,7 @@ export * from "./types/InstanceId";
 export * from "./types/Interface";
 export * from "./types/Listener";
 export * from "./types/Model";
+export * from "./types/RedoUndoStack";
 export * from "./types/Reducer";
 export * from "./types/Selector";
 export {

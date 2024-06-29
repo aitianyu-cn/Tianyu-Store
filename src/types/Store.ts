@@ -1,6 +1,5 @@
 /**@format */
 
-import { IDifferences } from "src/store/storage/interface/RedoUndoStack";
 import { IStoreState } from "src/store/storage/interface/StoreState";
 import { ActionType, IActionProvider, IBatchAction, IInstanceAction, IInstanceViewAction } from "./Action";
 import { IExternalObjectRegister } from "./ExternalObject";
@@ -9,6 +8,7 @@ import { InstanceId } from "./InstanceId";
 import { ITianyuStoreInterface, ITianyuStoreInterfaceMap } from "./Interface";
 import { IInstanceListener, StoreEventTriggerCallback } from "./Listener";
 import { IterableType } from "./Model";
+import { IDifferences } from "./RedoUndoStack";
 import { IInstanceSelector, ISelectorProviderBase, SelectorProvider, SelectorResult } from "./Selector";
 import { Unsubscribe } from "./Subscribe";
 import { CallbackActionT, MapOfType } from "@aitianyu.cn/types";

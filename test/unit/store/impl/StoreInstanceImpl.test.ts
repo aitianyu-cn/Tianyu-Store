@@ -5,11 +5,11 @@ import { generateInstanceId } from "src/InstanceId";
 import { generateNewStoreInstance } from "src/Store";
 import { MessageBundle } from "src/infra/Message";
 import { StoreInstanceImpl } from "src/store/impl/StoreInstanceImpl";
-import { DifferenceChangeType, STORE_STATE_EXTERNAL_REDOUNDO_STACK } from "src/store/storage/interface/RedoUndoStack";
+import { STORE_STATE_EXTERNAL_REDOUNDO_STACK } from "src/store/storage/interface/RedoUndoStack";
 import { IStoreState, STORE_STATE_INSTANCE, STORE_STATE_SYSTEM } from "src/store/storage/interface/StoreState";
 import { ActionType, IInstanceAction } from "src/types/Action";
 import { IExternalObjectRegister } from "src/types/ExternalObject";
-import { InstanceId } from "src/types/InstanceId";
+import { DifferenceChangeType } from "src/types/RedoUndoStack";
 
 describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreInstanceImpl", () => {
     const basicInstanceId = generateNewStoreInstance();

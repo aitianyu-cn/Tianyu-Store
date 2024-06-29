@@ -1,8 +1,8 @@
 /** @format */
 
 import { getDifference, mergeDiff } from "src/common/DiffHelper";
-import { DifferenceChangeType, IDifferences } from "src/store/storage/interface/RedoUndoStack";
 import { IStoreState, STORE_STATE_INSTANCE, STORE_STATE_SYSTEM } from "src/store/storage/interface/StoreState";
+import { DifferenceChangeType, IDifferences } from "src/types/RedoUndoStack";
 
 describe("aitianyu-cn.node-module.tianyu-store.common.DiffHelper", () => {
     describe("getDifference", () => {

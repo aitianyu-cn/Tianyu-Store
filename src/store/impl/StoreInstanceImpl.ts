@@ -9,15 +9,11 @@ import { InstanceId } from "src/types/InstanceId";
 import { IStoreExecution } from "src/types/Store";
 import { ExternalRegister } from "../modules/ExternalRegister";
 import { RedoUndoStackImpl } from "../storage/RedoUndoStackImpl";
-import {
-    DifferenceChangeType,
-    STORE_STATE_EXTERNAL_REDOUNDO_STACK,
-    IDifferences,
-    IRedoUndoStack,
-} from "../storage/interface/RedoUndoStack";
+import { STORE_STATE_EXTERNAL_REDOUNDO_STACK, IRedoUndoStack } from "../storage/interface/RedoUndoStack";
 import { IStoreState, STORE_STATE_SYSTEM, STORE_STATE_INSTANCE } from "../storage/interface/StoreState";
 import { InstanceIdImpl } from "./InstanceIdImpl";
 import { InstanceParentHolder } from "../modules/InstanceParentHolder";
+import { DifferenceChangeType, IDifferences } from "src/types/RedoUndoStack";
 
 interface IStoreChangeInstance {
     [storeType: string]: {

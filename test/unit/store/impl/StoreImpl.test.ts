@@ -1,6 +1,7 @@
 /** @format */
 
 import { guid } from "@aitianyu.cn/types";
+import { IDifferences, DifferenceChangeType } from "src/types/RedoUndoStack";
 import { MessageBundle } from "src/infra/Message";
 import { generateInstanceId } from "src/InstanceId";
 import { createStore, generateNewStoreInstance } from "src/Store";
@@ -8,7 +9,6 @@ import { StoreImpl } from "src/store/impl/StoreImpl";
 import { StoreInstanceImpl } from "src/store/impl/StoreInstanceImpl";
 import { formatTransactionType } from "src/store/modules/Transaction";
 import { SelectorFactor } from "src/store/SelectorFactor";
-import { DifferenceChangeType, IDifferences } from "src/store/storage/interface/RedoUndoStack";
 import { STORE_STATE_SYSTEM, STORE_STATE_INSTANCE } from "src/store/storage/interface/StoreState";
 import { ActionType, IInstanceAction, IInstanceViewAction } from "src/types/Action";
 import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "src/types/Defs";
@@ -16,7 +16,6 @@ import { InstanceId } from "src/types/InstanceId";
 import { ITianyuStoreInterfaceMap } from "src/types/Interface";
 import { IInstanceListener } from "src/types/Listener";
 import { Missing } from "src/types/Model";
-import { IStoreDevAPI, IStoreExecution } from "src/types/Store";
 import { ITransaction, TransactionType } from "src/types/Transaction";
 import { createBatchAction } from "src/utils/BatchActionUtils";
 import { TestUserStateInterface } from "test/unit/content/DispatchingTestContent";

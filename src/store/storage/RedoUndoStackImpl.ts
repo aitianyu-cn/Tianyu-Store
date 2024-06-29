@@ -1,6 +1,7 @@
 /** @format */
 
-import { IDifferences, IRedoUndoStack } from "./interface/RedoUndoStack";
+import { IDifferences } from "src/types/RedoUndoStack";
+import { IRedoUndoStack } from "./interface/RedoUndoStack";
 
 export class RedoUndoStackImpl implements IRedoUndoStack {
     private readonly history: IDifferences[];

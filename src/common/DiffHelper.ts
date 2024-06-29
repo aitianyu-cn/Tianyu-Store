@@ -1,8 +1,8 @@
 /** @format */
 
 import { ArrayHelper, ObjectHelper } from "@aitianyu.cn/types";
-import { IDifferences, DifferenceChangeType } from "src/store/storage/interface/RedoUndoStack";
 import { IStoreState, STORE_STATE_INSTANCE } from "src/store/storage/interface/StoreState";
+import { DifferenceChangeType, IDifferences } from "src/types/RedoUndoStack";
 
 export function getDifference(pre: IStoreState, next: IStoreState): IDifferences {
     const diffs: IDifferences = {};

@@ -30,11 +30,11 @@ import { TianyuStoreEntityInterface } from "../SystemActionFactor";
 import { TransactionImpl, formatTransactionType } from "../modules/Transaction";
 import { dispatching } from "../processing/Dispatching";
 import { doSelecting, doSelectingWithState } from "../processing/Selecting";
-import { IDifferences } from "../storage/interface/RedoUndoStack";
 import { IStoreState, STORE_STATE_INSTANCE } from "../storage/interface/StoreState";
 import { InvalidExternalRegister } from "./InvalidExternalRegisterImpl";
 import { StoreInstanceImpl } from "./StoreInstanceImpl";
 import { registerStore, unregisterStore } from "src/develop/DevToolsHelper";
+import { IDifferences } from "src/types/RedoUndoStack";
 
 interface IInstanceSubscribe {
     id: string;

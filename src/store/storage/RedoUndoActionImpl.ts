@@ -1,13 +1,13 @@
 /** @format */
 
 import { guid } from "@aitianyu.cn/types";
-import { createDefaultExternalOperator } from "src/common/ActionHelper";
 import { mergeDiff } from "src/common/DiffHelper";
 import { ActionType } from "src/types/Action";
+import { IDifferences } from "src/types/RedoUndoStack";
 import { doReadExternal } from "src/utils/StoreHandlerUtils";
 import { actionBaseImpl } from "../action/ActionBaseImpl";
 import { StoreUndoActionCreator, StoreRedoActionCreator } from "./interface/RedoUndoAction";
-import { IDifferences, IRedoUndoStack, STORE_STATE_EXTERNAL_REDOUNDO_STACK } from "./interface/RedoUndoStack";
+import { IRedoUndoStack, STORE_STATE_EXTERNAL_REDOUNDO_STACK } from "./interface/RedoUndoStack";
 import { IStoreState } from "./interface/StoreState";
 
 export function storeUndoActionCreatorImpl(): StoreUndoActionCreator {

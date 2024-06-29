@@ -1,6 +1,6 @@
 {
     "include": ["src", "test", "demo/website"],
-    "exclude": [],
+    "exclude": ["index.ts"],
     "compilerOptions": {
         "sourceMap": true,
         "composite": true,
