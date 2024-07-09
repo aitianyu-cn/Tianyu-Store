@@ -51,6 +51,21 @@ export class SelectorFactor {
     }
 
     /**
+     * To create a new constant selector to return a value out of store state
+     *
+     * @template RETURN_TYPE type of selector return value
+     * @template PARAMETER_TYPE type of selector parameter (default parameter is void type)
+     *
+     * @param rawSelector selector raw process function
+     * @returns return a new selector
+     */
+    public static makeConstantSelector<RETURN_TYPE, PARAMETER_TYPE = void>(
+        rawSelector: RawParameterSelector<{}, PARAMETER_TYPE, RETURN_TYPE, void>,
+    ): ParameterSelectorProvider<{}, PARAMETER_TYPE, RETURN_TYPE> {
+        return parameterSelectorCreator<{}, PARAMETER_TYPE, RETURN_TYPE>(rawSelector);
+    }
+
+    /**
      * To create a virtual selector with no parameteres
      *
      * @template STATE the type of state
@@ -80,6 +95,27 @@ export class SelectorFactor {
     >(): ParameterSelectorProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
         return parameterSelectorCreator<STATE, PARAMETER_TYPE, RETURN_TYPE>(function (
             _state: STATE,
+            _params: PARAMETER_TYPE,
+        ): RETURN_TYPE {
+            throw new Error(MessageBundle.getText("SELECTOR_VIRTUAL_NO_RANNABLE"));
+        });
+    }
+
+    /**
+     * To create a virtual constant selector
+     *
+     * @template RETURN_TYPE type of selector return value
+     * @template PARAMETER_TYPE type of selector parameter (default parameter is void type)
+     *
+     * @returns return a new virtual selector
+     */
+    public static makeVirtualConstantSelector<RETURN_TYPE, PARAMETER_TYPE = void>(): ParameterSelectorProvider<
+        {},
+        PARAMETER_TYPE,
+        RETURN_TYPE
+    > {
+        return parameterSelectorCreator<{}, PARAMETER_TYPE, RETURN_TYPE>(function (
+            _state: {},
             _params: PARAMETER_TYPE,
         ): RETURN_TYPE {
             throw new Error(MessageBundle.getText("SELECTOR_VIRTUAL_NO_RANNABLE"));

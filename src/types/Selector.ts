@@ -25,6 +25,7 @@ export interface IInstanceSelector<RESULT> {
 export enum SelectorType {
     NORMAL,
     PARAMETER,
+    MIX,
 }
 
 /**

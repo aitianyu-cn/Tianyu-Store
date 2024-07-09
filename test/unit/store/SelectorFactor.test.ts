@@ -19,6 +19,14 @@ describe("aitianyu-cn.node-module.tianyu-store.store.SelectorFactor", () => {
         expect(selector.getter).toBe(rawSelector);
     });
 
+    it("makeConstantSelector", () => {
+        const rawSelector = function () {
+            return [1, 2, 3];
+        };
+        const selector = SelectorFactor.makeConstantSelector(rawSelector);
+        expect(selector.getter).toBe(rawSelector);
+    });
+
     it("makeVirtualSelector", () => {
         const selector = SelectorFactor.makeVirtualSelector();
         expect(selector.getter).toThrow();
@@ -26,6 +34,11 @@ describe("aitianyu-cn.node-module.tianyu-store.store.SelectorFactor", () => {
 
     it("makeVirtualParameterSelector", () => {
         const selector = SelectorFactor.makeVirtualParameterSelector();
+        expect(selector.getter).toThrow();
+    });
+
+    it("makeVirtualConstantSelector", () => {
+        const selector = SelectorFactor.makeVirtualConstantSelector();
         expect(selector.getter).toThrow();
     });
 });
