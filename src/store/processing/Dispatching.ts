@@ -2,7 +2,6 @@
 
 import { MessageBundle } from "src/infra/Message";
 import { IInstanceAction, ActionType } from "src/types/Action";
-import { InstanceId } from "src/types/InstanceId";
 import { IStoreExecution, IStoreManager } from "src/types/Store";
 import {
     AnyStoreHandle,
@@ -11,163 +10,9 @@ import {
     StoreSelectorHandle,
     StoreExternalObjectHandle,
 } from "src/types/StoreHandler";
-import { InstanceIdImpl } from "../impl/InstanceIdImpl";
-import { IStoreState, STORE_STATE_INSTANCE } from "../storage/interface/StoreState";
 import { doSelecting } from "./Selecting";
-import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "src/types/Defs";
-import { getStoreTypeMatchedInstanceId } from "./InstanceProcessor";
-
-async function doneAction(
-    executor: IStoreExecution,
-    manager: IStoreManager,
-    action: IInstanceAction,
-    newState: any,
-    notRedoUndo: boolean,
-): Promise<void> {
-    switch (action.actionType) {
-        case ActionType.CREATE:
-            // for create action, to make difference between entity creation and instance creation
-            if (InstanceIdImpl.isAncestor(action.instanceId)) {
-                // when the instance id equals to ancestor
-                // that means the instance is for entity id itself
-                // the new state is IStoreState type
-                const newStoreState = newState as IStoreState;
-                manager.createEntity(action.instanceId, newStoreState);
-            } else {
-                // to create internal object
-                executor.pushStateChange(
-                    action.storeType,
-                    action.instanceId.toString(),
-                    action.actionType,
-                    newState || /* istanbul ignore next */ {},
-                    notRedoUndo,
-                );
-            }
-            break;
-        case ActionType.DESTROY:
-            // for destroy action, to make difference between entity creation and instance creation
-            if (InstanceIdImpl.isAncestor(action.instanceId)) {
-                // when the instance id equals to ancestor
-                // that means the instance is for entity id itself
-                // the operation should be a management operation
-                manager.destroyEntity(action.instanceId);
-            } else {
-                // to make internal object to be undefined
-                executor.pushStateChange(
-                    action.storeType,
-                    action.instanceId.toString(),
-                    action.actionType,
-                    undefined,
-                    notRedoUndo,
-                );
-            }
-            break;
-        case ActionType.UNDO:
-        case ActionType.REDO:
-            const globalInstance = (newState as IStoreState)[STORE_STATE_INSTANCE];
-            for (const storeType of Object.keys(globalInstance)) {
-                const instances = globalInstance[storeType];
-                for (const instanceId of Object.keys(instances)) {
-                    const ins = instances[instanceId];
-                    executor.pushStateChange(storeType, instanceId, action.actionType, ins, notRedoUndo);
-                }
-            }
-            break;
-        case ActionType.ACTION:
-        case ActionType.VIEW_ACTION:
-        default:
-            // for other actions, to set the states directly
-            executor.pushStateChange(
-                action.storeType,
-                action.instanceId.toString(),
-                action.actionType,
-                newState,
-                notRedoUndo,
-            );
-            break;
-    }
-}
-
-function verifyInstanceSameAncestor(...s: InstanceId[]): string {
-    /* istanbul ignore if */
-    if (s.length === 0) {
-        return "";
-    }
-
-    const first = s[0];
-    let other = s[0];
-    const differentAncestor = s.some((value) => {
-        other = value;
-        return first.entity !== value.entity;
-    });
-
-    /* istanbul ignore if */
-    if (differentAncestor) {
-        // to throw error when the two instance belongs to different ancestor
-        throw new Error(MessageBundle.getText("DISPATCHING_ACTIONS_DIFFERENT_ANCESTOR", first.entity, other.entity));
-    }
-
-    return first.entity;
-}
-
-function verifyInstanceIdMatchStoreTypeOrParentStoreType(storeType: string, instanceId: InstanceId): boolean {
-    let instance = instanceId;
-    while (!InstanceIdImpl.isAncestor(instance)) {
-        if (instance.storeType === storeType) {
-            return true;
-        }
-
-        instance = instance.parent;
-    }
-
-    return instance.storeType === TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE;
-}
-
-function verifyActionInstances(s: IInstanceAction[]): string {
-    const actionCount = s.length;
-    const instanceIds = s.map((value) => {
-        /* istanbul ignore if */
-        if (!value.instanceId.isValid()) {
-            // throw an error when redo undo operation is not atom
-            throw new Error(
-                MessageBundle.getText("DISPATCHING_INSTANCE_ID_NOT_VALID", value.action, value.instanceId.toString()),
-            );
-        }
-
-        /* istanbul ignore if */
-        if (actionCount > 1 && (value.actionType === ActionType.REDO || value.actionType === ActionType.UNDO)) {
-            // throw an error when redo undo operation is not atom
-            throw new Error(MessageBundle.getText("DISPATCHING_REDO_UNDO_NOT_ATOM", value.action));
-        }
-
-        /* istanbul ignore if */
-        if (
-            actionCount > 1 &&
-            InstanceIdImpl.isAncestor(value.instanceId) &&
-            /* istanbul ignore next */ (value.actionType === ActionType.CREATE ||
-                value.actionType === ActionType.DESTROY)
-        ) {
-            // throw an error when create or destroy an entity is not atom
-            throw new Error(MessageBundle.getText("DISPATCHING_SYSTEM_LIFECYCLE_NOT_ATOM", value.action));
-        }
-
-        /* istanbul ignore if */
-        if (!verifyInstanceIdMatchStoreTypeOrParentStoreType(value.storeType, value.instanceId)) {
-            // throw an error when try to use a different store type instance to run action
-            throw new Error(
-                MessageBundle.getText(
-                    "DISPATCHING_ACTION_INSTANCE_NOT_MATCH",
-                    value.storeType,
-                    value.instanceId.storeType,
-                    value.action,
-                ),
-            );
-        }
-        return value.instanceId;
-    });
-
-    return verifyInstanceSameAncestor(...instanceIds);
-}
+import { getStoreTypeMatchedInstanceId, verifyActionInstances, verifyInstanceSameAncestor } from "./InstanceProcessor";
+import { ActionProcessorMap } from "./ActionProcessor";
 
 export async function dispatching(
     executor: IStoreExecution,
@@ -235,7 +80,7 @@ export async function dispatching(
                         ),
                         result.value,
                     );
-                    await doneAction(executor, manager, action, newState, notRedoUndo);
+                    ActionProcessorMap[action.actionType](executor, manager, action, newState, notRedoUndo);
                 }
             } else {
                 const handleResult = result.value;
