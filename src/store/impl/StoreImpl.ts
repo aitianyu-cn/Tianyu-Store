@@ -319,7 +319,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
             throw new Error(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", entityId));
         }
 
-        return doSelecting<RESULT>(entity, this, selector);
+        return doSelecting<RESULT>(this, selector, true);
     }
     dispatch(action: IInstanceAction | IBatchAction): Promise<void> {
         const actions = Array.isArray((action as IBatchAction).actions)

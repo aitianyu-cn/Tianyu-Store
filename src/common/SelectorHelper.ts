@@ -115,7 +115,7 @@ export const mixingSelectorCreator: ICreateMixingSelector = <RESULT>(...selector
 };
 
 export function restrictSelectorCreator<RETURN_TYPE, PARAMETER_TYPE = void, RTo = any>(
-    restrictSelector: SPB<RTo>,
+    restrictSelector: SPB<RTo, PARAMETER_TYPE>,
     targetSelector: ParameterSelectorProvider<any, RTo, RETURN_TYPE>,
 ): RestrictSelectorProvider<PARAMETER_TYPE, RETURN_TYPE> {
     const selectorInstanceCaller = <RestrictSelectorProvider<PARAMETER_TYPE, RETURN_TYPE>>(

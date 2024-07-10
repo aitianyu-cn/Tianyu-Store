@@ -15,6 +15,7 @@ import { InstanceIdImpl } from "../impl/InstanceIdImpl";
 import { IStoreState, STORE_STATE_INSTANCE } from "../storage/interface/StoreState";
 import { doSelecting } from "./Selecting";
 import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "src/types/Defs";
+import { getStoreTypeMatchedInstanceId } from "./InstanceProcessor";
 
 async function doneAction(
     executor: IStoreExecution,
@@ -168,26 +169,6 @@ function verifyActionInstances(s: IInstanceAction[]): string {
     return verifyInstanceSameAncestor(...instanceIds);
 }
 
-function getStoreTypeMatchedInstanceId(storeType: string, instanceId: InstanceId): InstanceId {
-    // if (instanceId.storeType === storeType) {
-    //     return instanceId;
-    // }
-    // const instancePair = instanceId.structure();
-    // let index = instancePair.length - 1;
-    // for (; index >= 0; --index) {
-    //     if (instancePair[index].storeType === storeType) {
-    //         break;
-    //     }
-    // }
-
-    // if (index < 0) {
-    //     return instanceId;
-    // }
-
-    // return new InstanceIdImpl(instancePair.slice(0, index + 1));
-    return instanceId;
-}
-
 export async function dispatching(
     executor: IStoreExecution,
     manager: IStoreManager,
@@ -225,9 +206,9 @@ export async function dispatching(
                     return subRanActions;
                 case StoreHandleType.SELECTOR:
                     const selectedValue = doSelecting(
-                        executor,
                         manager,
                         (handleResult as StoreSelectorHandle<any>).selector,
+                        false,
                     );
                     return selectedValue;
                 case StoreHandleType.EXTERNAL_OBJ:

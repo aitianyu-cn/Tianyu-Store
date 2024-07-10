@@ -94,7 +94,7 @@ export class SelectorFactor {
      * @returns return a new selector
      */
     public static makeRestrictSelector<RETURN_TYPE, PARAMETER_TYPE = void, RTo = any>(
-        restrictSelector: SPB<RTo>,
+        restrictSelector: SPB<RTo, PARAMETER_TYPE>,
         targetSelector: ParameterSelectorProvider<any, RTo, RETURN_TYPE>,
     ): RestrictSelectorProvider<PARAMETER_TYPE, RETURN_TYPE> {
         return restrictSelectorCreator(restrictSelector, targetSelector);
@@ -164,5 +164,13 @@ export class SelectorFactor {
         return mixingSelectorCreator([], function (_selectors, _params) {
             throw new Error(MessageBundle.getText("SELECTOR_VIRTUAL_NO_RANNABLE"));
         });
+    }
+
+    public static makeVirtualRestrictSelector<
+        RETURN_TYPE,
+        PARAMETER_TYPE = void,
+        _RTo = any,
+    >(): RestrictSelectorProvider<PARAMETER_TYPE, RETURN_TYPE> {
+        return restrictSelectorCreator(SelectorFactor.makeVirtualSelector(), SelectorFactor.makeVirtualSelector());
     }
 }

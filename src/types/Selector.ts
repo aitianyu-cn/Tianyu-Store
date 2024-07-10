@@ -164,8 +164,8 @@ export interface RestrictSelectorProvider<PARAMETER_TYPE, RETURN_TYPE> extends I
 }
 
 /** Selector Provider Combination type */
-export type SPB<RT> =
+export type SPB<RT, PR = void> =
     | SelectorProvider<any, RT>
-    | ParameterSelectorProvider<any, any, RT>
-    | MixSelectorProvider<any, RT>
-    | RestrictSelectorProvider<any, RT>;
+    | ParameterSelectorProvider<any, PR, RT>
+    | MixSelectorProvider<PR, RT>
+    | RestrictSelectorProvider<PR, RT>;

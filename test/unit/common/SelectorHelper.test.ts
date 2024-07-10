@@ -70,4 +70,20 @@ describe("aitianyu-cn.node-module.tianyu-store.common.SelectorHelper", () => {
             expect(selectorInstance.id).toEqual(mixSelector.id);
         });
     });
+
+    it("restrictSelectorCreator", () => {
+        const fromSelector = SelectorFactor.makeParameterSelector((_state, param: boolean) => {
+            return param;
+        });
+        const toSelector = SelectorFactor.makeParameterSelector((_state, param: boolean) => {
+            return Number(param ? 1 : 0);
+        });
+        const restrictSelector = SelectorFactor.makeRestrictSelector(fromSelector, toSelector);
+
+        expect(restrictSelector.id).not.toEqual("");
+
+        const instanceId = generateInstanceId("", "");
+        const selectorInstance = restrictSelector(instanceId);
+        expect(selectorInstance.id).toEqual(restrictSelector.id);
+    });
 });

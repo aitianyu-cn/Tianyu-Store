@@ -29,5 +29,7 @@
     "DISPATCHING_ACTION_INSTANCE_NOT_MATCH": "[Tianyu Store] could not support different store type instance execution, using instance \"{1}\" store type to execute \"{2}\" action belongs to \"{0}\" store type.",
     "DISPATCHING_INSTANCE_ID_NOT_VALID": "[Tianyu Store] {0} action",
 
+    "RUNNING_STORE_TYPE_INSTANCE_NOT_MATCH": "[Tianyu Store] execute on instance ({0}) failed, due to store entity type could not found.",
+
     "TRANSACTION_ERROR_RECORDING_UNKNOWN_ERROR": "[Tianyu Store] an invalid instance id {1} is used to exuecute action: {0}."
 }

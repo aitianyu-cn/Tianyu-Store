@@ -1,6 +1,7 @@
 /** @format */
 
 import { SelectorFactor } from "src/store/SelectorFactor";
+import { SelectorType } from "src/types/Selector";
 
 describe("aitianyu-cn.node-module.tianyu-store.store.SelectorFactor", () => {
     it("makeSelector", () => {
@@ -45,5 +46,10 @@ describe("aitianyu-cn.node-module.tianyu-store.store.SelectorFactor", () => {
     it("makeVirtualMxingSelector", () => {
         const selector = SelectorFactor.makeVirtualMxingSelector();
         expect(selector.resultGenerator).toThrow();
+    });
+
+    it("makeVirtualRestrictSelector", () => {
+        const selector = SelectorFactor.makeVirtualRestrictSelector();
+        expect(selector.type).toEqual(SelectorType.RESTRICT);
     });
 });

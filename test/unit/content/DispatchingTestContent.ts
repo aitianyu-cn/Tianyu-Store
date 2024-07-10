@@ -16,10 +16,12 @@ import { DestroyPageStateActionCreator } from "./dispatching-test/action/creator
 import { DestroyUserStateActionCreator } from "./dispatching-test/action/creator/UserStateActionCreator";
 import { getCurrentPage } from "./dispatching-test/selector/PageStateSelector";
 import {
+    getCommonOperations,
     getConnectToken,
     getUser,
     getUserInfo,
     getUserOperations,
+    getUserSpecifiedOperations,
     getUserStatus,
     isUserLogon,
 } from "./dispatching-test/selector/UserStateSelector";
@@ -56,6 +58,8 @@ export const TestUserStateInterface = {
         getUserOperations,
         getUserStatus,
         getUserInfo,
+        getUserSpecifiedOperations,
+        getCommonOperations,
     },
 };
 

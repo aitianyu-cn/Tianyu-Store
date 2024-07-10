@@ -108,7 +108,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Dispatching", ()
 
             expect(
                 TianyuStore.selecte(TestUserStateInterface.selector.getUserOperations(userEntityInstanceId)),
-            ).toEqual(["Home", "Setting", "Help"]);
+            ).toEqual(["Home", "Setting", "Help", "Theme", "Language"]);
         });
 
         it("test for getting user status", () => {
@@ -148,7 +148,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Dispatching", ()
                         token: string;
                     }
                 ).operations,
-            ).toEqual(["Home", "Setting", "Help"]);
+            ).toEqual(["Home", "Setting", "Help", "Theme", "Language"]);
         });
 
         describe("redo undo test", () => {
