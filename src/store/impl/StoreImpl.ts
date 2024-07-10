@@ -157,8 +157,8 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
 
         return action;
     }
-    getSelector(id: string): ISelectorProviderBase<any> {
-        const selector = this.operationList[id] as ISelectorProviderBase<any>;
+    getSelector(id: string): ISelectorProviderBase<any, any> {
+        const selector = this.operationList[id] as ISelectorProviderBase<any, any>;
         if (!selector?.selector) {
             throw new Error(MessageBundle.getText("STORE_SELECTOR_NOT_FOUND", id));
         }

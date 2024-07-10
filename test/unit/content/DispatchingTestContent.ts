@@ -18,7 +18,9 @@ import { getCurrentPage } from "./dispatching-test/selector/PageStateSelector";
 import {
     getConnectToken,
     getUser,
+    getUserInfo,
     getUserOperations,
+    getUserStatus,
     isUserLogon,
 } from "./dispatching-test/selector/UserStateSelector";
 import { ITestUserState } from "./DispatchingTestContent";
@@ -52,6 +54,8 @@ export const TestUserStateInterface = {
         getUser,
         getConnectToken,
         getUserOperations,
+        getUserStatus,
+        getUserInfo,
     },
 };
 

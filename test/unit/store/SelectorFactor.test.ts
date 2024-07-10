@@ -41,4 +41,9 @@ describe("aitianyu-cn.node-module.tianyu-store.store.SelectorFactor", () => {
         const selector = SelectorFactor.makeVirtualConstantSelector();
         expect(selector.getter).toThrow();
     });
+
+    it("makeVirtualMxingSelector", () => {
+        const selector = SelectorFactor.makeVirtualMxingSelector();
+        expect(selector.resultGenerator).toThrow();
+    });
 });

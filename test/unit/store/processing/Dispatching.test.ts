@@ -111,6 +111,46 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Dispatching", ()
             ).toEqual(["Home", "Setting", "Help"]);
         });
 
+        it("test for getting user status", () => {
+            const status = TianyuStore.selecte(TestUserStateInterface.selector.getUserStatus(userEntityInstanceId));
+            expect(status instanceof Missing).toBeFalsy();
+
+            expect(
+                (
+                    status as {
+                        user: string;
+                        logon: boolean;
+                        token: string;
+                    }
+                ).user,
+            ).toEqual("admin");
+            expect(
+                (
+                    status as {
+                        user: string;
+                        logon: boolean;
+                        token: string;
+                    }
+                ).logon,
+            ).toBeTruthy();
+        });
+
+        it("test for getting user info", () => {
+            const info = TianyuStore.selecte(TestUserStateInterface.selector.getUserInfo(userEntityInstanceId));
+            expect(info instanceof Missing).toBeFalsy();
+
+            expect(
+                (
+                    info as {
+                        operations: string[];
+                        user: string;
+                        logon: boolean;
+                        token: string;
+                    }
+                ).operations,
+            ).toEqual(["Home", "Setting", "Help"]);
+        });
+
         describe("redo undo test", () => {
             it("change page", async () => {
                 await TianyuStore.dispatch(

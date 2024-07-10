@@ -27,7 +27,7 @@ export function registerInterface(
 }
 
 function checkSelector(obj: any): boolean {
-    return typeof obj !== "undefined" && !!(obj as ISelectorProviderBase<any>)?.selector;
+    return typeof obj !== "undefined" && !!(obj as ISelectorProviderBase<any, any>)?.selector;
 }
 
 function checkAction(obj: any): boolean {
@@ -51,7 +51,7 @@ function _registerExposeInternal(
         const isAction = checkAction(dir);
         if (isSelector || isAction) {
             // this is an action or selector
-            const operator = isSelector ? (dir as ISelectorProviderBase<any>) : (dir as IActionProviderBase<any>);
+            const operator = isSelector ? (dir as ISelectorProviderBase<any, any>) : (dir as IActionProviderBase<any>);
             operator.info.name = key;
             operator.info.path = path;
             operator.info.fullName = dirPath;

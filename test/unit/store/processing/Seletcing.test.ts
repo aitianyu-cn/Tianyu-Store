@@ -63,7 +63,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Selecting", () =
         getAction: function (id: string): IActionProvider<any, any, any> {
             throw new Error("Function not implemented.");
         },
-        getSelector: function (id: string): ISelectorProviderBase<any> {
+        getSelector: function (id: string): ISelectorProviderBase<any, any> {
             return SelectorFactor.makeSelector(function (state: any) {
                 return state["result"] || "undefined";
             });
