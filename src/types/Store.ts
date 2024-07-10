@@ -39,7 +39,7 @@ export interface IStoreExecution {
 export interface IStoreManager {
     id: string;
     getAction(id: string): IActionProvider<any, any, any>;
-    getSelector(id: string): ISelectorProviderBase<any>;
+    getSelector(id: string): ISelectorProviderBase<any, any>;
 
     createEntity(instanceId: InstanceId, state: IStoreState): void;
     destroyEntity(instanceId: InstanceId): void;
