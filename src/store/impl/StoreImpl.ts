@@ -364,7 +364,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
                     this.doneDispatch(actions);
 
                     // apply changes
-                    executor.applyChanges();
+                    const diff = executor.applyChanges();
 
                     if (!this.config.waitForAll) {
                         resolved = true;
@@ -372,7 +372,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
                     }
 
                     // fire events
-                    await this.changeApply(entity, executor);
+                    await this.changeApply(entity, executor, diff);
 
                     if (this.config.waitForAll && !resolved) {
                         resolved = true;
@@ -490,8 +490,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
         }
     }
 
-    private async changeApply(entity: string, executor: IStoreExecution): Promise<void> {
-        const changes = executor.getRecentChanges();
+    private async changeApply(entity: string, executor: IStoreExecution, changes: IDifferences): Promise<void> {
         this.onChangeApplied?.(changes);
 
         if (!isChangesEmpty(changes)) {
@@ -521,7 +520,9 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
     getHistories(): { histroy: IDifferences[]; index: number } {
         return { histroy: [], index: -1 };
     }
-    applyChanges(): void {}
+    applyChanges(): IDifferences {
+        return {};
+    }
     discardChanges(): void {}
     pushStateChange(
         _storeType: string,

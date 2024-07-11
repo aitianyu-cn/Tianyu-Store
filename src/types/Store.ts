@@ -22,7 +22,7 @@ export interface IStoreExecution {
     getRecentChanges(): IDifferences;
     getHistories(): { histroy: IDifferences[]; index: number };
 
-    applyChanges(): void;
+    applyChanges(): IDifferences;
     discardChanges(): void;
     pushStateChange(
         storeType: string,

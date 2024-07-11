@@ -30,7 +30,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.ActionProcessor"
         getHistories: function (): { histroy: IDifferences[]; index: number } {
             throw new Error("Function not implemented.");
         },
-        applyChanges: function (): void {
+        applyChanges: function (): IDifferences {
             throw new Error("Function not implemented.");
         },
         discardChanges: function (): void {

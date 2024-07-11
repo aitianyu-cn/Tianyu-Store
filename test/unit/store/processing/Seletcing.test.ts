@@ -42,7 +42,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Selecting", () =
             getRecentChanges: function (): IDifferences {
                 throw new Error("Function not implemented.");
             },
-            applyChanges: function (): void {
+            applyChanges: function (): IDifferences {
                 throw new Error("Function not implemented.");
             },
             discardChanges: function (): void {
@@ -178,7 +178,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Selecting", () =
             getRecentChanges: function (): IDifferences {
                 throw new Error("Function not implemented.");
             },
-            applyChanges: function (): void {
+            applyChanges: function (): IDifferences {
                 throw new Error("Function not implemented.");
             },
             discardChanges: function (): void {

@@ -137,7 +137,7 @@ export class StoreInstanceImpl implements IStoreExecution {
         return ins;
     }
 
-    applyChanges(): void {
+    applyChanges(): IDifferences {
         const changes = this.changeCache;
         this.changeCache = {};
 
@@ -188,6 +188,8 @@ export class StoreInstanceImpl implements IStoreExecution {
         } else {
             redoUndoStack?.resetRedoUndo();
         }
+
+        return diff;
     }
     discardChanges(): void {
         this.changeCache = {};
