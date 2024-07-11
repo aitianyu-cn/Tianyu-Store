@@ -468,7 +468,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
 
     describe("dispatchInternal", () => {
         const Processsing = require("src/store/processing/Dispatching");
-        const dispatchingSpyOn = jest.spyOn(Processsing, "dispatching");
+        let dispatchingSpyOn: any;
 
         beforeEach(() => {
             jest.spyOn(store as any, "fireListeners").mockImplementation(async () => {
@@ -480,6 +480,8 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
 
             jest.spyOn(storeInternal, "applyChanges");
             jest.spyOn(storeInternal, "discardChanges");
+
+            dispatchingSpyOn = jest.spyOn(Processsing, "dispatching");
 
             ((store as any)["transaction"] as unknown as ITransaction).cleanDispatch();
             ((store as any)["transaction"] as unknown as ITransaction).cleanError();
@@ -550,7 +552,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
 
     describe("fireListeners", () => {
         const Processsing = require("src/store/processing/Selecting");
-        const selectingSpyOn = jest.spyOn(Processsing, "doSelectingWithState");
+        let selectingSpyOn: any;
 
         const instanceId = generateInstanceId(baseInstanceId, "test", "instance");
 
@@ -558,7 +560,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
             id: guid(),
             selector: {
                 id: "",
-                selector: "test.selector",
+                selector: "test.selector.getUser",
                 storeType: "",
                 instanceId: instanceId,
                 params: undefined,
@@ -584,8 +586,8 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
 
         beforeEach(() => {
             jest.spyOn((store as any)["transaction"], "error");
-
             jest.spyOn(listener, "listener");
+            selectingSpyOn = jest.spyOn(Processsing, "doSelectingWithState");
         });
 
         it("entity is not valid, not to fire", (done) => {
@@ -768,7 +770,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
 
     describe("fireSubscribes", () => {
         const Processsing = require("src/store/processing/Selecting");
-        const selectingSpyOn = jest.spyOn(Processsing, "doSelectingWithState");
+        let selectingSpyOn: any;
 
         const instanceId = generateInstanceId(baseInstanceId, "test", "instance");
         const selectorProvider = SelectorFactor.makeSelector<any, any>(function (state) {
@@ -801,6 +803,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
 
         beforeEach(() => {
             jest.spyOn((store as any)["transaction"], "error");
+            selectingSpyOn = jest.spyOn(Processsing, "doSelectingWithState");
             isCalled = false;
         });
 

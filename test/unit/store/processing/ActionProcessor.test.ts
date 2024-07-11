@@ -3,7 +3,7 @@
 import { generateInstanceId } from "src/InstanceId";
 import { generateNewStoreInstance } from "src/Store";
 import { ActionProcessorMap } from "src/store/processing/ActionProcessor";
-import { IStoreState, STORE_STATE_INSTANCE, STORE_STATE_SYSTEM } from "src/store/storage/interface/StoreState";
+import { IStoreState } from "src/store/storage/interface/StoreState";
 import { ActionType, IActionProvider, IInstanceAction } from "src/types/Action";
 import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "src/types/Defs";
 import { IExternalObjectRegister } from "src/types/ExternalObject";
@@ -188,17 +188,5 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.ActionProcessor"
             ActionProcessorMap[ActionType.DESTROY](StoreExecutor, StoreManager, action, undefined, false);
             expect(StoreExecutor.pushStateChange).toHaveBeenCalled();
         });
-    });
-
-    it("ActionType.REDO & ActionType.UNDO", () => {
-        const state: IStoreState = {
-            [STORE_STATE_SYSTEM]: {},
-            [STORE_STATE_INSTANCE]: {
-                user: {
-                    test1: {},
-                },
-                console: {},
-            },
-        };
     });
 });

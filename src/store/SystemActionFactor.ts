@@ -30,14 +30,19 @@ const DestroyAction = DestroyActionCreator;
 
 export const TianyuStoreEntityInterface = {
     core: {
+        /** To create a new store entity */
         creator: CreateAction,
+        /** To delete a exist store entity */
         destroy: DestroyAction,
     },
     action: {
+        /** To create a new instance if the instance does not exist */
         createInstanceIfNotExist: CreateInstanceIfNotExist,
+        /** To delete a instance if the instance does exist */
         destroyInstanceIfExist: DestroyInstanceIfExist,
     },
     selector: {
+        /** Get the specified instance does exist */
         getInstanceExist: GetInstanceExist,
     },
 };
