@@ -31,7 +31,7 @@ export class RedoUndoStackImpl implements IRedoUndoStack {
         if (this.current) {
             this.previous.push(this.current);
         }
-        this.current = diff;
+        this.current = Object.freeze(diff);
     }
     public doRedo(): IDifferences | undefined {
         if (!this.canRedo) {

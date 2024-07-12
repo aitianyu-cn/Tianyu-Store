@@ -106,6 +106,12 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
                 }).not.toThrow();
             });
 
+            it("pushStateChange", () => {
+                expect(() => {
+                    storeInternal.pushDiffChange({});
+                }).not.toThrow();
+            });
+
             it("validateActionInstance", () => {
                 const action: IInstanceAction = {
                     id: "",
@@ -418,9 +424,8 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
             const newInstanceId = generateNewStoreInstance();
             const selectorInstance = TestUserStateInterface.selector.getUser(newInstanceId);
 
-            expect(() => {
-                store.selecte(selectorInstance);
-            }).toThrow(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", newInstanceId.entity));
+            const result = store.selecte(selectorInstance);
+            expect(result instanceof Missing).toBeTruthy();
         });
 
         it("do selecting", () => {
@@ -429,6 +434,26 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
 
             jest.spyOn(Processsing, "doSelecting").mockReturnValue(123);
             const selectResult = store.selecte(selectorInstance);
+            expect(selectResult).toBe(123);
+        });
+    });
+
+    describe("selecteWithThrow", () => {
+        it("entity not exist", () => {
+            const newInstanceId = generateNewStoreInstance();
+            const selectorInstance = TestUserStateInterface.selector.getUser(newInstanceId);
+
+            expect(() => {
+                store.selecteWithThrow(selectorInstance);
+            }).toThrow(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", newInstanceId.entity));
+        });
+
+        it("do selecting", () => {
+            const Processsing = require("src/store/processing/Selecting");
+            const selectorInstance = TestUserStateInterface.selector.getUser(baseInstanceId);
+
+            jest.spyOn(Processsing, "doSelectingWithThrow").mockReturnValue(123);
+            const selectResult = store.selecteWithThrow(selectorInstance);
             expect(selectResult).toBe(123);
         });
     });

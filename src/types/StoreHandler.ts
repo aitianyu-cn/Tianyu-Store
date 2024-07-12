@@ -40,6 +40,8 @@ export interface StoreSelectorHandle<RESULT> {
     type: StoreHandleType.SELECTOR;
     /** provides selector instance */
     selector: IInstanceSelector<RESULT>;
+    /** flag indicates the select should throw an error when receiving missing type */
+    shouldThrow?: boolean;
 }
 
 /**

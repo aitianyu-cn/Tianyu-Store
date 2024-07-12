@@ -29,12 +29,13 @@ import { TianyuStoreRedoUndoInterface } from "../RedoUndoFactor";
 import { TianyuStoreEntityInterface } from "../SystemActionFactor";
 import { TransactionImpl, formatTransactionType } from "../modules/Transaction";
 import { dispatching } from "../processing/Dispatching";
-import { doSelecting, doSelectingWithState } from "../processing/Selecting";
+import { doSelecting, doSelectingWithState, doSelectingWithThrow } from "../processing/Selecting";
 import { IStoreState, STORE_STATE_INSTANCE } from "../storage/interface/StoreState";
 import { InvalidExternalRegister } from "./InvalidExternalRegisterImpl";
 import { StoreInstanceImpl } from "./StoreInstanceImpl";
 import { registerStore, unregisterStore } from "src/develop/DevToolsHelper";
 import { IDifferences } from "src/types/RedoUndoStack";
+import { isChangesEmpty } from "src/utils/ObjectUtils";
 
 interface IInstanceSubscribe {
     id: string;
@@ -48,10 +49,6 @@ interface IInstanceSubscribeMap {
 
 interface IInstanceListenerMap {
     [id: string]: IInstanceListener<any>[];
-}
-
-function isChangesEmpty(changes: IDifferences): boolean {
-    return Object.keys(changes).length === 0;
 }
 
 export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStoreDevAPI {
@@ -316,10 +313,22 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
         const entityId = selector.instanceId.entity;
         const entity = this.entityMap.get(entityId);
         if (!entity) {
-            throw new Error(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", entityId));
+            this.error(MessageBundle.getText("STORE_ENTITY_NOT_EXIST", entityId), TransactionType.Selector);
+            return new Missing();
         }
 
         return doSelecting<RESULT>(this, selector, true);
+    }
+    selecteWithThrow<RESULT>(selector: IInstanceSelector<RESULT>): RESULT {
+        const entityId = selector.instanceId.entity;
+        const entity = this.entityMap.get(entityId);
+        if (!entity) {
+            const errorMsg = MessageBundle.getText("STORE_ENTITY_NOT_EXIST", entityId);
+            this.error(errorMsg, TransactionType.Selector);
+            throw new Error(errorMsg);
+        }
+
+        return doSelectingWithThrow<RESULT>(this, selector, true);
     }
     dispatch(action: IInstanceAction | IBatchAction): Promise<void> {
         const actions = Array.isArray((action as IBatchAction).actions)
@@ -531,5 +540,6 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
         _newState: any,
         _notRedoUndo: boolean,
     ): void {}
+    pushDiffChange(_diff: IDifferences): void {}
     validateActionInstance(_action: IInstanceAction): void {}
 }

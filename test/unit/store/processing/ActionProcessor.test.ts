@@ -45,6 +45,9 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.ActionProcessor"
         ): void {
             throw new Error("Function not implemented.");
         },
+        pushDiffChange: function (diff: IDifferences): void {
+            throw new Error("Function not implemented.");
+        },
         validateActionInstance: function (action: IInstanceAction): void {
             throw new Error("Function not implemented.");
         },

@@ -10,7 +10,7 @@ import {
     StoreSelectorHandle,
     StoreExternalObjectHandle,
 } from "src/types/StoreHandler";
-import { doSelecting } from "./Selecting";
+import { doSelecting, doSelectingWithThrow } from "./Selecting";
 import { getStoreTypeMatchedInstanceId, verifyActionInstances, verifyInstanceSameAncestor } from "./InstanceProcessor";
 import { ActionProcessorMap } from "./ActionProcessor";
 
@@ -50,11 +50,9 @@ export async function dispatching(
                     ranActions.push(...subRanActions);
                     return subRanActions;
                 case StoreHandleType.SELECTOR:
-                    const selectedValue = doSelecting(
-                        manager,
-                        (handleResult as StoreSelectorHandle<any>).selector,
-                        false,
-                    );
+                    const selectedValue = (handleResult as StoreSelectorHandle<any>).shouldThrow
+                        ? doSelectingWithThrow(manager, (handleResult as StoreSelectorHandle<any>).selector, false)
+                        : doSelecting(manager, (handleResult as StoreSelectorHandle<any>).selector, false);
                     return selectedValue;
                 case StoreHandleType.EXTERNAL_OBJ:
                     const externalGetter = (handleResult as StoreExternalObjectHandle<any>).handler(

@@ -30,6 +30,19 @@ export function doSelecting<RESULT>(
     }
 }
 
+export function doSelectingWithThrow<RESULT>(
+    manager: IStoreManager,
+    selector: IInstanceSelector<RESULT>,
+    forceStatic: boolean,
+): RESULT {
+    try {
+        return doSelectingWithStateThrowWhenMissing<RESULT>(manager, selector, forceStatic);
+    } catch (e) {
+        manager.error(e as any, TransactionType.Selector);
+        throw e;
+    }
+}
+
 export function doSelectingWithState<RESULT>(
     state: any,
     executor: IStoreExecution,

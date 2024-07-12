@@ -31,6 +31,7 @@ export interface IStoreExecution {
         newState: any,
         notRedoUndo: boolean,
     ): void;
+    pushDiffChange(diff: IDifferences): void;
 
     validateActionInstance(action: IInstanceAction): void;
 }
@@ -152,6 +153,15 @@ export interface IStore {
      * @returns return selected value
      */
     selecte<RESULT>(selector: IInstanceSelector<RESULT>): SelectorResult<RESULT>;
+
+    /**
+     * To select a state value, to throw an error when get state failed
+     *
+     * @param selector the selector instance
+     *
+     * @returns return selected value
+     */
+    selecteWithThrow<RESULT>(selector: IInstanceSelector<RESULT>): RESULT;
 
     /**
      * To dispatch an action or actions.

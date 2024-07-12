@@ -46,25 +46,7 @@ const GetRedoUndoEnabledSelector = SelectorFactor.makeSelector(function (state: 
 
 export const TianyuStoreRedoUndoInterface = {
     stack: {
-        /**
-         * Redo Action
-         *
-         * @description Tianyu Store system action, to move the store state to the next one if possible.
-         *
-         * @notes In order to avoid some events and external object issue, the redo action will only work for currently existing states,
-         *        if the state is new created or deleted, the redo operation will not to delete or create it. That means if a state does
-         *        exist in the current status, and next state does not exist, the redo action will not to delete it.
-         */
         redoAction: RedoActionCreator,
-        /**
-         * Undo Action
-         *
-         * @description Tianyu Store system action, to move the store state to the previous one if possible.
-         *
-         * @notes In order to avoid some events and external object issue, the undo action will only work for currently existing states,
-         *        if the state is new created or deleted, the undo operation will not to delete or create it. That means if a state does
-         *        exist in the current status, and pervious state does not exist, the undo action will not to delete it.
-         */
         undoAction: UndoActionCreator,
 
         /** Get current redo action is valid */

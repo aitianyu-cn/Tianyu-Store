@@ -67,18 +67,11 @@ function destroyProcessor(
 function redoUndoProcessor(
     executor: IStoreExecution,
     _manager: IStoreManager,
-    action: IInstanceAction,
+    _action: IInstanceAction,
     newState: any,
-    notRedoUndo: boolean,
+    _notRedoUndo: boolean,
 ): void {
-    const globalInstance = (newState as IStoreState)[STORE_STATE_INSTANCE];
-    for (const storeType of Object.keys(globalInstance)) {
-        const instances = globalInstance[storeType];
-        for (const instanceId of Object.keys(instances)) {
-            const ins = instances[instanceId];
-            executor.pushStateChange(storeType, instanceId, action.actionType, ins, notRedoUndo);
-        }
-    }
+    executor.pushDiffChange(newState);
 }
 
 function actionProcessor(

@@ -84,6 +84,7 @@ export namespace StoreUtils {
     export namespace Handler {
         export import doAction = HandlerUtilsImport.doAction;
         export import doSelector = HandlerUtilsImport.doSelector;
+        export import doSelectorWithThrow = HandlerUtilsImport.doSelectorWithThrow;
         export import doReadExternal = HandlerUtilsImport.doReadExternal;
     }
 
