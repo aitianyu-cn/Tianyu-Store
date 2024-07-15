@@ -14,7 +14,7 @@ export * from "./types/Reducer";
 export * from "./types/Selector";
 export {
     type StoreConfiguration,
-    type IStoreInstanceCreateConfig,
+    type IStoreInstanceSystemState as IStoreInstanceCreateConfig,
     type IStore,
     type IStoreDevAPI,
 } from "./types/Store";

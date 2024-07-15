@@ -16,7 +16,13 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreInstanceImpl", ()
     const defaultInstance = generateInstanceId(basicInstanceId, "test", "test_instance");
 
     const storeState: IStoreState = {
-        [STORE_STATE_SYSTEM]: { redoUndo: true },
+        [STORE_STATE_SYSTEM]: {
+            config: { redoUndo: true },
+            instanceMap: {
+                parentMap: {},
+                childrenMap: {},
+            },
+        },
         [STORE_STATE_INSTANCE]: {
             test: {
                 [defaultInstance.toString()]: {

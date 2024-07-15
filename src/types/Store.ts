@@ -11,7 +11,7 @@ import { IterableType } from "./Model";
 import { IDifferences } from "./RedoUndoStack";
 import { IInstanceSelector, ISelectorProviderBase, SelectorProvider, SelectorResult } from "./Selector";
 import { Unsubscribe } from "./Subscribe";
-import { CallbackActionT, MapOfType } from "@aitianyu.cn/types";
+import { CallbackActionT, MapOfString, MapOfStrings, MapOfType } from "@aitianyu.cn/types";
 import { TransactionErrorRecord, TransactionOperationRecord, TransactionType } from "./Transaction";
 
 /** this is for internal using */
@@ -71,14 +71,22 @@ export type StoreConfiguration = {
     friendlyName?: string;
 };
 
+export interface IStoreSystemInstanceMap extends IterableType {
+    parentMap: MapOfType<string | null>;
+    childrenMap: MapOfStrings;
+}
+
 /** Tianyu Store Instance Entity creation configuration */
-export interface IStoreInstanceCreateConfig extends IterableType {
+export interface IStoreInstanceSystemState extends IterableType {
     /**
      * Indicates the instance can do redo or undo operation
      *
      * If this is false, redo undo stack will not be generated
      */
-    redoUndo?: boolean;
+    config: {
+        redoUndo?: boolean;
+    };
+    instanceMap: IStoreSystemInstanceMap;
 }
 
 /**

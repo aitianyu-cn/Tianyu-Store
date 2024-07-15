@@ -50,7 +50,7 @@ export class StoreInstanceImpl implements IStoreExecution {
 
         // to init the root external register
         const externalRegister = new ExternalRegister();
-        if (this.storeState[STORE_STATE_SYSTEM].redoUndo) {
+        if (this.storeState[STORE_STATE_SYSTEM].config.redoUndo) {
             externalRegister.add(STORE_STATE_EXTERNAL_REDOUNDO_STACK, new RedoUndoStackImpl());
         }
         this.externalObjectMap.set(instanceId.toString(), externalRegister);
@@ -167,7 +167,10 @@ export class StoreInstanceImpl implements IStoreExecution {
                     }
 
                     if (changeItem.type === DifferenceChangeType.Create) {
-                        this.parentChildHolder.createInstance(new InstanceIdImpl(insId));
+                        this.parentChildHolder.createInstance(
+                            new InstanceIdImpl(insId),
+                            this.storeState[STORE_STATE_SYSTEM].instanceMap,
+                        );
                     }
 
                     // this is for state redo/undo checking
@@ -186,7 +189,7 @@ export class StoreInstanceImpl implements IStoreExecution {
         }
 
         this.storeState = mergeDiff(this.storeState, diff);
-        this.parentChildHolder.applyChanges();
+        this.parentChildHolder.applyChanges(this.storeState[STORE_STATE_SYSTEM].instanceMap);
 
         const redoUndoStack = this.externalObjectMap
             .get(this.instanceId.toString())
@@ -236,7 +239,10 @@ export class StoreInstanceImpl implements IStoreExecution {
 
         if (actionType === ActionType.DESTROY) {
             // for destroy instance, to destroy its children
-            const instances = this.parentChildHolder.removeInstance(instanceId);
+            const instances = this.parentChildHolder.removeInstance(
+                instanceId,
+                this.storeState[STORE_STATE_SYSTEM].instanceMap,
+            );
             for (const insId of instances) {
                 const ins = new InstanceIdImpl(insId);
                 const storeType = ins.storeType;

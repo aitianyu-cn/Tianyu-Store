@@ -33,7 +33,13 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
 
         // create entity normal case
         storeInternal.createEntity(baseInstanceId, {
-            [STORE_STATE_SYSTEM]: {},
+            [STORE_STATE_SYSTEM]: {
+                config: { redoUndo: true },
+                instanceMap: {
+                    parentMap: {},
+                    childrenMap: {},
+                },
+            },
             [STORE_STATE_INSTANCE]: {},
         });
         expect(
@@ -163,7 +169,13 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
             it("create duplicate entity", () => {
                 expect(() => {
                     storeInternal.createEntity(baseInstanceId, {
-                        [STORE_STATE_SYSTEM]: {},
+                        [STORE_STATE_SYSTEM]: {
+                            config: { redoUndo: true },
+                            instanceMap: {
+                                parentMap: {},
+                                childrenMap: {},
+                            },
+                        },
                         [STORE_STATE_INSTANCE]: {},
                     });
                 }).toThrow(MessageBundle.getText("STORE_CREATE_ENTITY_DUP", baseInstanceId.entity, baseInstanceId.id));
@@ -174,7 +186,13 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
 
                 instancesPool.push(newInstanceId);
                 storeInternal.createEntity(newInstanceId, {
-                    [STORE_STATE_SYSTEM]: {},
+                    [STORE_STATE_SYSTEM]: {
+                        config: { redoUndo: true },
+                        instanceMap: {
+                            parentMap: {},
+                            childrenMap: {},
+                        },
+                    },
                     [STORE_STATE_INSTANCE]: {},
                 });
                 expect(
@@ -192,7 +210,13 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
 
                     instancesPool.push(newInstanceId);
                     storeInternal.createEntity(newInstanceId, {
-                        [STORE_STATE_SYSTEM]: {},
+                        [STORE_STATE_SYSTEM]: {
+                            config: { redoUndo: true },
+                            instanceMap: {
+                                parentMap: {},
+                                childrenMap: {},
+                            },
+                        },
                         [STORE_STATE_INSTANCE]: {},
                     });
                     expect(

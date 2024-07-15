@@ -41,7 +41,7 @@ const GetUndoAvailableSelector = SelectorFactor.makeSelector(
 );
 
 const GetRedoUndoEnabledSelector = SelectorFactor.makeSelector(function (state: IStoreState): boolean {
-    return Boolean(state[STORE_STATE_SYSTEM].redoUndo);
+    return Boolean(state[STORE_STATE_SYSTEM].config.redoUndo);
 });
 
 export const TianyuStoreRedoUndoInterface = {
