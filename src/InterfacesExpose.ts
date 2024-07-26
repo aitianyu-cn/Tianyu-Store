@@ -52,6 +52,10 @@ export const TianyuStoreEntityExpose = {
             children: GetChildInstances,
         },
     },
+
+    utils: {
+        toBoolean: SelectorFactor.makeVirtualConstantSelector<boolean, any>(),
+    },
 };
 
 export const TianyuStoreRedoUndoExpose = {

@@ -6,6 +6,7 @@ import { ActionFactor } from "./ActionFactor";
 import { IStoreState, STORE_STATE_INSTANCE, STORE_STATE_SYSTEM } from "./storage/interface/StoreState";
 import { GetChildInstances, GetInstanceExist, GetParentInstance } from "./storage/StoreEntitySelector";
 import { CreateInstanceIfNotExist, DestroyInstanceIfExist } from "./storage/StoreEntityAction";
+import { ConvertAnyToBoolean } from "./storage/UtilsSelectorImpl";
 
 const DefaultInstanceCreationConfig: IStoreInstanceSystemState = {
     config: {
@@ -57,6 +58,10 @@ export const TianyuStoreEntityInterface = {
             /** Get all children of specified instance */
             children: GetChildInstances,
         },
+    },
+
+    utils: {
+        toBoolean: ConvertAnyToBoolean,
     },
 };
 
