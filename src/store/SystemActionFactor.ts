@@ -1,7 +1,7 @@
 /** @format */
 
 import { ITianyuStoreInterface } from "src/types/Interface";
-import { IStoreInstanceSystemState } from "src/types/Store";
+import { IStoreInstanceCreatorConfig, IStoreInstanceSystemState } from "src/types/Store";
 import { ActionFactor } from "./ActionFactor";
 import { IStoreState, STORE_STATE_INSTANCE, STORE_STATE_SYSTEM } from "./storage/interface/StoreState";
 import { GetChildInstances, GetInstanceExist, GetParentInstance } from "./storage/StoreEntitySelector";
@@ -18,17 +18,20 @@ const DefaultInstanceCreationConfig: IStoreInstanceSystemState = {
     },
 };
 
-const CreateActionCreator = ActionFactor.makeCreateStoreAction<IStoreState, IStoreInstanceSystemState | undefined>();
+const CreateActionCreator = ActionFactor.makeCreateStoreAction<IStoreState, IStoreInstanceCreatorConfig | undefined>();
 const DestroyActionCreator = ActionFactor.makeDestroyStoreAction();
 
 const CreateAction = CreateActionCreator.withReducer(function (
     _state: IStoreState,
-    data: IStoreInstanceSystemState | undefined,
+    data: IStoreInstanceCreatorConfig | undefined,
 ): IStoreState {
     const state = {
-        [STORE_STATE_SYSTEM]: data || DefaultInstanceCreationConfig,
+        [STORE_STATE_SYSTEM]: DefaultInstanceCreationConfig,
         [STORE_STATE_INSTANCE]: {},
     };
+    state[STORE_STATE_SYSTEM].config.redoUndo =
+        /* istanbul ignore next */
+        data?.redoUndo === undefined ? state[STORE_STATE_SYSTEM].config.redoUndo : data.redoUndo;
 
     return state;
 });

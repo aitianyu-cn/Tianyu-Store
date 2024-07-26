@@ -89,6 +89,16 @@ export interface IStoreInstanceSystemState extends IterableType {
     instanceMap: IStoreSystemInstanceMap;
 }
 
+/** Tianyu Store Instance Entity creation configuration */
+export interface IStoreInstanceCreatorConfig extends IterableType {
+    /**
+     * Indicates the instance can do redo or undo operation
+     *
+     * If this is false, redo undo stack will not be generated
+     */
+    redoUndo?: boolean;
+}
+
 /**
  * Tianyu Store Interface
  *

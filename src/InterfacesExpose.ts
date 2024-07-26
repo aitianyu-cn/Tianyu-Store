@@ -5,12 +5,12 @@ import { TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE } from "./types/Defs";
 import { storeRedoActionCreatorImpl, storeUndoActionCreatorImpl } from "./store/storage/RedoUndoActionImpl";
 import { IStoreState } from "./store/storage/interface/StoreState";
 import { SelectorFactor } from "./store/SelectorFactor";
-import { IStoreInstanceSystemState } from "./types/Store";
+import { IStoreInstanceCreatorConfig } from "./types/Store";
 import { ActionFactor } from "./store/ActionFactor";
 import { ITianyuStoreInterface } from "./types/Interface";
 import { InstanceId } from "./types/InstanceId";
 
-const CreateAction = ActionFactor.makeCreateStoreAction<IStoreState, IStoreInstanceSystemState | void>();
+const CreateAction = ActionFactor.makeCreateStoreAction<IStoreState, IStoreInstanceCreatorConfig | void>();
 const DestroyAction = ActionFactor.makeDestroyStoreAction();
 
 const CleanStackAction = ActionFactor.makeVirtualAction();
