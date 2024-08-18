@@ -8,7 +8,7 @@ import { IStoreState, STORE_STATE_INSTANCE } from "../storage/interface/StoreSta
 export type fnProcessor = (
     executor: IStoreExecution,
     manager: IStoreManager,
-    action: IInstanceAction,
+    action: IInstanceAction<any>,
     newState: any,
     notRedoUndo: boolean,
 ) => void;
@@ -16,7 +16,7 @@ export type fnProcessor = (
 function creatorProcessor(
     executor: IStoreExecution,
     manager: IStoreManager,
-    action: IInstanceAction,
+    action: IInstanceAction<any>,
     newState: any,
     notRedoUndo: boolean,
 ): void {
@@ -42,7 +42,7 @@ function creatorProcessor(
 function destroyProcessor(
     executor: IStoreExecution,
     manager: IStoreManager,
-    action: IInstanceAction,
+    action: IInstanceAction<any>,
     _newState: any,
     notRedoUndo: boolean,
 ): void {
@@ -67,7 +67,7 @@ function destroyProcessor(
 function redoUndoProcessor(
     executor: IStoreExecution,
     _manager: IStoreManager,
-    _action: IInstanceAction,
+    _action: IInstanceAction<any>,
     newState: any,
     _notRedoUndo: boolean,
 ): void {
@@ -77,7 +77,7 @@ function redoUndoProcessor(
 function actionProcessor(
     executor: IStoreExecution,
     _manager: IStoreManager,
-    action: IInstanceAction,
+    action: IInstanceAction<any>,
     newState: any,
     notRedoUndo: boolean,
 ): void {

@@ -28,7 +28,7 @@ export interface StoreActionHandle {
     /** indicates action handle type */
     type: StoreHandleType.ACTION;
     /** provides action instance */
-    action: IInstanceAction;
+    action: IInstanceAction<any>;
 }
 
 /**

@@ -64,7 +64,7 @@ export function verifyInstanceIdMatchStoreTypeOrParentStoreType(storeType: strin
     return storeType === TIANYU_STORE_INSTANCE_BASE_ENTITY_STORE_TYPE;
 }
 
-export function verifyActionInstances(s: IInstanceAction[]): string {
+export function verifyActionInstances(s: IInstanceAction<any>[]): string {
     const actionCount = s.length;
     const instanceIds = s.map((value) => {
         if (!value.instanceId.isValid()) {

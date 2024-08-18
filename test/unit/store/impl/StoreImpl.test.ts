@@ -93,7 +93,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
             });
 
             it("pushStateChange", () => {
-                const action: IInstanceAction = {
+                const action: IInstanceAction<any> = {
                     id: "",
                     action: "",
                     storeType: "",
@@ -119,7 +119,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
             });
 
             it("validateActionInstance", () => {
-                const action: IInstanceAction = {
+                const action: IInstanceAction<any> = {
                     id: "",
                     action: "",
                     storeType: "",
@@ -503,7 +503,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
             const action = {
                 ...TestUserStateInterface.action.userLifecycleCreateAction(baseInstanceId),
                 transaction: false,
-            } as IInstanceViewAction;
+            } as IInstanceViewAction<any>;
             store.dispatchForView(action);
             expect((store as any).dispatchInternal).toHaveBeenCalledWith([action], true);
         });

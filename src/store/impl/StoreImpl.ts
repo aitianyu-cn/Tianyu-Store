@@ -57,7 +57,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
     private readonly transaction: ITransactionInternal;
 
     private onSelector?: CallbackActionT<TransactionOperationRecord<IInstanceSelector<any>>>;
-    private onDispatch?: CallbackActionT<TransactionOperationRecord<IInstanceAction>>;
+    private onDispatch?: CallbackActionT<TransactionOperationRecord<IInstanceAction<any>>>;
     private onError?: CallbackActionT<TransactionErrorRecord>;
     private onChangeApplied?: CallbackActionT<IDifferences>;
 
@@ -112,7 +112,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
     setOnSelector(callback?: CallbackActionT<TransactionOperationRecord<IInstanceSelector<any>>>): void {
         this.onSelector = callback;
     }
-    setOnDispatch(callback?: CallbackActionT<TransactionOperationRecord<IInstanceAction>>): void {
+    setOnDispatch(callback?: CallbackActionT<TransactionOperationRecord<IInstanceAction<any>>>): void {
         this.onDispatch = callback;
     }
     setOnError(callback?: CallbackActionT<TransactionErrorRecord>): void {
@@ -132,7 +132,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
         }
         return {};
     }
-    getAllDispatchs(): TransactionOperationRecord<IInstanceAction>[] {
+    getAllDispatchs(): TransactionOperationRecord<IInstanceAction<any>>[] {
         return this.transaction.getDispatched();
     }
     getAllSelectors(): TransactionOperationRecord<IInstanceSelector<any>>[] {
@@ -330,17 +330,17 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
 
         return doSelectingWithThrow<RESULT>(this, selector, true);
     }
-    dispatch(action: IInstanceAction | IBatchAction): Promise<void> {
+    dispatch(action: IInstanceAction<any> | IBatchAction): Promise<void> {
         const actions = Array.isArray((action as IBatchAction).actions)
             ? (action as IBatchAction).actions
-            : [action as IInstanceAction];
+            : [action as IInstanceAction<any>];
 
         return this.dispatchInternal(actions, false);
     }
-    dispatchForView(action: IBatchAction | IInstanceViewAction): void {
+    dispatchForView(action: IBatchAction | IInstanceViewAction<any>): void {
         const actions = Array.isArray((action as IBatchAction).actions)
             ? (action as IBatchAction).actions
-            : [action as IInstanceAction];
+            : [action as IInstanceAction<any>];
 
         void this.dispatchInternal(actions, true);
     }
@@ -356,7 +356,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
     // Store Internal Impl
     // ==============================================================================
 
-    private async dispatchInternal(action: IInstanceAction[], notRedoUndo: boolean): Promise<void> {
+    private async dispatchInternal(action: IInstanceAction<any>[], notRedoUndo: boolean): Promise<void> {
         if (action.length === 0) {
             return;
         }
@@ -508,7 +508,7 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
         }
     }
 
-    private doneDispatch(actions: IInstanceAction[]): void {
+    private doneDispatch(actions: IInstanceAction<any>[]): void {
         const dispatchRec = this.transaction.dispatched(actions);
         this.onDispatch?.(dispatchRec);
     }
@@ -541,5 +541,5 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
         _notRedoUndo: boolean,
     ): void {}
     pushDiffChange(_diff: IDifferences): void {}
-    validateActionInstance(_action: IInstanceAction): void {}
+    validateActionInstance(_action: IInstanceAction<any>): void {}
 }

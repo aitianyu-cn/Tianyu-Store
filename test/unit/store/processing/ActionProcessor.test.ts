@@ -48,7 +48,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.ActionProcessor"
         pushDiffChange: function (diff: IDifferences): void {
             throw new Error("Function not implemented.");
         },
-        validateActionInstance: function (action: IInstanceAction): void {
+        validateActionInstance: function (action: IInstanceAction<any>): void {
             throw new Error("Function not implemented.");
         },
     };
@@ -105,7 +105,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.ActionProcessor"
 
             const root = generateNewStoreInstance();
             const ins = generateInstanceId(root, "user", "1");
-            const action: IInstanceAction = {
+            const action: IInstanceAction<any> = {
                 id: "",
                 action: "",
                 storeType: "user",
@@ -132,7 +132,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.ActionProcessor"
 
             const root = generateNewStoreInstance();
             const ins = generateInstanceId(root, "user", "1");
-            const action: IInstanceAction = {
+            const action: IInstanceAction<any> = {
                 id: "",
                 action: "",
                 storeType: "user",
@@ -180,7 +180,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.ActionProcessor"
 
             const root = generateNewStoreInstance();
             const ins = generateInstanceId(root, "user", "1");
-            const action: IInstanceAction = {
+            const action: IInstanceAction<any> = {
                 id: "",
                 action: "",
                 storeType: "user",

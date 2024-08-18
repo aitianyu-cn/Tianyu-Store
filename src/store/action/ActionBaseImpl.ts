@@ -16,7 +16,7 @@ export function actionBaseImpl<STATE extends IterableType, PARAMETER_TYPE, RETUR
     external?: ExternalOperatorFunction,
 ): IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE> {
     const actionInstanceCaller = <IActionProvider<STATE, PARAMETER_TYPE, RETURN_TYPE>>(
-        function (instanceId: InstanceId, params: PARAMETER_TYPE): IInstanceAction {
+        function (instanceId: InstanceId, params: PARAMETER_TYPE): IInstanceAction<PARAMETER_TYPE> {
             return {
                 id: actionInstanceCaller.actionId,
                 action: actionInstanceCaller.info.fullName,

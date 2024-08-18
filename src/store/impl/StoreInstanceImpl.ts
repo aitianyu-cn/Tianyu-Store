@@ -260,7 +260,7 @@ export class StoreInstanceImpl implements IStoreExecution {
         this.diffCache = diff;
     }
 
-    validateActionInstance(action: IInstanceAction): void {
+    validateActionInstance(action: IInstanceAction<any>): void {
         //
     }
 }

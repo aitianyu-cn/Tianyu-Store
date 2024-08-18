@@ -17,7 +17,7 @@ export function* doActionWithActioName(
     instanceId: InstanceId,
     params?: any,
 ): Generator<StoreActionHandle, StoreActionHandle, StoreActionHandle> {
-    const action: IInstanceAction = {
+    const action: IInstanceAction<any> = {
         // action id is not provided here
         id: "",
         // generate action name with the reg
@@ -38,7 +38,9 @@ export function* doActionWithActioName(
  * @param action to be generated action instance
  * @returns return a generator for action
  */
-export function* doAction(action: IInstanceAction): Generator<StoreActionHandle, StoreActionHandle, StoreActionHandle> {
+export function* doAction(
+    action: IInstanceAction<any>,
+): Generator<StoreActionHandle, StoreActionHandle, StoreActionHandle> {
     return yield { type: StoreHandleType.ACTION, action };
 }
 

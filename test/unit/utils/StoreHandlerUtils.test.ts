@@ -29,7 +29,7 @@ describe("aitianyu-cn.node-module.tianyu-store.utils.StoreHandlerUtils", () => {
 
     describe("doAction", () => {
         it("-", () => {
-            const action: IInstanceAction = {
+            const action: IInstanceAction<any> = {
                 id: "",
                 action: "",
                 storeType: "",

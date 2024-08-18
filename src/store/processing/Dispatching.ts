@@ -17,11 +17,11 @@ import { ActionProcessorMap } from "./ActionProcessor";
 export async function dispatching(
     executor: IStoreExecution,
     manager: IStoreManager,
-    actions: IInstanceAction[],
+    actions: IInstanceAction<any>[],
     /* istanbul ignore next */
     notRedoUndo: boolean = false,
-): Promise<IInstanceAction[]> {
-    const ranActions: IInstanceAction[] = [];
+): Promise<IInstanceAction<any>[]> {
+    const ranActions: IInstanceAction<any>[] = [];
 
     const _entity = verifyActionInstances(actions);
 

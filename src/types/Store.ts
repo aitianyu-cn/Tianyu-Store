@@ -33,7 +33,7 @@ export interface IStoreExecution {
     ): void;
     pushDiffChange(diff: IDifferences): void;
 
-    validateActionInstance(action: IInstanceAction): void;
+    validateActionInstance(action: IInstanceAction<any>): void;
 }
 
 /** this is for internal using */
@@ -192,7 +192,7 @@ export interface IStore {
      * WARNING: PLEASE DO NOT EXECUTE A VIEW ACTION DURING THIS DISPATCH EXECUTION,
      * BECAUSE IF THE UNDO, REDO IS APPLIED, STORE STATE MIGHT NOT CHANGED CORRECTLY.
      */
-    dispatch(action: IInstanceAction | IBatchAction): Promise<void>;
+    dispatch(action: IInstanceAction<any> | IBatchAction): Promise<void>;
     /**
      * To dispatch a ui action or actions.
      * This dispatch is not a transaction executor.
@@ -201,7 +201,7 @@ export interface IStore {
      *
      * @returns return a promise to wait actions done
      */
-    dispatchForView(action: IInstanceViewAction | IBatchAction): void;
+    dispatchForView(action: IInstanceViewAction<any> | IBatchAction): void;
     /** Destroy store */
     destroy(): void;
 }
@@ -214,12 +214,12 @@ export interface IStoreDevAPI {
 
     getState(): MapOfType<IStoreState>;
     getHistories(): { histroy: IDifferences[]; index: number };
-    getAllDispatchs(): TransactionOperationRecord<IInstanceAction>[];
+    getAllDispatchs(): TransactionOperationRecord<IInstanceAction<any>>[];
     getAllSelectors(): TransactionOperationRecord<IInstanceSelector<any>>[];
     getAllErrors(): TransactionErrorRecord[];
 
     setOnSelector(callback?: CallbackActionT<TransactionOperationRecord<IInstanceSelector<any>>>): void;
-    setOnDispatch(callback?: CallbackActionT<TransactionOperationRecord<IInstanceAction>>): void;
+    setOnDispatch(callback?: CallbackActionT<TransactionOperationRecord<IInstanceAction<any>>>): void;
     setOnError(callback?: CallbackActionT<TransactionErrorRecord>): void;
     setOnChangeApplied(callback?: CallbackActionT<IDifferences>): void;
 }

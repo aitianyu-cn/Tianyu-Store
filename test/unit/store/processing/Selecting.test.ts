@@ -51,7 +51,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Selecting", () =
             pushStateChange: function (): void {
                 throw new Error("Function not implemented.");
             },
-            validateActionInstance: function (action: IInstanceAction): void {
+            validateActionInstance: function (action: IInstanceAction<any>): void {
                 throw new Error("Function not implemented.");
             },
             getHistories: function (): { histroy: IDifferences[]; index: number } {
@@ -189,7 +189,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Selecting", () =
             pushStateChange: function (): void {
                 throw new Error("Function not implemented.");
             },
-            validateActionInstance: function (action: IInstanceAction): void {
+            validateActionInstance: function (action: IInstanceAction<any>): void {
                 throw new Error("Function not implemented.");
             },
             getHistories: function (): { histroy: IDifferences[]; index: number } {
@@ -330,7 +330,7 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Selecting", () =
             pushStateChange: function (): void {
                 throw new Error("Function not implemented.");
             },
-            validateActionInstance: function (action: IInstanceAction): void {
+            validateActionInstance: function (action: IInstanceAction<any>): void {
                 throw new Error("Function not implemented.");
             },
             getHistories: function (): { histroy: IDifferences[]; index: number } {
