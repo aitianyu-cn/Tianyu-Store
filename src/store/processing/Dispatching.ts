@@ -26,7 +26,7 @@ export async function dispatching(
     const _entity = verifyActionInstances(actions);
 
     for (const rawAction of actions) {
-        const actionImpl = manager.getAction(rawAction.action);
+        const actionImpl = manager.getAction(rawAction.action, !!rawAction.template, rawAction.instanceId);
 
         // due to in the internal case, there will execute action by action name only
         // reget the action instance to ensure the action valid

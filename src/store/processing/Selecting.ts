@@ -50,7 +50,7 @@ export function doSelectingWithState<RESULT>(
     selector: IInstanceSelector<RESULT>,
 ): SelectorResult<RESULT> {
     try {
-        const selectorImpl = manager.getSelector(selector.selector);
+        const selectorImpl = manager.getSelector(selector.selector, !!selector.template, selector.instanceId);
         manager.select(selector);
         const type = selectorImpl.type;
 
@@ -82,7 +82,7 @@ function doSelectingWithStateThrowWhenMissing<RESULT>(
     selector: IInstanceSelector<RESULT>,
     forceStatic: boolean,
 ): RESULT {
-    const selectorImpl = manager.getSelector(selector.selector);
+    const selectorImpl = manager.getSelector(selector.selector, !!selector.template, selector.instanceId);
     manager.select(selector);
     const type = selectorImpl.type;
 
@@ -131,7 +131,7 @@ function doMixSelecting<RESULT>(
     const innerSelectors = mixSelector.getters;
     const innerResults: any[] = [];
     for (const selectorInfo of innerSelectors) {
-        const selectorProvider = manager.getSelector(selectorInfo.fullName);
+        const selectorProvider = manager.getSelector(selectorInfo.fullName, !!selector.template, selector.instanceId);
         const selectorInstance = generateSelectorInstance(selector.instanceId, selectorProvider, selector.params);
         innerResults.push(doSelectingWithStateThrowWhenMissing(manager, selectorInstance, forceStatic));
     }
@@ -144,8 +144,16 @@ function doRestrictSelecting<RESULT>(
     selectorImpl: RestrictSelectorProvider<any, RESULT>,
     forceStatic: boolean,
 ): RESULT {
-    const fromSelector = manager.getSelector(selectorImpl.parameterGenerator.fullName);
-    const toSelector = manager.getSelector(selectorImpl.resultGenerator.fullName);
+    const fromSelector = manager.getSelector(
+        selectorImpl.parameterGenerator.fullName,
+        !!selector.template,
+        selector.instanceId,
+    );
+    const toSelector = manager.getSelector(
+        selectorImpl.resultGenerator.fullName,
+        !!selector.template,
+        selector.instanceId,
+    );
     const fromInstance = generateSelectorInstance(selector.instanceId, fromSelector, selector.params);
     const fromValue = doSelectingWithStateThrowWhenMissing(manager, fromInstance, forceStatic);
 

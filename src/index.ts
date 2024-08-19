@@ -89,5 +89,6 @@ export namespace StoreUtils {
     }
 
     export import registerExpose = InterfaceUtilsImport.registerExpose;
+    export import registerTemplate = InterfaceUtilsImport.registerTemplate;
     export import createBatchAction = BatchActionUtilsImport.createBatchAction;
 }

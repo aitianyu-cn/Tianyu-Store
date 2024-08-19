@@ -20,6 +20,8 @@ export interface IInstanceSelector<_RESULT> {
     instanceId: InstanceId;
     /** Additional Parameter */
     params: any;
+    /** Indicates the store operator is a template or fact */
+    template?: boolean;
 }
 
 export enum SelectorType {

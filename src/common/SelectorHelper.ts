@@ -38,6 +38,7 @@ function fillSelectorInstanceCaller<
                 storeType: selectorInstanceCaller.info.storeType,
                 params: params,
                 instanceId,
+                template: selectorInstanceCaller.info.template,
             };
         }
     );
@@ -99,6 +100,7 @@ export const mixingSelectorCreator: ICreateMixingSelector = <RESULT>(...selector
                 storeType: selectorInstanceCaller.info.storeType,
                 params: params,
                 instanceId,
+                template: selectorInstanceCaller.info.template,
             };
         }
     );
@@ -126,6 +128,7 @@ export function restrictSelectorCreator<RETURN_TYPE, PARAMETER_TYPE = void, RTo 
                 storeType: selectorInstanceCaller.info.storeType,
                 params: params,
                 instanceId,
+                template: selectorInstanceCaller.info.template,
             };
         }
     );

@@ -39,8 +39,8 @@ export interface IStoreExecution {
 /** this is for internal using */
 export interface IStoreManager {
     id: string;
-    getAction(id: string): IActionProvider<any, any, any>;
-    getSelector(id: string): ISelectorProviderBase<any, any>;
+    getAction(id: string, template: boolean, instanceId: InstanceId): IActionProvider<any, any, any>;
+    getSelector(id: string, template: boolean, instanceId: InstanceId): ISelectorProviderBase<any, any>;
 
     createEntity(instanceId: InstanceId, state: IStoreState): void;
     destroyEntity(instanceId: InstanceId): void;

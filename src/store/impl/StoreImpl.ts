@@ -146,16 +146,20 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
     // IStore Manager Impl
     // ==============================================================================
 
-    getAction(id: string): IActionProvider<any, any, any> {
-        const action = this.operationList[id] as IActionProvider<any, any, any>;
+    getAction(id: string, template: boolean, instanceId: InstanceId): IActionProvider<any, any, any> {
+        const action = this.getInterfaceInternal(id, template, instanceId) as
+            | IActionProvider<any, any, any>
+            | undefined;
         if (!action?.actionId) {
             throw new Error(MessageBundle.getText("STORE_ACTION_NOT_FOUND", id));
         }
 
         return action;
     }
-    getSelector(id: string): ISelectorProviderBase<any, any> {
-        const selector = this.operationList[id] as ISelectorProviderBase<any, any>;
+    getSelector(id: string, template: boolean, instanceId: InstanceId): ISelectorProviderBase<any, any> {
+        const selector = this.getInterfaceInternal(id, template, instanceId) as
+            | ISelectorProviderBase<any, any>
+            | undefined;
         if (!selector?.selector) {
             throw new Error(MessageBundle.getText("STORE_SELECTOR_NOT_FOUND", id));
         }
@@ -511,6 +515,34 @@ export class StoreImpl implements IStore, IStoreManager, IStoreExecution, IStore
     private doneDispatch(actions: IInstanceAction<any>[]): void {
         const dispatchRec = this.transaction.dispatched(actions);
         this.onDispatch?.(dispatchRec);
+    }
+
+    private getInterfaceInternal(
+        id: string,
+        template: boolean,
+        instanceId: InstanceId,
+    ): IActionProvider<any, any, any> | ISelectorProviderBase<any, any> | undefined {
+        if (!template) {
+            return this.operationList[id] as
+                | IActionProvider<any, any, any>
+                | ISelectorProviderBase<any, any>
+                | undefined;
+        }
+
+        const instancePair = instanceId.structure();
+        for (let index = instancePair.length - 1; index >= 0; index--) {
+            const storeType = instancePair[index].storeType;
+            const operatorId = `${storeType}.${id}`;
+            const operator = this.operationList[operatorId] as
+                | IActionProvider<any, any, any>
+                | ISelectorProviderBase<any, any>
+                | undefined;
+            if (operator) {
+                return operator;
+            }
+        }
+
+        return undefined;
     }
 
     // ================================================================================================================

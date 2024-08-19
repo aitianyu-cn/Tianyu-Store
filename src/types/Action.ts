@@ -35,6 +35,8 @@ export interface IInstanceAction<PARAMETER_TYPE> {
     params: PARAMETER_TYPE;
     /** Action Type */
     actionType: ActionType;
+    /** Indicates the store operator is a template or fact */
+    template?: boolean;
 }
 
 /**

@@ -24,6 +24,7 @@ export function actionBaseImpl<STATE extends IterableType, PARAMETER_TYPE, RETUR
                 actionType: actionInstanceCaller.getType(),
                 instanceId,
                 params,
+                template: actionInstanceCaller.info.template,
             };
         }
     );

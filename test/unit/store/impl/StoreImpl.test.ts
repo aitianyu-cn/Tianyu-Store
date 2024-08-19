@@ -142,26 +142,60 @@ describe("aitianyu-cn.node-module.tianyu-store.store.impl.StoreImpl", () => {
         describe("getAction", () => {
             it("action is not defined", () => {
                 expect(() => {
-                    storeInternal.getAction("test.unDefined");
+                    storeInternal.getAction("test.unDefined", false, generateInstanceId("", ""));
                 }).toThrow(MessageBundle.getText("STORE_ACTION_NOT_FOUND", "test.unDefined"));
             });
 
             it("action is defined", () => {
-                const action = storeInternal.getAction(TestUserStateInterface.action.userLogonAction.info.fullName);
+                const action = storeInternal.getAction(
+                    TestUserStateInterface.action.userLogonAction.info.fullName,
+                    false,
+                    generateInstanceId("", ""),
+                );
                 expect(action.info.name).toEqual("userLogonAction");
+            });
+
+            it("action is template", () => {
+                const instanceId = generateInstanceId(baseInstanceId, "test", "");
+                const action = storeInternal.getAction("action.userLogonAction", true, instanceId);
+                expect(action.info.name).toEqual("userLogonAction");
+            });
+
+            it("action is template and could not found", () => {
+                const instanceId = generateInstanceId(baseInstanceId, "test1", "");
+                expect(() => {
+                    storeInternal.getAction("action.userLogonAction", true, instanceId);
+                }).toThrow(MessageBundle.getText("STORE_ACTION_NOT_FOUND", "action.userLogonAction"));
             });
         });
 
         describe("getSelector", () => {
             it("selector is not defined", () => {
                 expect(() => {
-                    storeInternal.getSelector("test.unDefined");
+                    storeInternal.getSelector("test.unDefined", false, generateInstanceId("", ""));
                 }).toThrow(MessageBundle.getText("STORE_SELECTOR_NOT_FOUND", "test.unDefined"));
             });
 
             it("selector is defined", () => {
-                const selector = storeInternal.getSelector(TestUserStateInterface.selector.getUser.info.fullName);
+                const selector = storeInternal.getSelector(
+                    TestUserStateInterface.selector.getUser.info.fullName,
+                    false,
+                    generateInstanceId("", ""),
+                );
                 expect(selector.info.name).toEqual("getUser");
+            });
+
+            it("selector is template", () => {
+                const instanceId = generateInstanceId(baseInstanceId, "test", "");
+                const selector = storeInternal.getSelector("selector.getUser", true, instanceId);
+                expect(selector.info.name).toEqual("getUser");
+            });
+
+            it("selector is template and could not found", () => {
+                const instanceId = generateInstanceId(baseInstanceId, "test1", "");
+                expect(() => {
+                    storeInternal.getSelector("selector.getUser", true, instanceId);
+                }).toThrow(MessageBundle.getText("STORE_SELECTOR_NOT_FOUND", "selector.getUser"));
             });
         });
 
