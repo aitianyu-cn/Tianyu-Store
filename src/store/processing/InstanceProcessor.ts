@@ -88,17 +88,6 @@ export function verifyActionInstances(s: IInstanceAction<any>[]): string {
             throw new Error(MessageBundle.getText("DISPATCHING_SYSTEM_LIFECYCLE_NOT_ATOM", value.action));
         }
 
-        if (!verifyInstanceIdMatchStoreTypeOrParentStoreType(value.storeType, value.instanceId)) {
-            // throw an error when try to use a different store type instance to run action
-            throw new Error(
-                MessageBundle.getText(
-                    "DISPATCHING_ACTION_INSTANCE_NOT_MATCH",
-                    value.storeType,
-                    value.instanceId.storeType,
-                    value.action,
-                ),
-            );
-        }
         return value.instanceId;
     });
 

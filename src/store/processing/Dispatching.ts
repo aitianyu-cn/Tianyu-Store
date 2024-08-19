@@ -11,7 +11,12 @@ import {
     StoreExternalObjectHandle,
 } from "src/types/StoreHandler";
 import { doSelecting, doSelectingWithThrow } from "./Selecting";
-import { getStoreTypeMatchedInstanceId, verifyActionInstances, verifyInstanceSameAncestor } from "./InstanceProcessor";
+import {
+    getStoreTypeMatchedInstanceId,
+    verifyActionInstances,
+    verifyInstanceIdMatchStoreTypeOrParentStoreType,
+    verifyInstanceSameAncestor,
+} from "./InstanceProcessor";
 import { ActionProcessorMap } from "./ActionProcessor";
 
 export async function dispatching(
@@ -31,6 +36,18 @@ export async function dispatching(
         // due to in the internal case, there will execute action by action name only
         // reget the action instance to ensure the action valid
         const action = actionImpl(rawAction.instanceId, rawAction.params);
+        if (!verifyInstanceIdMatchStoreTypeOrParentStoreType(action.storeType, action.instanceId)) {
+            // throw an error when try to use a different store type instance to run action
+            throw new Error(
+                MessageBundle.getText(
+                    "DISPATCHING_ACTION_INSTANCE_NOT_MATCH",
+                    action.storeType,
+                    action.instanceId.storeType,
+                    action.action,
+                ),
+            );
+        }
+
         ranActions.push(action);
 
         // execute external processing
@@ -73,7 +90,7 @@ export async function dispatching(
                 if (actionImpl.reducer) {
                     const newState = actionImpl.reducer(
                         executor.getState(
-                            getStoreTypeMatchedInstanceId(rawAction.storeType, rawAction.instanceId),
+                            getStoreTypeMatchedInstanceId(action.storeType, action.instanceId),
                             action.actionType === ActionType.CREATE,
                         ),
                         result.value,

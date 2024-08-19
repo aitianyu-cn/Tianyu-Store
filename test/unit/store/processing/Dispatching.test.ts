@@ -153,6 +153,16 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.Dispatching", ()
             ).toEqual(["Home", "Setting", "Help", "Theme", "Language"]);
         });
 
+        it("test for store type is not matched in instance id", async () => {
+            jest.spyOn(TianyuStore as any, "error");
+
+            await TianyuStore.dispatch(
+                TestUserStateInterface.action.userLogonAction(pageEntityInstanceId, { user: "admin" }),
+            );
+
+            expect((TianyuStore as any).error).toHaveBeenCalled();
+        });
+
         describe("redo undo test", () => {
             const testEntityInstanceId1 = generateInstanceId(ancestorInstanceId, TestTestStateStoreType);
             const testEntityInstanceId2 = generateInstanceId(ancestorInstanceId, TestTestStateStoreType);

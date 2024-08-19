@@ -100,7 +100,7 @@ function doSelectingWithStateThrowWhenMissing<RESULT>(
     }
 
     const getter = (selectorImpl as SelectorProvider<any, RESULT> | ParameterSelectorProvider<any, any, RESULT>).getter;
-    const instanceIdMatchedStoreType = getStoreTypeMatchedInstanceId(selector.storeType, selector.instanceId);
+    const instanceIdMatchedStoreType = getStoreTypeMatchedInstanceId(selectorImpl.info.storeType, selector.instanceId);
 
     const executor = manager.getEntity(instanceIdMatchedStoreType.entity);
     const externalResult = selectorImpl.external?.(executor.getExternalRegister(selector.instanceId));

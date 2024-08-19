@@ -195,23 +195,5 @@ describe("aitianyu-cn.node-module.tianyu-store.store.processing.InstanceProcesso
                 ]);
             }).toThrow();
         });
-
-        it("different instance and action store type", () => {
-            const root = generateNewStoreInstance();
-            const ins = generateInstanceId(root, "test", "test");
-
-            expect(() => {
-                verifyActionInstances([
-                    {
-                        id: "",
-                        action: "",
-                        storeType: "test2",
-                        instanceId: ins,
-                        params: undefined,
-                        actionType: ActionType.ACTION,
-                    },
-                ]);
-            }).toThrow();
-        });
     });
 });
